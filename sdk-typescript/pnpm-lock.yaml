@@ -8,6 +8,72 @@ importers:
 
   .: {}
 
+  packages/audience:
+    dependencies:
+      '@wave-av/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@types/node':
+        specifier: ^25.0.3
+        version: 25.9.1
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.1(postcss@8.5.15)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.4
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
+      zod:
+        specifier: 3.25.76
+        version: 3.25.76
+
+  packages/billing:
+    dependencies:
+      '@wave-av/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@types/node':
+        specifier: ^25.0.3
+        version: 25.9.1
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.1(postcss@8.5.15)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.4
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
+      zod:
+        specifier: 3.25.76
+        version: 3.25.76
+
+  packages/camera-control:
+    dependencies:
+      '@wave-av/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@types/node':
+        specifier: ^25.0.3
+        version: 25.9.1
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.1(postcss@8.5.15)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.4
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
+      zod:
+        specifier: 3.25.76
+        version: 3.25.76
+
   packages/captions:
     dependencies:
       '@wave-av/core':
@@ -74,7 +140,51 @@ importers:
         specifier: 3.25.76
         version: 3.25.76
 
+  packages/cloud-switcher:
+    dependencies:
+      '@wave-av/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@types/node':
+        specifier: ^25.0.3
+        version: 25.9.1
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.1(postcss@8.5.15)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.4
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
+      zod:
+        specifier: 3.25.76
+        version: 3.25.76
+
   packages/collab:
+    dependencies:
+      '@wave-av/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@types/node':
+        specifier: ^25.0.3
+        version: 25.9.1
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.1(postcss@8.5.15)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.4
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
+      zod:
+        specifier: 3.25.76
+        version: 3.25.76
+
+  packages/connect:
     dependencies:
       '@wave-av/core':
         specifier: workspace:*
@@ -121,7 +231,227 @@ importers:
         specifier: 3.25.76
         version: 3.25.76
 
+  packages/creator:
+    dependencies:
+      '@wave-av/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@types/node':
+        specifier: ^25.0.3
+        version: 25.9.1
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.1(postcss@8.5.15)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.4
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
+      zod:
+        specifier: 3.25.76
+        version: 3.25.76
+
+  packages/desktop:
+    dependencies:
+      '@wave-av/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@types/node':
+        specifier: ^25.0.3
+        version: 25.9.1
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.1(postcss@8.5.15)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.4
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
+      zod:
+        specifier: 3.25.76
+        version: 3.25.76
+
+  packages/distribution:
+    dependencies:
+      '@wave-av/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@types/node':
+        specifier: ^25.0.3
+        version: 25.9.1
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.1(postcss@8.5.15)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.4
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
+      zod:
+        specifier: 3.25.76
+        version: 3.25.76
+
+  packages/drm:
+    dependencies:
+      '@wave-av/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@types/node':
+        specifier: ^25.0.3
+        version: 25.9.1
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.1(postcss@8.5.15)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.4
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
+      zod:
+        specifier: 3.25.76
+        version: 3.25.76
+
+  packages/edge:
+    dependencies:
+      '@wave-av/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@types/node':
+        specifier: ^25.0.3
+        version: 25.9.1
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.1(postcss@8.5.15)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.4
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
+      zod:
+        specifier: 3.25.76
+        version: 3.25.76
+
   packages/editor:
+    dependencies:
+      '@wave-av/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@types/node':
+        specifier: ^25.0.3
+        version: 25.9.1
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.1(postcss@8.5.15)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.4
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
+      zod:
+        specifier: 3.25.76
+        version: 3.25.76
+
+  packages/fleet:
+    dependencies:
+      '@wave-av/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@types/node':
+        specifier: ^25.0.3
+        version: 25.9.1
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.1(postcss@8.5.15)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.4
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
+      zod:
+        specifier: 3.25.76
+        version: 3.25.76
+
+  packages/ghost:
+    dependencies:
+      '@wave-av/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@types/node':
+        specifier: ^25.0.3
+        version: 25.9.1
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.1(postcss@8.5.15)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.4
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
+      zod:
+        specifier: 3.25.76
+        version: 3.25.76
+
+  packages/marketplace:
+    dependencies:
+      '@wave-av/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@types/node':
+        specifier: ^25.0.3
+        version: 25.9.1
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.1(postcss@8.5.15)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.4
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
+      zod:
+        specifier: 3.25.76
+        version: 3.25.76
+
+  packages/mesh:
+    dependencies:
+      '@wave-av/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@types/node':
+        specifier: ^25.0.3
+        version: 25.9.1
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.1(postcss@8.5.15)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.4
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
+      zod:
+        specifier: 3.25.76
+        version: 3.25.76
+
+  packages/notifications:
     dependencies:
       '@wave-av/core':
         specifier: workspace:*
@@ -165,7 +495,161 @@ importers:
         specifier: 3.25.76
         version: 3.25.76
 
+  packages/pipeline:
+    dependencies:
+      '@wave-av/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@types/node':
+        specifier: ^25.0.3
+        version: 25.9.1
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.1(postcss@8.5.15)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.4
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
+      zod:
+        specifier: 3.25.76
+        version: 3.25.76
+
   packages/podcast:
+    dependencies:
+      '@wave-av/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@types/node':
+        specifier: ^25.0.3
+        version: 25.9.1
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.1(postcss@8.5.15)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.4
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
+      zod:
+        specifier: 3.25.76
+        version: 3.25.76
+
+  packages/prism:
+    dependencies:
+      '@wave-av/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@types/node':
+        specifier: ^25.0.3
+        version: 25.9.1
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.1(postcss@8.5.15)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.4
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
+      zod:
+        specifier: 3.25.76
+        version: 3.25.76
+
+  packages/prompter:
+    dependencies:
+      '@wave-av/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@types/node':
+        specifier: ^25.0.3
+        version: 25.9.1
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.1(postcss@8.5.15)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.4
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
+      zod:
+        specifier: 3.25.76
+        version: 3.25.76
+
+  packages/pulse:
+    dependencies:
+      '@wave-av/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@types/node':
+        specifier: ^25.0.3
+        version: 25.9.1
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.1(postcss@8.5.15)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.4
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
+      zod:
+        specifier: 3.25.76
+        version: 3.25.76
+
+  packages/qr:
+    dependencies:
+      '@wave-av/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@types/node':
+        specifier: ^25.0.3
+        version: 25.9.1
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.1(postcss@8.5.15)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.4
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
+      zod:
+        specifier: 3.25.76
+        version: 3.25.76
+
+  packages/replay:
+    dependencies:
+      '@wave-av/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@types/node':
+        specifier: ^25.0.3
+        version: 25.9.1
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.1(postcss@8.5.15)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.4
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
+      zod:
+        specifier: 3.25.76
+        version: 3.25.76
+
+  packages/scene:
     dependencies:
       '@wave-av/core':
         specifier: workspace:*
@@ -189,6 +673,15 @@ importers:
 
   packages/sdk:
     dependencies:
+      '@wave-av/audience':
+        specifier: workspace:*
+        version: link:../audience
+      '@wave-av/billing':
+        specifier: workspace:*
+        version: link:../billing
+      '@wave-av/camera-control':
+        specifier: workspace:*
+        version: link:../camera-control
       '@wave-av/captions':
         specifier: workspace:*
         version: link:../captions
@@ -198,36 +691,111 @@ importers:
       '@wave-av/clips':
         specifier: workspace:*
         version: link:../clips
+      '@wave-av/cloud-switcher':
+        specifier: workspace:*
+        version: link:../cloud-switcher
       '@wave-av/collab':
         specifier: workspace:*
         version: link:../collab
+      '@wave-av/connect':
+        specifier: workspace:*
+        version: link:../connect
       '@wave-av/core':
         specifier: workspace:*
         version: link:../core
+      '@wave-av/creator':
+        specifier: workspace:*
+        version: link:../creator
+      '@wave-av/desktop':
+        specifier: workspace:*
+        version: link:../desktop
+      '@wave-av/distribution':
+        specifier: workspace:*
+        version: link:../distribution
+      '@wave-av/drm':
+        specifier: workspace:*
+        version: link:../drm
+      '@wave-av/edge':
+        specifier: workspace:*
+        version: link:../edge
       '@wave-av/editor':
         specifier: workspace:*
         version: link:../editor
+      '@wave-av/fleet':
+        specifier: workspace:*
+        version: link:../fleet
+      '@wave-av/ghost':
+        specifier: workspace:*
+        version: link:../ghost
+      '@wave-av/marketplace':
+        specifier: workspace:*
+        version: link:../marketplace
+      '@wave-av/mesh':
+        specifier: workspace:*
+        version: link:../mesh
+      '@wave-av/notifications':
+        specifier: workspace:*
+        version: link:../notifications
       '@wave-av/phone':
         specifier: workspace:*
         version: link:../phone
+      '@wave-av/pipeline':
+        specifier: workspace:*
+        version: link:../pipeline
       '@wave-av/podcast':
         specifier: workspace:*
         version: link:../podcast
+      '@wave-av/prism':
+        specifier: workspace:*
+        version: link:../prism
+      '@wave-av/prompter':
+        specifier: workspace:*
+        version: link:../prompter
+      '@wave-av/pulse':
+        specifier: workspace:*
+        version: link:../pulse
+      '@wave-av/qr':
+        specifier: workspace:*
+        version: link:../qr
+      '@wave-av/replay':
+        specifier: workspace:*
+        version: link:../replay
+      '@wave-av/scene':
+        specifier: workspace:*
+        version: link:../scene
       '@wave-av/search':
         specifier: workspace:*
         version: link:../search
       '@wave-av/sentiment':
         specifier: workspace:*
         version: link:../sentiment
+      '@wave-av/signage':
+        specifier: workspace:*
+        version: link:../signage
+      '@wave-av/slides':
+        specifier: workspace:*
+        version: link:../slides
+      '@wave-av/studio':
+        specifier: workspace:*
+        version: link:../studio
       '@wave-av/studio-ai':
         specifier: workspace:*
         version: link:../studio-ai
       '@wave-av/transcribe':
         specifier: workspace:*
         version: link:../transcribe
+      '@wave-av/usb':
+        specifier: workspace:*
+        version: link:../usb
+      '@wave-av/vault':
+        specifier: workspace:*
+        version: link:../vault
       '@wave-av/voice':
         specifier: workspace:*
         version: link:../voice
+      '@wave-av/zoom':
+        specifier: workspace:*
+        version: link:../zoom
     devDependencies:
       tsup:
         specifier: ^8.0.0
@@ -262,6 +830,72 @@ importers:
         version: 3.25.76
 
   packages/sentiment:
+    dependencies:
+      '@wave-av/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@types/node':
+        specifier: ^25.0.3
+        version: 25.9.1
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.1(postcss@8.5.15)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.4
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
+      zod:
+        specifier: 3.25.76
+        version: 3.25.76
+
+  packages/signage:
+    dependencies:
+      '@wave-av/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@types/node':
+        specifier: ^25.0.3
+        version: 25.9.1
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.1(postcss@8.5.15)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.4
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
+      zod:
+        specifier: 3.25.76
+        version: 3.25.76
+
+  packages/slides:
+    dependencies:
+      '@wave-av/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@types/node':
+        specifier: ^25.0.3
+        version: 25.9.1
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.1(postcss@8.5.15)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.4
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
+      zod:
+        specifier: 3.25.76
+        version: 3.25.76
+
+  packages/studio:
     dependencies:
       '@wave-av/core':
         specifier: workspace:*
@@ -327,7 +961,73 @@ importers:
         specifier: 3.25.76
         version: 3.25.76
 
+  packages/usb:
+    dependencies:
+      '@wave-av/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@types/node':
+        specifier: ^25.0.3
+        version: 25.9.1
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.1(postcss@8.5.15)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.4
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
+      zod:
+        specifier: 3.25.76
+        version: 3.25.76
+
+  packages/vault:
+    dependencies:
+      '@wave-av/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@types/node':
+        specifier: ^25.0.3
+        version: 25.9.1
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.1(postcss@8.5.15)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.4
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
+      zod:
+        specifier: 3.25.76
+        version: 3.25.76
+
   packages/voice:
+    dependencies:
+      '@wave-av/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@types/node':
+        specifier: ^25.0.3
+        version: 25.9.1
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.1(postcss@8.5.15)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.4
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
+      zod:
+        specifier: 3.25.76
+        version: 3.25.76
+
+  packages/zoom:
     dependencies:
       '@wave-av/core':
         specifier: workspace:*

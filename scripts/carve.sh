@@ -51,10 +51,14 @@ carve_one() {
   fi
 
   # --- discover the API class + factory names from the carved <p>.ts ---
-  local cls fac
-  cls=$(grep -oE "export class [A-Za-z0-9_]+API" "$dir/src/$p.ts" | head -1 | awk '{print $3}')
-  fac=$(grep -oE "export function create[A-Za-z0-9_]+API" "$dir/src/$p.ts" | head -1 | awk '{print $3}')
-  [ -n "$cls" ] || { echo "FAIL: no '*API' class found in $p.ts"; exit 2; }
+  # Two client conventions exist: class-style (export class FooAPI + createFooAPI) and
+  # functional-style (no class, just createFooApi returning an object of methods, e.g. prompter).
+  local cls fac ver="${PREVIEW:+0.0.1}"; ver="${ver:-0.1.0}"
+  # `|| true` so a non-matching grep (e.g. functional client has no *API class) doesn't abort under set -e
+  cls=$(grep -oE "export class [A-Za-z0-9_]+API" "$dir/src/$p.ts" | head -1 | awk '{print $3}' || true)
+  fac=$(grep -oE "export function create[A-Za-z0-9_]+[Aa][Pp][Ii]\b" "$dir/src/$p.ts" | head -1 | awk '{print $3}' || true)
+  [ -n "$fac" ] || fac=$(grep -oE "export function create[A-Za-z0-9_]+" "$dir/src/$p.ts" | head -1 | awk '{print $3}' || true)
+  { [ -n "$cls" ] || [ -n "$fac" ]; } || { echo "FAIL: no API class or create* factory in $p.ts"; exit 2; }
 
   # --- src/index.ts ---
   {
@@ -66,7 +70,7 @@ carve_one() {
   cat > "$dir/package.json" <<JSON
 {
   "name": "@wave-av/$p",
-  "version": "0.1.0",
+  "version": "$ver",
   "description": "$desc",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -115,11 +119,15 @@ JSON
   # --- tsconfig.json (identical clone of the proven clips tsconfig) ---
   cp "$PKGROOT/clips/tsconfig.json" "$dir/tsconfig.json"
 
-  # --- README.md ---
+  # --- README.md (preview banner when PREVIEW=1) ---
+  local banner=""
+  [ -n "${PREVIEW:-}" ] && banner="> ⚠️ **Preview.** The typed client surface is published ahead of GA. Calls return \`403\`/\`404\` until the product is live. Want it prioritized? Upvote at https://github.com/wave-av/sdks/issues (see CONTRIBUTING → product requests).
+
+"
   cat > "$dir/README.md" <<MD
 # @wave-av/$p
 
-Typed client for **WAVE ${desc%% —*}** through the WAVE gateway. Entitlement is enforced server-side (401 unauthenticated / 403 under-scoped) — installing this package does not grant access.
+${banner}Typed client for **WAVE ${desc%% —*}** through the WAVE gateway. Entitlement is enforced server-side (401 unauthenticated / 403 under-scoped) — installing this package does not grant access.
 
 \`\`\`bash
 npm i @wave-av/$p      # pulls @wave-av/core automatically
@@ -135,8 +143,8 @@ const api = ${fac:-/* factory */}(createClient({ apiKey: process.env.WAVE_API_KE
 Install only the products you use. Part of [\`wave-av/sdks\`](https://github.com/wave-av/sdks). MIT © WAVE Online, LLC.
 MD
 
-  # --- src/<p>.test.ts (smoke: factory binds, class is constructable) ---
-  if [ -n "$fac" ]; then
+  # --- src/<p>.test.ts (smoke; 3 cases by client convention) ---
+  if [ -n "$cls" ] && [ -n "$fac" ]; then
     cat > "$dir/src/$p.test.ts" <<TST
 import { describe, it, expect } from "vitest";
 import { createClient } from "@wave-av/core";
@@ -154,7 +162,7 @@ describe("@wave-av/$p", () => {
   });
 });
 TST
-  else
+  elif [ -n "$cls" ]; then
     cat > "$dir/src/$p.test.ts" <<TST
 import { describe, it, expect } from "vitest";
 import { createClient } from "@wave-av/core";
@@ -165,6 +173,24 @@ describe("@wave-av/$p", () => {
 
   it("the API surface is a constructable class bound to the core client", () => {
     expect(new $cls(client)).toBeInstanceOf($cls);
+  });
+});
+TST
+  else
+    # functional client (no class): factory returns an object exposing method functions
+    cat > "$dir/src/$p.test.ts" <<TST
+import { describe, it, expect } from "vitest";
+import { createClient } from "@wave-av/core";
+import { $fac } from "./index";
+
+describe("@wave-av/$p", () => {
+  const client = createClient({ apiKey: "wave_test_x", baseUrl: "https://api.wave.online" });
+
+  it("$fac returns a bound client object exposing methods", () => {
+    const api = $fac(client);
+    expect(api).toBeTruthy();
+    expect(typeof api).toBe("object");
+    expect(Object.values(api).some((v) => typeof v === "function")).toBe(true);
   });
 });
 TST
