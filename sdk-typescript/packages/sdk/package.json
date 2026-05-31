@@ -12,7 +12,13 @@
       "require": "./dist/index.js"
     }
   },
-  "files": ["dist/**/*.js", "dist/**/*.mjs", "dist/**/*.d.ts", "README.md", "LICENSE"],
+  "files": [
+    "dist/**/*.js",
+    "dist/**/*.mjs",
+    "dist/**/*.d.ts",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --clean && tsc --emitDeclarationOnly --declaration --outDir dist",
     "test": "vitest run --passWithNoTests",
@@ -30,14 +36,28 @@
     "provenance": true,
     "registry": "https://registry.npmjs.org/"
   },
-  "engines": { "node": ">=18.0.0" },
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "dependencies": {
     "@wave-av/core": "workspace:*",
-    "@wave-av/clips": "workspace:*"
+    "@wave-av/clips": "workspace:*",
+    "@wave-av/voice": "workspace:*",
+    "@wave-av/captions": "workspace:*",
+    "@wave-av/chapters": "workspace:*",
+    "@wave-av/editor": "workspace:*",
+    "@wave-av/phone": "workspace:*",
+    "@wave-av/collab": "workspace:*",
+    "@wave-av/podcast": "workspace:*",
+    "@wave-av/studio-ai": "workspace:*",
+    "@wave-av/transcribe": "workspace:*",
+    "@wave-av/sentiment": "workspace:*",
+    "@wave-av/search": "workspace:*"
   },
   "devDependencies": {
     "tsup": "^8.0.0",
     "typescript": "^5.9.3",
     "vitest": "^4.1.4"
-  }
+  },
+  "sideEffects": false
 }

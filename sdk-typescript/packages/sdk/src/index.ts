@@ -8,3 +8,14 @@
  */
 export * from "@wave-av/core";
 export * as clips from "@wave-av/clips";
+export * as voice from "@wave-av/voice";
+export * as captions from "@wave-av/captions";
+export * as chapters from "@wave-av/chapters";
+export * as editor from "@wave-av/editor";
+export * as phone from "@wave-av/phone";
+export * as collab from "@wave-av/collab";
+export * as podcast from "@wave-av/podcast";
+export * as studioAi from "@wave-av/studio-ai";
+export * as transcribe from "@wave-av/transcribe";
+export * as sentiment from "@wave-av/sentiment";
+export * as search from "@wave-av/search";

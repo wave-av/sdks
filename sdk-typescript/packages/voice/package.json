@@ -1,7 +1,7 @@
 {
-  "name": "@wave-av/clips",
+  "name": "@wave-av/voice",
   "version": "0.1.0",
-  "description": "WAVE Clips client — typed access to the clip-engine product through the WAVE gateway. Entitlement enforced server-side (401/403).",
+  "description": "Voice — text-to-speech & voice cloning",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -12,13 +12,8 @@
       "require": "./dist/index.js"
     }
   },
-  "files": [
-    "dist/**/*.js",
-    "dist/**/*.mjs",
-    "dist/**/*.d.ts",
-    "README.md",
-    "LICENSE"
-  ],
+  "files": ["dist/**/*.js", "dist/**/*.mjs", "dist/**/*.d.ts", "README.md", "LICENSE"],
+  "sideEffects": false,
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --clean && tsc --emitDeclarationOnly --declaration --outDir dist",
     "test": "vitest run",
@@ -29,19 +24,15 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/wave-av/sdks.git",
-    "directory": "sdk-typescript/packages/clips"
+    "directory": "sdk-typescript/packages/voice"
   },
   "publishConfig": {
     "access": "public",
     "provenance": true,
     "registry": "https://registry.npmjs.org/"
   },
-  "engines": {
-    "node": ">=18.0.0"
-  },
-  "peerDependencies": {
-    "zod": "^3.22.0"
-  },
+  "engines": { "node": ">=18.0.0" },
+  "peerDependencies": { "zod": "^3.22.0" },
   "dependencies": {
     "@wave-av/core": "workspace:*"
   },
@@ -51,6 +42,5 @@
     "typescript": "^5.9.3",
     "vitest": "^4.1.4",
     "zod": "3.25.76"
-  },
-  "sideEffects": false
+  }
 }

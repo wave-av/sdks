@@ -6,7 +6,7 @@
  *
  * @example
  * ```typescript
- * import { Wave } from '@wave/sdk';
+ * import { Wave } from '@wave-av/core';
  *
  * const wave = new Wave({
  *   apiKey: process.env.WAVE_API_KEY!,
@@ -25,7 +25,7 @@
 export interface TelemetryConfig {
   /** Enable telemetry span collection. Default: false */
   enabled: boolean;
-  /** Service name reported in spans. Default: '@wave/sdk' */
+  /** Service name reported in spans. Default: '@wave-av/sdk' */
   serviceName?: string;
 }
 
@@ -88,7 +88,7 @@ export function initTelemetry(config: TelemetryConfig): void {
     // This is a peer dependency - if not installed, we gracefully disable.
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const otelApi = require('@opentelemetry/api') as { trace: OtelTraceApi };
-    const serviceName = config.serviceName ?? '@wave/sdk';
+    const serviceName = config.serviceName ?? '@wave-av/sdk';
     resolvedTracer = otelApi.trace.getTracer(serviceName, '2.0.0');
     telemetryEnabled = true;
   } catch {
