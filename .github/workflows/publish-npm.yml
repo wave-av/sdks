@@ -1,0 +1,55 @@
+name: npm publish (OIDC + provenance)
+
+# Publishes the @wave-av/* packages to npm from this PUBLIC repo, so npm provenance
+# (sigstore) works — it cannot from the private monorepo. Auth = OIDC trusted publishing
+# (NO NPM_TOKEN to leak/rotate); a Trusted Publisher must be registered on npmjs.com for
+# this repo + this workflow file + the `npm-publish` environment before a real publish.
+# Inert until then: tag pushes + the dry-run dispatch only pack/validate.
+on:
+  push:
+    tags: ["sdks-v*"]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Validate + pack only (no publish)"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+  id-token: write          # OIDC trusted publishing + provenance attestation
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: npm-publish     # required-reviewer gate on real publishes
+    defaults:
+      run:
+        working-directory: sdk-typescript
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org"
+      - name: Upgrade npm (OIDC trusted publishing needs npm >= 11.5)
+        run: npm install -g npm@latest
+      - name: Install (frozen, ignore-scripts in CI)
+        run: |
+          cat ../.npmrc.ci >> .npmrc
+          pnpm install --frozen-lockfile
+      - name: Build all packages (dependency order)
+        run: |
+          pnpm --filter @wave-av/core build
+          pnpm --filter @wave-av/clips build
+          pnpm --filter @wave-av/sdk build
+      - name: Pack — always (proves the tarballs; resolves workspace:* via pnpm)
+        run: pnpm -r --filter "@wave-av/*" pack
+      - name: Publish to npm (OIDC trusted publishing — NO token, provenance ON)
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/sdks-v')
+        run: pnpm -r --filter "@wave-av/*" publish --access public --provenance --no-git-checks
+        # pnpm rewrites workspace:* → the real dependency version at publish time.
+        # provenance requires each package.json repository.url == this repo (satisfied).

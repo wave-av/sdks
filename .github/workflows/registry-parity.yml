@@ -1,0 +1,45 @@
+name: registry parity
+
+# Asserts each @wave-av/* package's DECLARED version (package.json) == its npm published-latest.
+# Reuses the vendored wave-foundation check-registry-parity.py (#61). Pre-first-publish, npm 404s
+# → we WARN (not fail); flip to hard-fail once the packages are published (W-S2).
+on:
+  pull_request:
+    paths: ["sdk-typescript/packages/**/package.json"]
+  schedule:
+    - cron: "0 14 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  parity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Per-package declared vs npm-latest
+        run: |
+          set -uo pipefail
+          drift=0
+          for pj in sdk-typescript/packages/*/package.json; do
+            name=$(node -p "require('./$pj').name")
+            ver=$(node -p "require('./$pj').version")
+            echo "::group::$name@$ver"
+            if python3 scripts/check-registry-parity.py \
+                 --canonical "$pj" '"version":\s*"([^"]+)"' \
+                 --registry "npm $name" "https://registry.npmjs.org/$name/latest" '.version'; then
+              echo "$name: parity OK"
+            else
+              echo "::warning title=registry parity::$name not yet published or drifted (expected pre-first-publish)"
+              drift=$((drift+1))
+            fi
+            echo "::endgroup::"
+          done
+          echo "packages with drift/not-published: $drift (warn-only until first publish; W-S2 flips to hard-fail)"
