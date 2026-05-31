@@ -135,3 +135,66 @@ product you call, entitlement enforced server-side.**
 3. Add `export * as <ns> from "@wave-av/<product>";` to `packages/sdk/src/index.ts` and the
    `workspace:*` dep to `packages/sdk/package.json`.
 4. `scripts/sync-from-monorepo.sh <checkout>` now auto-discovers it — no script edit needed.
+
+## 9. Folds — whole-package carves (adk, mcp-server, workflow-sdk)
+
+Three SDK surfaces are **not** single modules under `sdk-typescript/src/`; they are already
+standalone packages in the monorepo (`packages/adk`, `packages/mcp-server`,
+`packages/workflow-sdk`) with their own `package.json`, multi-entry `exports`, own dependencies,
+and (mcp-server) a CLI `bin`. We carve the **whole package tree** via
+`git -C <mono> archive origin/main packages/<pkg> | tar -x` and then:
+
+- **Prune** non-publishable / non-source: `.DS_Store`, `.turbo/`, `dist/`, `node_modules/`,
+  monorepo-internal hook config (`lefthook.yml`), and **network/e2e tests** (e.g. adk's
+  `src/__tests__/e2e/staging-api.test.ts`, which fetches `staging.wave.online` with test secrets).
+- **Rebase the package metadata only:** `repository.url → https://github.com/wave-av/sdks.git`,
+  `repository.directory → sdk-typescript/packages/<pkg>`, `bugs.url → wave-av/sdks/issues`,
+  `publishConfig.provenance → true`. Keep `homepage`, `keywords`, real version, deps.
+- **Keep each fold's own build config.** The product-rule "never add `type:module`" does NOT apply
+  here: adk + mcp-server are ESM-first and their `exports` use `.js`(ESM)/`.cjs`(CJS), so
+  `type:module` is *required* and correct. The invariant is "the `type` field and the `exports`
+  file extensions must agree," not "never `type:module`." workflow-sdk has no `type` and uses
+  `.mjs`/`.js` like the products → it stays `type`-less.
+- **Reparent any `extends`.** adk's tsconfig extended the WSC root (`../../tsconfig.json`), which
+  does not exist here → replace with a self-sufficient compilerOptions block (omit the extra-strict
+  `noUnusedLocals`/`noUnusedParameters` so existing code still type-checks). Make the d.ts step read
+  the tsconfig (`tsc -p tsconfig.json --emitDeclarationOnly`) instead of passing bare files.
+- **Folds are tooling, NOT product API namespaces** → they are **not** mounted in the `@wave-av/sdk`
+  umbrella. adk = agent framework, mcp-server = CLI binary, workflow-sdk = standalone orchestration
+  client (its own `WaveWorkflowClient`, not the core `createClient`). Install them directly.
+- **Drop dead code that breaks the build.** mcp-server's `src/sdk-server.ts` (an experimental
+  in-process Agent-SDK variant) is not imported, not a tsup entry, not in `exports`, and statically
+  imports an uninstalled peer (`@anthropic-ai/claude-agent-sdk`) → dropped from the mirror. Re-add
+  with a guarded optional peer if in-process mode is productized. Canonical copy persists in WSC.
+
+## 10. Legacy single-file modules + the gateway-`/v1` normalization
+
+`autopilot`, `console`, `discovery` are real product modules in `sdk-typescript/src/` that the
+first 40-product carve missed. They use the **pre-core-client pattern**: a config-based
+constructor (`WaveClientConfig`, not a `WaveClient`) doing raw `fetch`, with an **apex base URL
+default (`https://wave.online`) and `/api/v1/` paths** — both wrong for the gateway, which enforces
+`api.wave.online` + the `/v1/` prefix (task #8). `scripts/carve-legacy-module.sh` carves them and
+**normalizes to the gateway convention**: `'https://wave.online' → 'https://api.wave.online'` and
+`/api/v1/ → /v1/`. Their smoke tests construct from a config (or `(baseUrl, apiKey)` for
+discovery's class-only `WaveDiscoveryClient`), not from `createClient()`.
+
+These ship as **`0.0.1` preview**, NOT `0.1.0`. "Preview" here = *the API is not yet frozen in the
+published OpenAPI contract and has no `AVAILABLE_SCOPES` entry, so it is not entitle-able through
+the gateway* — even though a real WSC backend exists (console fully; autopilot async-202;
+discovery 503-stub). The discriminator for the `0.1.0` real-API tier is an entry in
+`packages/api-spec/openapi.yaml` (exactly the 12 tagged products). **Graduating a preview to
+`0.1.0`** requires, upstream in WSC: (1) migrate the module to the core-client `/v1` pattern,
+(2) add an `AVAILABLE_SCOPES` scope, (3) add the OpenAPI tag/paths — then re-carve at `0.1.0`.
+
+### Documented divergences from canonical (tracked for upstream fix)
+
+The sync is normally a byte-identical copy. These carves intentionally diverge from
+`origin/main` and therefore are **excluded from the dumb product sync** — each is tracked as a WSC
+follow-up so the source can be fixed and the divergence retired:
+
+| Divergence | Where | Why | Upstream fix |
+| --- | --- | --- | --- |
+| apex→gateway base + `/api/v1`→`/v1` | autopilot, console, discovery, mcp-server (#59) | gateway enforces `/v1`; apex/`/api/v1` bypasses metering or 404s | migrate WSC source to core-client `/v1` |
+| dropped `sdk-server.ts` | mcp-server | dead code, imports uninstalled peer, breaks build | remove from WSC or make it a guarded optional feature |
+| skipped 2 adk runtime tests + fixed tool-name assertions | adk `__tests__` | upstream tests are stale vs shipped v1.0.14 (`wave_` tool prefix; self-defeating `agent.start` mock) | fix the tests in WSC `packages/adk` |
+| per-package `LICENSE` added | all packages | each `package.json` lists `LICENSE` in `files[]` but only a repo-root `LICENSE` existed → tarballs omitted it | n/a (mirror-correct) |

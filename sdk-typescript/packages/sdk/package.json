@@ -80,7 +80,10 @@
     "@wave-av/drm": "workspace:*",
     "@wave-av/billing": "workspace:*",
     "@wave-av/notifications": "workspace:*",
-    "@wave-av/ghost": "workspace:*"
+    "@wave-av/ghost": "workspace:*",
+    "@wave-av/autopilot": "workspace:*",
+    "@wave-av/console": "workspace:*",
+    "@wave-av/discovery": "workspace:*"
   },
   "devDependencies": {
     "tsup": "^8.0.0",

@@ -50,3 +50,6 @@ export * as drm from "@wave-av/drm";
 export * as billing from "@wave-av/billing";
 export * as notifications from "@wave-av/notifications";
 export * as ghost from "@wave-av/ghost";
+export * as autopilot from "@wave-av/autopilot";
+export * as console from "@wave-av/console";
+export * as discovery from "@wave-av/discovery";
