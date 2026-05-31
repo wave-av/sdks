@@ -184,7 +184,7 @@ export interface ListScriptsParams extends PaginationParams {
  * ```
  */
 export function createPrompterApi(client: WaveClient) {
-  const basePath = '/api/v1/prompter';
+  const basePath = '/v1/prompter';
 
   return {
     scripts: {
