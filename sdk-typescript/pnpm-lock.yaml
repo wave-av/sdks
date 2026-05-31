@@ -55,6 +55,25 @@ importers:
         specifier: 3.25.76
         version: 3.25.76
 
+  packages/sdk:
+    dependencies:
+      '@wave-av/clips':
+        specifier: workspace:*
+        version: link:../clips
+      '@wave-av/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.1(postcss@8.5.15)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.4
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
+
 packages:
 
   '@emnapi/core@1.10.0':
