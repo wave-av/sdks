@@ -1,0 +1,39 @@
+name: python test
+
+# Installs sdk-python and runs its offline test suite. This is the CI gate that fully
+# verifies the carve (local verification was limited by toolchain; CI installs httpx/pydantic
+# and runs pytest for real).
+on:
+  pull_request:
+    paths:
+      - "sdk-python/**"
+      - ".github/workflows/test-python.yml"
+  push:
+    branches: [main]
+    paths:
+      - "sdk-python/**"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.12"]
+    defaults:
+      run:
+        working-directory: sdk-python
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install (editable + dev extras)
+        run: python -m pip install --upgrade pip && python -m pip install -e '.[dev]'
+      - name: Test (offline)
+        run: python -m pytest -q
+      - name: Lint (ruff — config in pyproject)
+        run: python -m ruff check .
+        continue-on-error: true
