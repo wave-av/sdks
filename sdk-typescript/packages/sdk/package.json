@@ -1,0 +1,43 @@
+{
+  "name": "@wave-av/sdk",
+  "version": "3.0.0",
+  "description": "WAVE SDK umbrella — re-exports all @wave-av product clients. Install individual @wave-av/<product> packages for a smaller footprint.",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": ["dist/**/*.js", "dist/**/*.mjs", "dist/**/*.d.ts", "README.md", "LICENSE"],
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --clean && tsc --emitDeclarationOnly --declaration --outDir dist",
+    "test": "vitest run --passWithNoTests",
+    "type-check": "tsc --noEmit"
+  },
+  "license": "MIT",
+  "author": "WAVE Online, LLC <sdk@wave.online>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wave-av/sdks.git",
+    "directory": "sdk-typescript/packages/sdk"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true,
+    "registry": "https://registry.npmjs.org/"
+  },
+  "engines": { "node": ">=18.0.0" },
+  "dependencies": {
+    "@wave-av/core": "workspace:*",
+    "@wave-av/clips": "workspace:*"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.4"
+  }
+}

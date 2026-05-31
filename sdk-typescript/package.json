@@ -1,0 +1,15 @@
+{
+  "name": "@wave-av/sdks-workspace",
+  "version": "0.0.0",
+  "private": true,
+  "description": "WAVE SDK open-core workspace (publishes @wave-av/* packages). Not published itself.",
+  "license": "MIT",
+  "scripts": {
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "type-check": "pnpm -r type-check"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild"]
+  }
+}

@@ -1,0 +1,7 @@
+packages:
+  - "packages/*"
+
+# esbuild ships a native binary via a postinstall build script; pnpm >=10 blocks build
+# scripts by default. tsup (our bundler) needs it, so allow exactly this one.
+onlyBuiltDependencies:
+  - esbuild
