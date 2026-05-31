@@ -47,6 +47,16 @@ jobs:
         run: pnpm -r --filter "@wave-av/*" pack
       - name: Publish to npm (OIDC trusted publishing — NO token, provenance ON)
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/sdks-v')
-        run: pnpm -r --filter "@wave-av/*" publish --access public --provenance --no-git-checks
-        # pnpm rewrites workspace:* → the real dependency version at publish time.
+        # Per-package so preview (0.0.x) packages publish under the `preview` dist-tag and stable
+        # (0.1.0+) under `latest`. pnpm rewrites workspace:* → the real version at publish time;
         # provenance requires each package.json repository.url == this repo (satisfied).
+        run: |
+          set -euo pipefail
+          for dir in packages/*/; do
+            name=$(node -p "require('./${dir}package.json').name" 2>/dev/null) || continue
+            case "$name" in @wave-av/*) ;; *) continue ;; esac
+            ver=$(node -p "require('./${dir}package.json').version")
+            tag=latest; case "$ver" in 0.0.*) tag=preview ;; esac
+            echo "publishing $name@$ver --tag $tag"
+            ( cd "$dir" && pnpm publish --access public --provenance --no-git-checks --tag "$tag" )
+          done
