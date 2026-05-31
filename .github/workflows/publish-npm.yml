@@ -41,11 +41,8 @@ jobs:
         run: |
           cat ../.npmrc.ci >> .npmrc
           pnpm install --frozen-lockfile
-      - name: Build all packages (dependency order)
-        run: |
-          pnpm --filter @wave-av/core build
-          pnpm --filter @wave-av/clips build
-          pnpm --filter @wave-av/sdk build
+      - name: Build all packages (pnpm -r topo-sorts: core → products → umbrella)
+        run: pnpm -r --filter "@wave-av/*" build
       - name: Pack — always (proves the tarballs; resolves workspace:* via pnpm)
         run: pnpm -r --filter "@wave-av/*" pack
       - name: Publish to npm (OIDC trusted publishing — NO token, provenance ON)

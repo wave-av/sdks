@@ -1,7 +1,8 @@
 {
   "name": "@wave-av/core",
   "version": "0.1.0",
-  "description": "WAVE SDK core — gateway client, auth, shared types. The base every @wave-av/<product> package depends on.",  "main": "./dist/index.js",
+  "description": "WAVE SDK core — gateway client, auth, shared types. The base every @wave-av/<product> package depends on.",
+  "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -11,7 +12,13 @@
       "require": "./dist/index.js"
     }
   },
-  "files": ["dist/**/*.js", "dist/**/*.mjs", "dist/**/*.d.ts", "README.md", "LICENSE"],
+  "files": [
+    "dist/**/*.js",
+    "dist/**/*.mjs",
+    "dist/**/*.d.ts",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --clean && tsc --emitDeclarationOnly --declaration --outDir dist",
     "test": "vitest run",
@@ -29,13 +36,17 @@
     "provenance": true,
     "registry": "https://registry.npmjs.org/"
   },
-  "engines": { "node": ">=18.0.0" },
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "peerDependencies": {
     "zod": "^3.22.0",
     "@opentelemetry/api": "^1.7.0"
   },
   "peerDependenciesMeta": {
-    "@opentelemetry/api": { "optional": true }
+    "@opentelemetry/api": {
+      "optional": true
+    }
   },
   "dependencies": {
     "eventemitter3": "^5.0.1"
@@ -46,5 +57,6 @@
     "typescript": "^5.9.3",
     "vitest": "^4.1.4",
     "zod": "3.25.76"
-  }
+  },
+  "sideEffects": false
 }
