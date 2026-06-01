@@ -60,7 +60,10 @@ fn list_parses_pagination() {
         "Content-Type: application/json\r\n",
         r#"{"data":[{"id":"a"},{"id":"b"}],"pagination":{"page":2,"perPage":20,"total":2,"totalPages":1}}"#,
     );
-    let params = wave::clips::ClipsListParams { page: Some(2), ..Default::default() };
+    let params = wave::clips::ClipsListParams {
+        page: Some(2),
+        ..Default::default()
+    };
     let page = client(port).clips().list(&params).unwrap();
     assert_eq!(page.data.len(), 2);
     assert_eq!(page.pagination.page, 2);
@@ -75,7 +78,13 @@ fn nested_error_envelope() {
     );
     let err = client(port).clips().get("x").unwrap_err();
     match err {
-        wave::Error::Api { code, status_code, request_id, retryable, .. } => {
+        wave::Error::Api {
+            code,
+            status_code,
+            request_id,
+            retryable,
+            ..
+        } => {
             assert_eq!(code, "ENTITLEMENT_SCOPE");
             assert_eq!(status_code, 403);
             assert_eq!(request_id.as_deref(), Some("req_42"));

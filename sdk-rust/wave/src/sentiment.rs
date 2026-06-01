@@ -16,7 +16,10 @@ pub struct SentimentListAnalysesParams {
 
 impl<'a> Sentiment<'a> {
     /// List sentiment analyses (operationId: listSentimentAnalyses, GET /sentiment).
-    pub fn list_analyses(&self, params: &SentimentListAnalysesParams) -> Result<Page<models::SentimentAnalysis>, Error> {
+    pub fn list_analyses(
+        &self,
+        params: &SentimentListAnalysesParams,
+    ) -> Result<Page<models::SentimentAnalysis>, Error> {
         let mut query: Vec<(String, String)> = Vec::new();
         if let Some(v) = &params.page {
             query.push(("page".to_string(), v.to_string()));
@@ -27,17 +30,21 @@ impl<'a> Sentiment<'a> {
         if let Some(v) = &params.status {
             query.push(("status".to_string(), v.to_string()));
         }
-        self.http.request("GET", "/sentiment", &query, None::<&serde_json::Value>)
+        self.http
+            .request("GET", "/sentiment", &query, None::<&serde_json::Value>)
     }
 
     /// Create a sentiment analysis (operationId: createSentimentAnalysis, POST /sentiment).
-    pub fn create_analysis(&self, body: &models::SentimentAnalysisCreate) -> Result<models::SentimentAnalysis, Error> {
+    pub fn create_analysis(
+        &self,
+        body: &models::SentimentAnalysisCreate,
+    ) -> Result<models::SentimentAnalysis, Error> {
         self.http.request("POST", "/sentiment", &[], Some(body))
     }
 
     /// Analyze text directly (operationId: analyzeText, POST /sentiment/analyze).
     pub fn analyze_text(&self, body: &serde_json::Value) -> Result<serde_json::Value, Error> {
-        self.http.request("POST", "/sentiment/analyze", &[], Some(body))
+        self.http
+            .request("POST", "/sentiment/analyze", &[], Some(body))
     }
-
 }

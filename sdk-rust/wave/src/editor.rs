@@ -16,7 +16,10 @@ pub struct EditorListProjectsParams {
 
 impl<'a> Editor<'a> {
     /// List editor projects (operationId: listProjects, GET /editor/projects).
-    pub fn list_projects(&self, params: &EditorListProjectsParams) -> Result<Page<models::EditorProject>, Error> {
+    pub fn list_projects(
+        &self,
+        params: &EditorListProjectsParams,
+    ) -> Result<Page<models::EditorProject>, Error> {
         let mut query: Vec<(String, String)> = Vec::new();
         if let Some(v) = &params.page {
             query.push(("page".to_string(), v.to_string()));
@@ -27,36 +30,62 @@ impl<'a> Editor<'a> {
         if let Some(v) = &params.status {
             query.push(("status".to_string(), v.to_string()));
         }
-        self.http.request("GET", "/editor/projects", &query, None::<&serde_json::Value>)
+        self.http.request(
+            "GET",
+            "/editor/projects",
+            &query,
+            None::<&serde_json::Value>,
+        )
     }
 
     /// Create an editor project (operationId: createProject, POST /editor/projects).
-    pub fn create_project(&self, body: &models::EditorProjectCreate) -> Result<models::EditorProject, Error> {
-        self.http.request("POST", "/editor/projects", &[], Some(body))
+    pub fn create_project(
+        &self,
+        body: &models::EditorProjectCreate,
+    ) -> Result<models::EditorProject, Error> {
+        self.http
+            .request("POST", "/editor/projects", &[], Some(body))
     }
 
     /// Get a project (operationId: getProject, GET /editor/projects/{projectId}).
     pub fn get_project(&self, project_id: &str) -> Result<models::EditorProject, Error> {
-        let path = "/editor/projects/{projectId}".to_string().replace("{projectId}", project_id);
-        self.http.request("GET", &path, &[], None::<&serde_json::Value>)
+        let path = "/editor/projects/{projectId}"
+            .to_string()
+            .replace("{projectId}", project_id);
+        self.http
+            .request("GET", &path, &[], None::<&serde_json::Value>)
     }
 
     /// Update a project (operationId: updateProject, PATCH /editor/projects/{projectId}).
-    pub fn update_project(&self, project_id: &str, body: &models::EditorProjectUpdate) -> Result<models::EditorProject, Error> {
-        let path = "/editor/projects/{projectId}".to_string().replace("{projectId}", project_id);
+    pub fn update_project(
+        &self,
+        project_id: &str,
+        body: &models::EditorProjectUpdate,
+    ) -> Result<models::EditorProject, Error> {
+        let path = "/editor/projects/{projectId}"
+            .to_string()
+            .replace("{projectId}", project_id);
         self.http.request("PATCH", &path, &[], Some(body))
     }
 
     /// Delete a project (operationId: deleteProject, DELETE /editor/projects/{projectId}).
     pub fn delete_project(&self, project_id: &str) -> Result<(), Error> {
-        let path = "/editor/projects/{projectId}".to_string().replace("{projectId}", project_id);
-        self.http.request_no_content("DELETE", &path, &[], None::<&serde_json::Value>)
+        let path = "/editor/projects/{projectId}"
+            .to_string()
+            .replace("{projectId}", project_id);
+        self.http
+            .request_no_content("DELETE", &path, &[], None::<&serde_json::Value>)
     }
 
     /// Export a project (operationId: exportProject, POST /editor/projects/{projectId}/export).
-    pub fn export_project(&self, project_id: &str, body: &models::ExportRequest) -> Result<models::ExportJob, Error> {
-        let path = "/editor/projects/{projectId}/export".to_string().replace("{projectId}", project_id);
+    pub fn export_project(
+        &self,
+        project_id: &str,
+        body: &models::ExportRequest,
+    ) -> Result<models::ExportJob, Error> {
+        let path = "/editor/projects/{projectId}/export"
+            .to_string()
+            .replace("{projectId}", project_id);
         self.http.request("POST", &path, &[], Some(body))
     }
-
 }

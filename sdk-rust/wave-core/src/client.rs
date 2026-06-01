@@ -127,8 +127,8 @@ impl Client {
 
             let result = match body {
                 Some(b) => {
-                    let json = serde_json::to_value(b)
-                        .map_err(|e| Error::Serialization(e.to_string()))?;
+                    let json =
+                        serde_json::to_value(b).map_err(|e| Error::Serialization(e.to_string()))?;
                     req.send_json(json)
                 }
                 None => req.call(),

@@ -9,3 +9,7 @@ sdk-rust/target/
 sdk-rust/Cargo.lock
 *.gem
 sdk-ruby/Gemfile.lock
+
+# Python bytecode
+__pycache__/
+*.pyc

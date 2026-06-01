@@ -35,7 +35,8 @@ impl<'a> Clips<'a> {
         if let Some(v) = &params.category {
             query.push(("category".to_string(), v.to_string()));
         }
-        self.http.request("GET", "/clips", &query, None::<&serde_json::Value>)
+        self.http
+            .request("GET", "/clips", &query, None::<&serde_json::Value>)
     }
 
     /// Create a clip (operationId: createClip, POST /clips).
@@ -46,7 +47,8 @@ impl<'a> Clips<'a> {
     /// Get a clip (operationId: getClip, GET /clips/{clipId}).
     pub fn get(&self, clip_id: &str) -> Result<models::Clip, Error> {
         let path = "/clips/{clipId}".to_string().replace("{clipId}", clip_id);
-        self.http.request("GET", &path, &[], None::<&serde_json::Value>)
+        self.http
+            .request("GET", &path, &[], None::<&serde_json::Value>)
     }
 
     /// Update a clip (operationId: updateClip, PATCH /clips/{clipId}).
@@ -58,12 +60,12 @@ impl<'a> Clips<'a> {
     /// Delete a clip (operationId: deleteClip, DELETE /clips/{clipId}).
     pub fn delete(&self, clip_id: &str) -> Result<(), Error> {
         let path = "/clips/{clipId}".to_string().replace("{clipId}", clip_id);
-        self.http.request_no_content("DELETE", &path, &[], None::<&serde_json::Value>)
+        self.http
+            .request_no_content("DELETE", &path, &[], None::<&serde_json::Value>)
     }
 
     /// Start AI clip detection (operationId: detectClips, POST /clips/detect).
     pub fn detect(&self, body: &models::ClipDetectRequest) -> Result<models::DetectionJob, Error> {
         self.http.request("POST", "/clips/detect", &[], Some(body))
     }
-
 }
