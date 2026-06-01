@@ -47,10 +47,21 @@ jobs:
         working-directory: sdk-ruby
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: "3.3"
-      - name: Publish to RubyGems (trusted publishing)
-        uses: rubygems/release-gem@v1
-        with:
-          working-directory: sdk-ruby
+      # NOTE: we deliberately do NOT use rubygems/release-gem here. That action runs
+      # `bundle exec rake release`, and bundler/gem_tasks derives the release tag as
+      # `v<version>` — but this monorepo tags per-language as `sdk-ruby-v<version>`. With
+      # that mismatch `rake release` sees the gem as "not yet tagged" and tries to CREATE
+      # and `git push` a `v0.1.0` tag, which fails under `contents: read`. So we use the
+      # same OIDC credential action release-gem uses internally, then build + push the gem
+      # explicitly — no rake, no Rakefile, no Gemfile.lock, no git write needed.
+      - name: Configure RubyGems credentials via OIDC trusted publishing
+        uses: rubygems/configure-rubygems-credentials@762a4b77c3300434bb57c7ce80b20e36231927aa # v2.0.0
+      - name: Build + push gem
+        run: |
+          gem build wave-sdk.gemspec
+          gem push wave-sdk-*.gem
