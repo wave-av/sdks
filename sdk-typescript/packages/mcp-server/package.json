@@ -1,7 +1,7 @@
 {
   "name": "@wave-av/mcp-server",
   "version": "0.1.8",
-  "description": "WAVE MCP server — 19 streaming API tools for Claude Code, Cursor, Windsurf, and other AI coding assistants",
+  "description": "WAVE MCP server — streaming API tools + a generic gateway-call escape hatch for Claude Code, Cursor, Windsurf, and other AI coding assistants",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "type": "module",
