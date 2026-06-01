@@ -1,0 +1,72 @@
+#!/usr/bin/env python3
+"""WAVE polyglot SDK codegen harness (#101).
+
+Parses the gateway OpenAPI contract (codegen/openapi.yaml) into a neutral IR and
+renders idiomatic, layered SDKs for Go / Rust / Ruby. The TypeScript and Python
+SDKs are hand-carved (they predate and drift from the frozen contract — see
+codegen/README.md); these three are generated, so they are the most
+contract-accurate clients in the fleet.
+
+Usage:
+    python3 codegen/generate.py [--lang go,rust,ruby] [--spec codegen/openapi.yaml]
+
+Deterministic: no timestamps, no network. Re-running overwrites the generated
+trees (sdk-go/, sdk-rust/, sdk-ruby/) in place.
+"""
+
+from __future__ import annotations
+
+import argparse
+import os
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from parse_spec import build_ir  # noqa: E402
+
+REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+def _maybe_fmt(cmd: list[str], tool: str) -> None:
+    """Run a formatter if it is installed, so the committed tree stays canonical.
+    Silently skips when the tool is absent (CI formats/checks anyway)."""
+    import shutil
+    import subprocess
+
+    if shutil.which(cmd[0]):
+        subprocess.run(cmd, check=False)
+    else:
+        print(f"  ({tool} not found — skipping format; CI will check)")
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--lang", default="go,rust,ruby")
+    ap.add_argument("--spec", default=os.path.join(REPO, "codegen", "openapi.yaml"))
+    args = ap.parse_args()
+    langs = [x.strip() for x in args.lang.split(",") if x.strip()]
+
+    ir = build_ir(args.spec)
+    print(f"IR: {len(ir['products'])} products, "
+          f"{sum(len(p['operations']) for p in ir['products'])} operations, "
+          f"{len(ir['schemas'])} schemas, version {ir['version']}")
+
+    if "go" in langs:
+        import render_go
+        go_root = os.path.join(REPO, "sdk-go")
+        files = render_go.render(ir, go_root)
+        _maybe_fmt(["gofmt", "-w", os.path.join(go_root, "wave")], "gofmt")
+        print(f"go:   {len(files)} files -> sdk-go/")
+    if "rust" in langs:
+        import render_rust
+        files = render_rust.render(ir, os.path.join(REPO, "sdk-rust"))
+        print(f"rust: {len(files)} files -> sdk-rust/")
+    if "ruby" in langs:
+        import render_ruby
+        files = render_ruby.render(ir, os.path.join(REPO, "sdk-ruby"))
+        print(f"ruby: {len(files)} files -> sdk-ruby/")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -1,0 +1,38 @@
+name: go test
+
+# Builds + tests sdk-go. This is the CI gate that fully verifies the Go SDK
+# (gofmt, go vet, go test against an httptest mock). proxy.golang.org serves the
+# module directly from git tags, so there is no separate publish step — the
+# release-go workflow just re-validates on the version tag.
+on:
+  pull_request:
+    paths:
+      - "sdk-go/**"
+      - "codegen/**"
+      - ".github/workflows/test-go.yml"
+  push:
+    branches: [main]
+    paths:
+      - "sdk-go/**"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: sdk-go
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+          cache: false   # stdlib-only module, no go.sum to cache
+      - name: gofmt (must be clean)
+        run: test -z "$(gofmt -l .)" || { echo 'run gofmt -w'; gofmt -l .; exit 1; }
+      - name: go vet
+        run: go vet ./...
+      - name: go test
+        run: go test ./... -count=1

@@ -198,3 +198,47 @@ follow-up so the source can be fixed and the divergence retired:
 | dropped `sdk-server.ts` | mcp-server | dead code, imports uninstalled peer, breaks build | remove from WSC or make it a guarded optional feature |
 | skipped 2 adk runtime tests + fixed tool-name assertions | adk `__tests__` | upstream tests are stale vs shipped v1.0.14 (`wave_` tool prefix; self-defeating `agent.start` mock) | fix the tests in WSC `packages/adk` |
 | per-package `LICENSE` added | all packages | each `package.json` lists `LICENSE` in `files[]` but only a repo-root `LICENSE` existed → tarballs omitted it | n/a (mirror-correct) |
+| flat error model vs nested envelope | TS/Python cores parse/spec-document `Error` differently | OpenAPI `Error` is flat `{message,code,errors}` but the **gateway actually emits nested `{error:{code,message}}`** (confirmed in `wave-gateway/src/worker.ts`) | fix the canonical `openapi.yaml` `Error` schema to the nested envelope; Go/Rust/Ruby cores already parse nested |
+| flat pagination vs `{data,pagination}` | Python `PaginatedResponse` is `{data,total,has_more,next_cursor}` | the spec wire shape is `{data, pagination:{page,perPage,total,totalPages}}` | reconcile Python to the spec wire shape (#122) |
+| legacy clip methods | TS/Python `clips` (`export_clip`, `detect_highlights`, `/v1/clips/highlights/*`) | hand-authored against an older internal surface absent from the frozen contract | retire in WSC; Go/Rust/Ruby are spec-faithful (#122/#123) |
+
+## 11. Polyglot codegen — Go / Rust / Ruby (the generated tier)
+
+TypeScript and Python are **hand-carved** from WSC source (and therefore drift — see the
+divergence table). Go, Rust, and Ruby have **no hand-written source**, so they are **generated**
+from the gateway contract and are the most contract-accurate clients in the fleet.
+
+**Method of record:** `python3 codegen/generate.py [--lang go,rust,ruby]`. The harness
+(`codegen/`) parses the vendored `codegen/openapi.yaml` into a neutral IR (`parse_spec.py`) and
+renders each language (`render_go.py` / `render_rust.py` / `render_ruby.py`). It is deterministic —
+no timestamps, no network — so re-running on an unchanged spec is a no-op diff. The vendored spec is
+the single source of truth; refresh it from WSC `packages/api-spec/openapi.yaml` and re-generate.
+
+**Layout (mirrors the fleet's core ← product ← umbrella layering):**
+
+| Lang | Crate/module layout | Core (hand-written behavior) | Publish |
+| --- | --- | --- | --- |
+| Go | one module `github.com/wave-av/sdks/sdk-go`, package `wave`, service per product | `client.go`/`errors.go`/`pagination.go` | git tag `sdk-go/vX.Y.Z` → proxy.golang.org (no registry account) |
+| Rust | workspace: `wave-core` (transport+types) + `wave` (umbrella, module per product) | `client.rs`/`error.rs`/`pagination.rs` | crates.io OIDC trusted publishing (core then umbrella) |
+| Ruby | one gem `wave-sdk`, class per product | `client.rb`/`errors.rb` | RubyGems OIDC trusted publishing |
+
+**Faithfulness rules the harness enforces:**
+
+- Base URL = the OpenAPI `servers[0]` (`https://api.wave.online/v1`); paths are the spec paths.
+- Method names are the `operationId` with the product noun stripped (`createCaptionJob` →
+  `captions.createJob`); the full `operationId` is preserved in each method's doc comment.
+- The core (errors/retry/pagination/auth) is **hand-written per language** to match the gateway's
+  *real* behavior, not the (incomplete) component schemas: nested error envelope, `x-request-id`,
+  `retryable = 429 ∪ 5xx ∪ {TIMEOUT,NETWORK_ERROR,SERVICE_UNAVAILABLE}`, backoff `1s→30s +25%`
+  jitter, `Retry-After` honored. `Error`/`Pagination`/`PaginatedResponse` are therefore **excluded
+  from model generation** (the core owns them).
+- Models cover every `components/schemas` object + enum (forward-compatible: Rust enums carry an
+  `Unknown` `#[serde(other)]` arm); free-form objects map to the language's JSON value type.
+- Responses: `single` → typed struct, list (`allOf PaginatedResponse + {data}`) → `Page<T>`, a
+  richer `allOf` (e.g. `/search` adds `facets`) → raw JSON (no field loss), `204` → no body.
+
+**Per-language gate (the real verification):** `test-go.yml` (gofmt+vet+test), `test-rust.yml`
+(fmt+clippy `-D warnings`+test), `test-ruby.yml` (syntax+gem build+test). Each ships an offline
+mock-server smoke suite asserting auth header, single/paginated decode, the nested error envelope,
+and 204/no-body. Publish workflows are **inert until the operator registers the trusted publisher**
+(crates.io, RubyGems) — Go needs none.

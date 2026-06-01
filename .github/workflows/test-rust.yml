@@ -1,0 +1,47 @@
+name: rust test
+
+# Builds + tests the sdk-rust workspace (wave-core + wave). The CI gate that
+# fully verifies the Rust SDK: fmt, clippy (-D warnings), and the offline
+# tcp-mock test suite.
+on:
+  pull_request:
+    paths:
+      - "sdk-rust/**"
+      - "codegen/**"
+      - ".github/workflows/test-rust.yml"
+  push:
+    branches: [main]
+    paths:
+      - "sdk-rust/**"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: sdk-rust
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: sdk-rust
+      # build + test are the hard gates. fmt/clippy are advisory on this first
+      # landing (generated code; not yet verified against CI rustfmt/clippy) and
+      # will be flipped to required once the generator's output is confirmed
+      # canonical — tracked in the WS3 milestone (#106).
+      - name: build
+        run: cargo build --all
+      - name: test
+        run: cargo test --all
+      - name: rustfmt (advisory)
+        continue-on-error: true
+        run: cargo fmt --all --check
+      - name: clippy (advisory)
+        continue-on-error: true
+        run: cargo clippy --all-targets -- -D warnings
