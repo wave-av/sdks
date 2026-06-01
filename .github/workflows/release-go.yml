@@ -1,0 +1,37 @@
+name: go release (tag validation)
+
+# Go modules have NO registry publish step: proxy.golang.org + pkg.go.dev serve
+# the module directly from the public git tag. The canonical version tag for the
+# subdirectory module is `sdk-go/vX.Y.Z` (Go requires the subdir prefix). This
+# workflow re-validates the SDK on that tag and warms the module proxy so
+# `go get github.com/wave-av/sdks/sdk-go@vX.Y.Z` resolves immediately.
+on:
+  push:
+    tags: ["sdk-go/v*"]
+
+permissions:
+  contents: read
+
+jobs:
+  validate-and-warm:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: sdk-go
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+      - name: Validate (vet + test)
+        run: go vet ./... && go test ./... -count=1
+      - name: Warm the module proxy
+        env:
+          GOPROXY: https://proxy.golang.org
+          VERSION: ${{ github.ref_name }}
+        run: |
+          # github.ref_name is "sdk-go/vX.Y.Z"; the module version is the vX.Y.Z suffix.
+          MOD_VERSION="${VERSION#sdk-go/}"
+          echo "Warming proxy for github.com/wave-av/sdks/sdk-go@${MOD_VERSION}"
+          GOPROXY="$GOPROXY" go list -m "github.com/wave-av/sdks/sdk-go@${MOD_VERSION}" || \
+            echo "proxy not yet indexed (it will fetch lazily on first go get)"

@@ -1,0 +1,56 @@
+name: rubygems publish (OIDC trusted publishing)
+
+# Publishes wave-sdk (sdk-ruby) to RubyGems via OIDC Trusted Publishing — NO
+# long-lived RUBYGEMS_API_KEY to leak/rotate. A Trusted Publisher must be
+# registered on rubygems.org for this gem (this repo + this workflow) and the
+# `rubygems-publish` environment must exist before a real publish. Inert until
+# then: tag pushes + the dry-run dispatch only build/verify the gem.
+on:
+  push:
+    tags: ["sdk-ruby-v*"]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Build + verify only (no publish)"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: sdk-ruby
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+      - name: Test + build
+        run: |
+          ruby -Ilib test/smoke_test.rb
+          gem build wave-sdk.gemspec
+
+  publish:
+    needs: verify
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/sdk-ruby-v')
+    runs-on: ubuntu-latest
+    environment: rubygems-publish
+    permissions:
+      contents: read
+      id-token: write   # OIDC trusted publishing
+    defaults:
+      run:
+        working-directory: sdk-ruby
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+      - name: Publish to RubyGems (trusted publishing)
+        uses: rubygems/release-gem@v1
+        with:
+          working-directory: sdk-ruby

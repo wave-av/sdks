@@ -3,3 +3,9 @@ dist/
 *.log
 .DS_Store
 *.tgz
+
+# WS3 polyglot SDK build artifacts
+sdk-rust/target/
+sdk-rust/Cargo.lock
+*.gem
+sdk-ruby/Gemfile.lock
