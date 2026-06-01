@@ -41,7 +41,7 @@ jobs:
         run: |
           cat ../.npmrc.ci >> .npmrc
           pnpm install --frozen-lockfile
-      - name: Build all packages (pnpm -r topo-sorts: core → products → umbrella)
+      - name: "Build all packages (pnpm -r topo-sorts: core then products then umbrella)"
         run: pnpm -r --filter "@wave-av/*" build
       - name: Pack — always (proves the tarballs; resolves workspace:* via pnpm)
         run: pnpm -r --filter "@wave-av/*" pack
