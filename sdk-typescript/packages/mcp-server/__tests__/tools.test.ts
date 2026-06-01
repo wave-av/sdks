@@ -9,7 +9,7 @@ const EXPECTED_TOOL_FILES = [
   'streams.ts', 'studio.ts', 'analytics.ts', 'billing.ts', 'production.ts',
   'safety.ts', 'docs.ts', 'config-branch.ts', 'diagnostics.ts',
   'auth-mgmt.ts', 'types-gen.ts', 'captions.ts', 'chat.ts', 'clips.ts',
-  'platform.ts',
+  'platform.ts', 'gateway.ts',
 ];
 
 describe('MCP Server Tool Registration', () => {
@@ -32,6 +32,7 @@ describe('MCP Server Tool Registration', () => {
     expect(server).toContain('registerChatTools');
     expect(server).toContain('registerClipTools');
     expect(server).toContain('registerPlatformTools');
+    expect(server).toContain('registerGatewayTools');
   });
 
   it.each(EXPECTED_TOOL_FILES)('tool file %s exports a register function', (file) => {

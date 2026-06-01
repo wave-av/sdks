@@ -9,6 +9,7 @@ import { registerAnalyticsTools } from "./tools/analytics.js";
 import { registerBillingTools } from "./tools/billing.js";
 import { registerProductionTools } from "./tools/production.js";
 import { registerAgenticMediaTools } from "./tools/agentic-media.js";
+import { registerGatewayTools } from "./tools/gateway.js";
 import { registerStreamResources } from "./resources/streams.js";
 import { registerProductionResources } from "./resources/productions.js";
 
@@ -36,6 +37,7 @@ export async function startServer(): Promise<void> {
   registerBillingTools(server);
   registerProductionTools(server);
   registerAgenticMediaTools(server);
+  registerGatewayTools(server);
 
   // Register resources (wave:// URI scheme)
   registerStreamResources(server);
