@@ -5,8 +5,8 @@
 
 mod client;
 mod error;
-mod pagination;
 pub mod models;
+mod pagination;
 
 pub use client::{Client, ClientBuilder};
 pub use error::Error;

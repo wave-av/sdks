@@ -31,17 +31,14 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: sdk-rust
-      # build + test are the hard gates. fmt/clippy are advisory on this first
-      # landing (generated code; not yet verified against CI rustfmt/clippy) and
-      # will be flipped to required once the generator's output is confirmed
-      # canonical — tracked in the WS3 milestone (#106).
+      # All four are hard gates. fmt/clippy were advisory on the initial landing
+      # (PR #7) and passed clean on real CI, confirming the generator's output is
+      # rustfmt-canonical and clippy-clean (-D warnings) — so they are now required.
       - name: build
         run: cargo build --all
       - name: test
         run: cargo test --all
-      - name: rustfmt (advisory)
-        continue-on-error: true
+      - name: rustfmt (check)
         run: cargo fmt --all --check
-      - name: clippy (advisory)
-        continue-on-error: true
+      - name: clippy (deny warnings)
         run: cargo clippy --all-targets -- -D warnings

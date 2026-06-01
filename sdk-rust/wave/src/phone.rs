@@ -23,7 +23,10 @@ pub struct PhoneListCallsParams {
 
 impl<'a> Phone<'a> {
     /// List phone lines (operationId: listPhoneLines, GET /phone/lines).
-    pub fn list_lines(&self, params: &PhoneListLinesParams) -> Result<Page<models::PhoneLine>, Error> {
+    pub fn list_lines(
+        &self,
+        params: &PhoneListLinesParams,
+    ) -> Result<Page<models::PhoneLine>, Error> {
         let mut query: Vec<(String, String)> = Vec::new();
         if let Some(v) = &params.page {
             query.push(("page".to_string(), v.to_string()));
@@ -31,11 +34,15 @@ impl<'a> Phone<'a> {
         if let Some(v) = &params.per_page {
             query.push(("perPage".to_string(), v.to_string()));
         }
-        self.http.request("GET", "/phone/lines", &query, None::<&serde_json::Value>)
+        self.http
+            .request("GET", "/phone/lines", &query, None::<&serde_json::Value>)
     }
 
     /// Provision a phone line (operationId: provisionPhoneLine, POST /phone/lines).
-    pub fn provision_line(&self, body: &models::PhoneLineProvision) -> Result<models::PhoneLine, Error> {
+    pub fn provision_line(
+        &self,
+        body: &models::PhoneLineProvision,
+    ) -> Result<models::PhoneLine, Error> {
         self.http.request("POST", "/phone/lines", &[], Some(body))
     }
 
@@ -54,12 +61,12 @@ impl<'a> Phone<'a> {
         if let Some(v) = &params.direction {
             query.push(("direction".to_string(), v.to_string()));
         }
-        self.http.request("GET", "/phone/calls", &query, None::<&serde_json::Value>)
+        self.http
+            .request("GET", "/phone/calls", &query, None::<&serde_json::Value>)
     }
 
     /// Make a call (operationId: makeCall, POST /phone/calls).
     pub fn make_call(&self, body: &models::CallCreate) -> Result<models::Call, Error> {
         self.http.request("POST", "/phone/calls", &[], Some(body))
     }
-
 }

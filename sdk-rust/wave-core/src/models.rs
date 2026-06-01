@@ -40,13 +40,25 @@ pub struct Clip {
     pub score: Option<f64>,
     #[serde(skip_serializing_if = "Option::is_none", default)]
     pub category: Option<String>,
-    #[serde(rename = "thumbnailUrl", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "thumbnailUrl",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub thumbnail_url: Option<String>,
-    #[serde(rename = "previewUrl", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "previewUrl",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub preview_url: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none", default)]
     pub status: Option<JobStatus>,
-    #[serde(rename = "organizationId", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "organizationId",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub organization_id: Option<String>,
     #[serde(rename = "createdAt", skip_serializing_if = "Option::is_none", default)]
     pub created_at: Option<String>,
@@ -86,9 +98,17 @@ pub struct ClipUpdate {
 pub struct ClipDetectRequest {
     #[serde(rename = "videoId")]
     pub video_id: String,
-    #[serde(rename = "minDuration", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "minDuration",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub min_duration: Option<f64>,
-    #[serde(rename = "maxDuration", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "maxDuration",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub max_duration: Option<f64>,
     #[serde(skip_serializing_if = "Option::is_none", default)]
     pub categories: Option<Vec<String>>,
@@ -118,7 +138,11 @@ pub struct Voice {
     pub name: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none", default)]
     pub description: Option<String>,
-    #[serde(rename = "previewUrl", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "previewUrl",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub preview_url: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none", default)]
     pub category: Option<String>,
@@ -140,7 +164,11 @@ pub struct VoiceGeneration {
     pub audio_url: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none", default)]
     pub duration: Option<f64>,
-    #[serde(rename = "characterCount", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "characterCount",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub character_count: Option<i64>,
     #[serde(skip_serializing_if = "Option::is_none", default)]
     pub model: Option<String>,
@@ -157,13 +185,21 @@ pub struct VoiceGenerateRequest {
     pub text: String,
     #[serde(skip_serializing_if = "Option::is_none", default)]
     pub stability: Option<f64>,
-    #[serde(rename = "similarityBoost", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "similarityBoost",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub similarity_boost: Option<f64>,
     #[serde(skip_serializing_if = "Option::is_none", default)]
     pub style: Option<f64>,
     #[serde(skip_serializing_if = "Option::is_none", default)]
     pub model: Option<String>,
-    #[serde(rename = "outputFormat", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "outputFormat",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub output_format: Option<String>,
 }
 
@@ -184,9 +220,17 @@ pub struct CaptionJob {
     pub id: Option<String>,
     #[serde(rename = "videoId", skip_serializing_if = "Option::is_none", default)]
     pub video_id: Option<String>,
-    #[serde(rename = "sourceLanguage", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "sourceLanguage",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub source_language: Option<String>,
-    #[serde(rename = "targetLanguages", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "targetLanguages",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub target_languages: Option<Vec<String>>,
     #[serde(skip_serializing_if = "Option::is_none", default)]
     pub status: Option<JobStatus>,
@@ -194,9 +238,17 @@ pub struct CaptionJob {
     pub progress: Option<i64>,
     #[serde(skip_serializing_if = "Option::is_none", default)]
     pub outputs: Option<serde_json::Value>,
-    #[serde(rename = "errorMessage", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "errorMessage",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub error_message: Option<String>,
-    #[serde(rename = "organizationId", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "organizationId",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub organization_id: Option<String>,
     #[serde(rename = "createdAt", skip_serializing_if = "Option::is_none", default)]
     pub created_at: Option<String>,
@@ -208,13 +260,25 @@ pub struct CaptionJob {
 pub struct CaptionJobCreate {
     #[serde(rename = "videoId")]
     pub video_id: String,
-    #[serde(rename = "sourceLanguage", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "sourceLanguage",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub source_language: Option<String>,
-    #[serde(rename = "targetLanguages", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "targetLanguages",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub target_languages: Option<Vec<String>>,
     #[serde(skip_serializing_if = "Option::is_none", default)]
     pub style: Option<String>,
-    #[serde(rename = "speakerLabels", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "speakerLabels",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub speaker_labels: Option<bool>,
 }
 
@@ -232,7 +296,11 @@ pub struct Chapter {
     pub start_time: Option<f64>,
     #[serde(rename = "endTime", skip_serializing_if = "Option::is_none", default)]
     pub end_time: Option<f64>,
-    #[serde(rename = "thumbnailUrl", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "thumbnailUrl",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub thumbnail_url: Option<String>,
 }
 
@@ -249,13 +317,29 @@ pub struct ChapterCreate {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ChapterDetectRequest {
-    #[serde(rename = "minDuration", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "minDuration",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub min_duration: Option<f64>,
-    #[serde(rename = "maxChapters", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "maxChapters",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub max_chapters: Option<i64>,
-    #[serde(rename = "includeDescriptions", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "includeDescriptions",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub include_descriptions: Option<bool>,
-    #[serde(rename = "includeThumbnails", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "includeThumbnails",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub include_thumbnails: Option<bool>,
 }
 
@@ -275,11 +359,19 @@ pub struct EditorProject {
     pub resolution: Option<String>,
     #[serde(rename = "frameRate", skip_serializing_if = "Option::is_none", default)]
     pub frame_rate: Option<f64>,
-    #[serde(rename = "thumbnailUrl", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "thumbnailUrl",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub thumbnail_url: Option<String>,
     #[serde(rename = "exportUrl", skip_serializing_if = "Option::is_none", default)]
     pub export_url: Option<String>,
-    #[serde(rename = "organizationId", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "organizationId",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub organization_id: Option<String>,
     #[serde(rename = "createdAt", skip_serializing_if = "Option::is_none", default)]
     pub created_at: Option<String>,
@@ -296,7 +388,11 @@ pub struct EditorProjectCreate {
     pub resolution: Option<String>,
     #[serde(rename = "frameRate", skip_serializing_if = "Option::is_none", default)]
     pub frame_rate: Option<f64>,
-    #[serde(rename = "aspectRatio", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "aspectRatio",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub aspect_ratio: Option<String>,
 }
 
@@ -342,9 +438,17 @@ pub struct PhoneLine {
     pub status: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none", default)]
     pub capabilities: Option<Vec<String>>,
-    #[serde(rename = "monthlyCost", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "monthlyCost",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub monthly_cost: Option<f64>,
-    #[serde(rename = "organizationId", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "organizationId",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub organization_id: Option<String>,
     #[serde(rename = "createdAt", skip_serializing_if = "Option::is_none", default)]
     pub created_at: Option<String>,
@@ -372,7 +476,11 @@ pub struct Call {
     pub line_id: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none", default)]
     pub direction: Option<String>,
-    #[serde(rename = "fromNumber", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "fromNumber",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub from_number: Option<String>,
     #[serde(rename = "toNumber", skip_serializing_if = "Option::is_none", default)]
     pub to_number: Option<String>,
@@ -380,7 +488,11 @@ pub struct Call {
     pub status: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none", default)]
     pub duration: Option<i64>,
-    #[serde(rename = "recordingUrl", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "recordingUrl",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub recording_url: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none", default)]
     pub transcript: Option<String>,
@@ -400,7 +512,11 @@ pub struct CallCreate {
     pub record: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none", default)]
     pub transcribe: Option<bool>,
-    #[serde(rename = "webhookUrl", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "webhookUrl",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub webhook_url: Option<String>,
 }
 
@@ -414,15 +530,31 @@ pub struct CollabRoom {
     pub r#type: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none", default)]
     pub status: Option<String>,
-    #[serde(rename = "maxParticipants", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "maxParticipants",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub max_participants: Option<i64>,
-    #[serde(rename = "currentParticipants", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "currentParticipants",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub current_participants: Option<i64>,
-    #[serde(rename = "scheduledStart", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "scheduledStart",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub scheduled_start: Option<String>,
     #[serde(rename = "joinUrl", skip_serializing_if = "Option::is_none", default)]
     pub join_url: Option<String>,
-    #[serde(rename = "organizationId", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "organizationId",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub organization_id: Option<String>,
     #[serde(rename = "createdAt", skip_serializing_if = "Option::is_none", default)]
     pub created_at: Option<String>,
@@ -434,9 +566,17 @@ pub struct CollabRoom {
 pub struct CollabRoomCreate {
     pub name: String,
     pub r#type: String,
-    #[serde(rename = "maxParticipants", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "maxParticipants",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub max_participants: Option<i64>,
-    #[serde(rename = "scheduledStart", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "scheduledStart",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub scheduled_start: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none", default)]
     pub settings: Option<serde_json::Value>,
@@ -460,9 +600,17 @@ pub struct PodcastShow {
     pub language: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none", default)]
     pub explicit: Option<bool>,
-    #[serde(rename = "episodeCount", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "episodeCount",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub episode_count: Option<i64>,
-    #[serde(rename = "organizationId", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "organizationId",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub organization_id: Option<String>,
     #[serde(rename = "createdAt", skip_serializing_if = "Option::is_none", default)]
     pub created_at: Option<String>,
@@ -499,11 +647,23 @@ pub struct PodcastEpisode {
     pub audio_url: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none", default)]
     pub duration: Option<f64>,
-    #[serde(rename = "episodeNumber", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "episodeNumber",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub episode_number: Option<i64>,
-    #[serde(rename = "seasonNumber", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "seasonNumber",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub season_number: Option<i64>,
-    #[serde(rename = "publishedAt", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "publishedAt",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub published_at: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none", default)]
     pub status: Option<String>,
@@ -520,11 +680,23 @@ pub struct PodcastEpisodeCreate {
     pub description: Option<String>,
     #[serde(rename = "audioUrl")]
     pub audio_url: String,
-    #[serde(rename = "episodeNumber", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "episodeNumber",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub episode_number: Option<i64>,
-    #[serde(rename = "seasonNumber", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "seasonNumber",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub season_number: Option<i64>,
-    #[serde(rename = "publishedAt", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "publishedAt",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub published_at: Option<String>,
 }
 
@@ -546,9 +718,17 @@ pub struct Enhancement {
     pub output_url: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none", default)]
     pub settings: Option<serde_json::Value>,
-    #[serde(rename = "creditsUsed", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "creditsUsed",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub credits_used: Option<i64>,
-    #[serde(rename = "organizationId", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "organizationId",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub organization_id: Option<String>,
     #[serde(rename = "createdAt", skip_serializing_if = "Option::is_none", default)]
     pub created_at: Option<String>,
@@ -584,7 +764,11 @@ pub struct Transcription {
     pub id: Option<String>,
     #[serde(rename = "sourceId", skip_serializing_if = "Option::is_none", default)]
     pub source_id: Option<String>,
-    #[serde(rename = "sourceType", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "sourceType",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub source_type: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none", default)]
     pub status: Option<JobStatus>,
@@ -598,7 +782,11 @@ pub struct Transcription {
     pub word_count: Option<i64>,
     #[serde(skip_serializing_if = "Option::is_none", default)]
     pub confidence: Option<f64>,
-    #[serde(rename = "organizationId", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "organizationId",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub organization_id: Option<String>,
     #[serde(rename = "createdAt", skip_serializing_if = "Option::is_none", default)]
     pub created_at: Option<String>,
@@ -614,9 +802,17 @@ pub struct TranscriptionCreate {
     pub source_type: String,
     #[serde(skip_serializing_if = "Option::is_none", default)]
     pub language: Option<String>,
-    #[serde(rename = "speakerLabels", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "speakerLabels",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub speaker_labels: Option<bool>,
-    #[serde(rename = "wordTimestamps", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "wordTimestamps",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub word_timestamps: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none", default)]
     pub punctuation: Option<bool>,
@@ -630,19 +826,35 @@ pub struct SentimentAnalysis {
     pub id: Option<String>,
     #[serde(rename = "sourceId", skip_serializing_if = "Option::is_none", default)]
     pub source_id: Option<String>,
-    #[serde(rename = "sourceType", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "sourceType",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub source_type: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none", default)]
     pub status: Option<JobStatus>,
-    #[serde(rename = "overallSentiment", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "overallSentiment",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub overall_sentiment: Option<String>,
-    #[serde(rename = "overallScore", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "overallScore",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub overall_score: Option<f64>,
     #[serde(skip_serializing_if = "Option::is_none", default)]
     pub confidence: Option<f64>,
     #[serde(skip_serializing_if = "Option::is_none", default)]
     pub summary: Option<String>,
-    #[serde(rename = "organizationId", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "organizationId",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub organization_id: Option<String>,
     #[serde(rename = "createdAt", skip_serializing_if = "Option::is_none", default)]
     pub created_at: Option<String>,
@@ -658,13 +870,29 @@ pub struct SentimentAnalysisCreate {
     pub source_type: String,
     #[serde(skip_serializing_if = "Option::is_none", default)]
     pub text: Option<String>,
-    #[serde(rename = "includeEmotions", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "includeEmotions",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub include_emotions: Option<bool>,
-    #[serde(rename = "includeTopics", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "includeTopics",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub include_topics: Option<bool>,
-    #[serde(rename = "includeSummary", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "includeSummary",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub include_summary: Option<bool>,
-    #[serde(rename = "segmentAnalysis", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "segmentAnalysis",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub segment_analysis: Option<bool>,
 }
 
@@ -712,7 +940,11 @@ pub struct SearchResult {
     pub title: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none", default)]
     pub description: Option<String>,
-    #[serde(rename = "thumbnailUrl", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "thumbnailUrl",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub thumbnail_url: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none", default)]
     pub url: Option<String>,
@@ -749,7 +981,11 @@ pub struct SearchRequest {
     pub highlight: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none", default)]
     pub fuzzy: Option<bool>,
-    #[serde(rename = "semanticSearch", skip_serializing_if = "Option::is_none", default)]
+    #[serde(
+        rename = "semanticSearch",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
     pub semantic_search: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none", default)]
     pub page: Option<i64>,

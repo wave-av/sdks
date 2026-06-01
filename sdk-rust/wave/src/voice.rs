@@ -23,17 +23,21 @@ impl<'a> Voice<'a> {
         if let Some(v) = &params.language {
             query.push(("language".to_string(), v.to_string()));
         }
-        self.http.request("GET", "/voice/voices", &query, None::<&serde_json::Value>)
+        self.http
+            .request("GET", "/voice/voices", &query, None::<&serde_json::Value>)
     }
 
     /// Generate speech from text (operationId: generateSpeech, POST /voice/generate).
-    pub fn generate_speech(&self, body: &models::VoiceGenerateRequest) -> Result<models::VoiceGeneration, Error> {
-        self.http.request("POST", "/voice/generate", &[], Some(body))
+    pub fn generate_speech(
+        &self,
+        body: &models::VoiceGenerateRequest,
+    ) -> Result<models::VoiceGeneration, Error> {
+        self.http
+            .request("POST", "/voice/generate", &[], Some(body))
     }
 
     /// Clone a voice from audio samples (operationId: cloneVoice, POST /voice/clone).
     pub fn clone(&self, body: &models::VoiceCloneRequest) -> Result<models::Voice, Error> {
         self.http.request("POST", "/voice/clone", &[], Some(body))
     }
-
 }

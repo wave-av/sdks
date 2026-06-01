@@ -49,8 +49,16 @@ impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Error::Api { code, message, .. } => write!(f, "wave: [{code}] {message}"),
-            Error::RateLimit { code, message, retry_after, .. } => {
-                write!(f, "wave: [{code}] {message} (retry after {retry_after:.0}s)")
+            Error::RateLimit {
+                code,
+                message,
+                retry_after,
+                ..
+            } => {
+                write!(
+                    f,
+                    "wave: [{code}] {message} (retry after {retry_after:.0}s)"
+                )
             }
             Error::Network(m) => write!(f, "wave: network error: {m}"),
             Error::Serialization(m) => write!(f, "wave: serialization error: {m}"),

@@ -17,7 +17,10 @@ pub struct StudioAiListEnhancementsParams {
 
 impl<'a> StudioAi<'a> {
     /// List enhancement jobs (operationId: listEnhancements, GET /studio-ai/enhancements).
-    pub fn list_enhancements(&self, params: &StudioAiListEnhancementsParams) -> Result<Page<models::Enhancement>, Error> {
+    pub fn list_enhancements(
+        &self,
+        params: &StudioAiListEnhancementsParams,
+    ) -> Result<Page<models::Enhancement>, Error> {
         let mut query: Vec<(String, String)> = Vec::new();
         if let Some(v) = &params.page {
             query.push(("page".to_string(), v.to_string()));
@@ -31,17 +34,29 @@ impl<'a> StudioAi<'a> {
         if let Some(v) = &params.status {
             query.push(("status".to_string(), v.to_string()));
         }
-        self.http.request("GET", "/studio-ai/enhancements", &query, None::<&serde_json::Value>)
+        self.http.request(
+            "GET",
+            "/studio-ai/enhancements",
+            &query,
+            None::<&serde_json::Value>,
+        )
     }
 
     /// Create an enhancement job (operationId: createEnhancement, POST /studio-ai/enhancements).
-    pub fn create_enhancement(&self, body: &models::EnhancementCreate) -> Result<models::Enhancement, Error> {
-        self.http.request("POST", "/studio-ai/enhancements", &[], Some(body))
+    pub fn create_enhancement(
+        &self,
+        body: &models::EnhancementCreate,
+    ) -> Result<models::Enhancement, Error> {
+        self.http
+            .request("POST", "/studio-ai/enhancements", &[], Some(body))
     }
 
     /// Generate enhancement preview (operationId: previewEnhancement, POST /studio-ai/preview).
-    pub fn preview_enhancement(&self, body: &models::EnhancementPreviewRequest) -> Result<serde_json::Value, Error> {
-        self.http.request("POST", "/studio-ai/preview", &[], Some(body))
+    pub fn preview_enhancement(
+        &self,
+        body: &models::EnhancementPreviewRequest,
+    ) -> Result<serde_json::Value, Error> {
+        self.http
+            .request("POST", "/studio-ai/preview", &[], Some(body))
     }
-
 }

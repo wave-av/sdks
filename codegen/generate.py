@@ -39,6 +39,33 @@ def _maybe_fmt(cmd: list[str], tool: str) -> None:
         print(f"  ({tool} not found — skipping format; CI will check)")
 
 
+def _fmt_rust(root: str) -> None:
+    """rustfmt every generated .rs so the committed Rust is canonical (CI runs
+    `cargo fmt --check` as a required gate). Tries `cargo fmt`, then a bare
+    `rustfmt` on PATH, then the rustup toolchain binary; skips if none found."""
+    import glob
+    import os as _os
+    import shutil
+    import subprocess
+
+    manifest = _os.path.join(root, "Cargo.toml")
+    if shutil.which("cargo"):
+        r = subprocess.run(["cargo", "fmt", "--manifest-path", manifest], check=False)
+        if r.returncode == 0:
+            return
+    rustfmt = shutil.which("rustfmt")
+    if not rustfmt:
+        hits = glob.glob(_os.path.expanduser("~/.rustup/toolchains/*/bin/rustfmt"))
+        rustfmt = hits[0] if hits else None
+    if not rustfmt:
+        print("  (rustfmt not found — skipping format; CI will check)")
+        return
+    rs_files = [p for p in glob.glob(_os.path.join(root, "**", "*.rs"), recursive=True)
+                if f"{_os.sep}target{_os.sep}" not in p]
+    if rs_files:
+        subprocess.run([rustfmt, "--edition", "2021", *rs_files], check=False)
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--lang", default="go,rust,ruby")
@@ -59,7 +86,9 @@ def main() -> int:
         print(f"go:   {len(files)} files -> sdk-go/")
     if "rust" in langs:
         import render_rust
-        files = render_rust.render(ir, os.path.join(REPO, "sdk-rust"))
+        rust_root = os.path.join(REPO, "sdk-rust")
+        files = render_rust.render(ir, rust_root)
+        _fmt_rust(rust_root)
         print(f"rust: {len(files)} files -> sdk-rust/")
     if "ruby" in langs:
         import render_ruby
