@@ -5,7 +5,7 @@ Official Python SDK for the WAVE API by WAVE Online, LLC
 ## Installation
 
 ```bash
-pip install wave-sdk
+pip install wave-av-sdk
 ```
 
 ## Quick start

@@ -4,9 +4,9 @@
 //! products through typed accessors:
 //!
 //! ```no_run
-//! let client = wave::Client::new("wave_live_...")?;
+//! let client = wave_sdk::Client::new("wave_live_...")?;
 //! let clip = client.clips().get("clip_123")?;
-//! # Ok::<(), wave::Error>(())
+//! # Ok::<(), wave_sdk::Error>(())
 //! ```
 
 use wave_core::Client as Http;

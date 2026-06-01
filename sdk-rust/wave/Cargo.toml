@@ -1,5 +1,5 @@
 [package]
-name = "wave"
+name = "wave-sdk"
 version = "0.1.0"
 edition = "2021"
 description = "Official WAVE API SDK for Rust (generated from the gateway OpenAPI contract)."
