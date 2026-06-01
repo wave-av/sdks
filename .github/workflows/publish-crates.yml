@@ -35,7 +35,7 @@ jobs:
       - name: Package (dry-run publish)
         run: |
           cargo package -p wave-core
-          cargo package -p wave --no-verify
+          cargo package -p wave-sdk --no-verify
 
   publish:
     needs: verify
@@ -59,7 +59,7 @@ jobs:
         run: cargo publish -p wave-core
       - name: Wait for wave-core to index
         run: sleep 30
-      - name: Publish wave (umbrella)
+      - name: Publish wave-sdk (umbrella)
         env:
           CARGO_REGISTRY_TOKEN: ${{ steps.auth.outputs.token }}
-        run: cargo publish -p wave
+        run: cargo publish -p wave-sdk

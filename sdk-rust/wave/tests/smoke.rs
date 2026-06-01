@@ -26,19 +26,19 @@ fn serve_once(status_line: &'static str, headers: &'static str, body: &'static s
     port
 }
 
-fn client(port: u16) -> wave::Client {
-    let http = wave::Client::builder("wave_test_abc")
+fn client(port: u16) -> wave_sdk::Client {
+    let http = wave_sdk::Client::builder("wave_test_abc")
         .base_url(format!("http://127.0.0.1:{port}"))
         .max_retries(0)
         .build()
         .unwrap();
-    wave::Client::from_http(http)
+    wave_sdk::Client::from_http(http)
 }
 
 #[test]
 fn client_requires_api_key() {
-    assert!(wave::Client::new("").is_err());
-    assert!(wave::Client::new("wave_test_abc").is_ok());
+    assert!(wave_sdk::Client::new("").is_err());
+    assert!(wave_sdk::Client::new("wave_test_abc").is_ok());
 }
 
 #[test]
@@ -60,7 +60,7 @@ fn list_parses_pagination() {
         "Content-Type: application/json\r\n",
         r#"{"data":[{"id":"a"},{"id":"b"}],"pagination":{"page":2,"perPage":20,"total":2,"totalPages":1}}"#,
     );
-    let params = wave::clips::ClipsListParams {
+    let params = wave_sdk::clips::ClipsListParams {
         page: Some(2),
         ..Default::default()
     };
@@ -78,7 +78,7 @@ fn nested_error_envelope() {
     );
     let err = client(port).clips().get("x").unwrap_err();
     match err {
-        wave::Error::Api {
+        wave_sdk::Error::Api {
             code,
             status_code,
             request_id,

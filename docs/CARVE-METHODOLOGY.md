@@ -112,7 +112,7 @@ language's idiomatic unit:
 | **TypeScript** | package | low beyond per-product (tree-shaking does the rest) | per-product packages + umbrella; `sideEffects:false` |
 | **Python** | package / extra | low (import-time only loads what you import) | per-product subpackages or extras |
 | **Go** | package (dir) | automatic — linker strips unused; per-package compile/cache | **one module**, per-product sub-packages (`.../voice`) — *not* a module per product |
-| **Rust** | crate | **highest** — per-crate compilation; smaller units compile faster & in parallel | per-product crates in one cargo workspace + a `wave` umbrella crate |
+| **Rust** | crate | **highest** — per-crate compilation; smaller units compile faster & in parallel | per-product crates in one cargo workspace + a `wave-sdk` umbrella crate |
 
 So the per-product split pays off *most* in Rust (and helps Go binary size/compile), and is mostly
 a DX/tree-shaking concern in TS/Python. Either way the public shape stays: **install only the
@@ -219,7 +219,7 @@ the single source of truth; refresh it from WSC `packages/api-spec/openapi.yaml`
 | Lang | Crate/module layout | Core (hand-written behavior) | Publish |
 | --- | --- | --- | --- |
 | Go | one module `github.com/wave-av/sdks/sdk-go`, package `wave`, service per product | `client.go`/`errors.go`/`pagination.go` | git tag `sdk-go/vX.Y.Z` → proxy.golang.org (no registry account) |
-| Rust | workspace: `wave-core` (transport+types) + `wave` (umbrella, module per product) | `client.rs`/`error.rs`/`pagination.rs` | crates.io OIDC trusted publishing (core then umbrella) |
+| Rust | workspace: `wave-core` (transport+types) + `wave-sdk` (umbrella, module per product) | `client.rs`/`error.rs`/`pagination.rs` | crates.io OIDC trusted publishing (core then umbrella) |
 | Ruby | one gem `wave-sdk`, class per product | `client.rb`/`errors.rb` | RubyGems OIDC trusted publishing |
 
 **Faithfulness rules the harness enforces:**

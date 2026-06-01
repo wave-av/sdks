@@ -98,7 +98,7 @@ ureq = {{ version = "2", features = ["json"] }}
 
 def _umbrella_toml() -> str:
     return f'''[package]
-name = "wave"
+name = "wave-sdk"
 version = "{CORE_VER}"
 edition = "2021"
 description = "Official WAVE API SDK for Rust (generated from the gateway OpenAPI contract)."
@@ -530,9 +530,9 @@ def _umbrella_lib(ir: dict) -> str:
 //! products through typed accessors:
 //!
 //! ```no_run
-//! let client = wave::Client::new("wave_live_...")?;
+//! let client = wave_sdk::Client::new("wave_live_...")?;
 //! let clip = client.clips().get("clip_123")?;
-//! # Ok::<(), wave::Error>(())
+//! # Ok::<(), wave_sdk::Error>(())
 //! ```
 
 pub use wave_core::{{models, Error, Page, Pagination, DEFAULT_BASE_URL, VERSION}};

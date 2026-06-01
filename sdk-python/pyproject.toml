@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "wave-sdk"
+name = "wave-av-sdk"
 version = "2.0.0"
 description = "Official WAVE SDK for Python - 33 API modules for streaming, production, analytics, and more"
 readme = "README.md"
