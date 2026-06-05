@@ -7,7 +7,7 @@ name = "wave-av-sdk"
 version = "2.0.0"
 description = "Official WAVE SDK for Python - 33 API modules for streaming, production, analytics, and more"
 readme = "README.md"
-license = {text = "MIT"}
+license = {text = "Apache-2.0"}
 requires-python = ">=3.10"
 authors = [
     {name = "WAVE Inc.", email = "sdk@wave.online"}
@@ -37,7 +37,7 @@ keywords = [
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
+    "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
