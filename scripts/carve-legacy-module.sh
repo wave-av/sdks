@@ -18,7 +18,8 @@
 # + an OpenAPI tag (see CARVE-METHODOLOGY "graduating a preview").
 set -euo pipefail
 
-MONO="${MONO:-/Users/jakefineman/WAVE-Inc/wave-surfer-connect}"
+# HOME guarded so `set -u` doesn't abort when it's unset (e.g. minimal CI shells).
+MONO="${MONO:-${HOME:-.}/wave-surfer-connect}"
 SDKS="${SDKS:-/tmp/sdks}"
 SRCPATH="packages/sdk-typescript/src"
 PKGROOT="$SDKS/sdk-typescript/packages"
