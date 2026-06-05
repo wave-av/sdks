@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.authors = ["WAVE Inc."]
   spec.email = ["sdk@wave.online"]
   spec.homepage = "https://wave.online"
-  spec.license = "MIT"
+  spec.license = "Apache-2.0"
   spec.required_ruby_version = ">= 3.0"
 
   spec.files = Dir["lib/**/*.rb", "README.md", "LICENSE"]

@@ -24,7 +24,7 @@
     "test": "vitest run --passWithNoTests",
     "type-check": "tsc --noEmit"
   },
-  "license": "MIT",
+  "license": "Apache-2.0",
   "author": "WAVE Online, LLC <sdk@wave.online>",
   "repository": {
     "type": "git",

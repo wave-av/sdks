@@ -43,4 +43,4 @@ scripts/check-registry-parity.py            # declared-vs-published gate (vendor
 
 ## License
 
-MIT © WAVE Online, LLC
+Apache-2.0 © WAVE — see [LICENSE](LICENSE) and [NOTICE](NOTICE).

@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "description": "WAVE SDK open-core workspace (publishes @wave-av/* packages). Not published itself.",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "scripts": {
     "build": "pnpm -r build",
     "test": "pnpm -r test",
