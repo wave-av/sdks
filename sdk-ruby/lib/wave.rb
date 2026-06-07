@@ -15,6 +15,7 @@ require_relative "wave/studio_ai"
 require_relative "wave/transcribe"
 require_relative "wave/sentiment"
 require_relative "wave/search"
+require_relative "wave/x402"
 
 # Official WAVE API SDK for Ruby. Generated from the gateway OpenAPI contract.
 #

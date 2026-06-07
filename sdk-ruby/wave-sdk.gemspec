@@ -10,11 +10,16 @@ Gem::Specification.new do |spec|
   spec.authors = ["WAVE Inc."]
   spec.email = ["sdk@wave.online"]
   spec.homepage = "https://wave.online"
-  spec.license = "Apache-2.0"
+  spec.license = "MIT"
   spec.required_ruby_version = ">= 3.0"
 
   spec.files = Dir["lib/**/*.rb", "README.md", "LICENSE"]
   spec.require_paths = ["lib"]
+
+  # Optional: x402 agent-payment signing (lib/wave/x402.rb) needs the `eth` gem for EIP-712/EIP-3009.
+  # The base SDK does NOT require it; users who sign payments add `gem "eth"`. Declared here as a dev
+  # dependency so the conformance test (test/x402_test.rb) can run.
+  spec.add_development_dependency "eth", "~> 0.5"
 
   spec.metadata = {
     "source_code_uri" => "https://github.com/wave-av/sdks",
