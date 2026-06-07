@@ -77,9 +77,16 @@ def render(ir: dict, root: str) -> list[str]:
     w("models.go", _models(ir, models, enums))
     for prod in ir["products"]:
         w(f"{prod['snake']}.go", _service(prod, models, enums))
-    # go.mod at module root (sdk-go/)
+    # go.mod at module root (sdk-go/). The generated SDK is pure net/http, but the hand-written x402
+    # signer (wave/x402.go — NOT codegen output) needs go-ethereum for EIP-712/EIP-3009. Emit its direct
+    # require + the matching go directive here so a regen doesn't drop them; `go mod tidy` (run by
+    # generate.py after rendering) restores the indirect block + go.sum from the actual imports.
     with open(os.path.join(root, "go.mod"), "w") as f:
-        f.write(f"module {MODULE}\n\ngo 1.22\n")
+        f.write(
+            f"module {MODULE}\n\n"
+            "go 1.24.0\n\n"
+            "require github.com/ethereum/go-ethereum v1.17.3\n"
+        )
     written.append(os.path.join(root, "go.mod"))
     return written
 

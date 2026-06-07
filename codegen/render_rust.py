@@ -71,9 +71,11 @@ def render(ir: dict, root: str) -> list[str]:
 
 
 def _workspace_toml() -> str:
+    # wave-x402 is a hand-written crate (EIP-3009 "exact" signing via alloy) — NOT codegen output — so
+    # it is listed here to keep it in the workspace across a regen; its Cargo.toml/src are never rewritten.
     return (
         "[workspace]\n"
-        'members = ["wave-core", "wave"]\n'
+        'members = ["wave-core", "wave", "wave-x402"]\n'
         'resolver = "2"\n'
     )
 

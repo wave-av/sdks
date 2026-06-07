@@ -39,6 +39,19 @@ def _maybe_fmt(cmd: list[str], tool: str) -> None:
         print(f"  ({tool} not found — skipping format; CI will check)")
 
 
+def _go_tidy(root: str) -> None:
+    """Restore go.mod's indirect requires + go.sum after rendering. The base SDK is pure net/http, but
+    the hand-written x402 signer (sdk-go/wave/x402.go) imports go-ethereum, so a regen needs `go mod tidy`
+    to reconcile the module graph. Skips silently if `go` is absent (CI runs it anyway)."""
+    import shutil
+    import subprocess
+
+    if shutil.which("go"):
+        subprocess.run(["go", "mod", "tidy"], cwd=root, check=False)
+    else:
+        print("  (go not found — skipping `go mod tidy`; CI will run it)")
+
+
 def _fmt_rust(root: str) -> None:
     """rustfmt every generated .rs so the committed Rust is canonical (CI runs
     `cargo fmt --check` as a required gate). Tries `cargo fmt`, then a bare
@@ -83,6 +96,7 @@ def main() -> int:
         go_root = os.path.join(REPO, "sdk-go")
         files = render_go.render(ir, go_root)
         _maybe_fmt(["gofmt", "-w", os.path.join(go_root, "wave")], "gofmt")
+        _go_tidy(go_root)  # the hand-written x402 signer pulls go-ethereum; reconcile go.mod/go.sum
         print(f"go:   {len(files)} files -> sdk-go/")
     if "rust" in langs:
         import render_rust

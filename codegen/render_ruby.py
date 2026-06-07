@@ -55,6 +55,7 @@ require_relative "wave/version"
 require_relative "wave/errors"
 require_relative "wave/client"
 {products_require}
+require_relative "wave/x402"
 
 # Official WAVE API SDK for Ruby. Generated from the gateway OpenAPI contract.
 #
@@ -298,6 +299,11 @@ Gem::Specification.new do |spec|
 
   spec.files = Dir["lib/**/*.rb", "README.md", "LICENSE"]
   spec.require_paths = ["lib"]
+
+  # Optional: x402 agent-payment signing (lib/wave/x402.rb) needs the `eth` gem for EIP-712/EIP-3009.
+  # The base SDK does NOT require it; users who sign payments add `gem "eth"`. Declared here as a dev
+  # dependency so the conformance test (test/x402_test.rb) can run.
+  spec.add_development_dependency "eth", "~> 0.5"
 
   spec.metadata = {{
     "source_code_uri" => "https://github.com/wave-av/sdks",
