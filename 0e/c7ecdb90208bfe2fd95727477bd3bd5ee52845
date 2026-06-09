@@ -1,0 +1,38 @@
+sdk-typescript/packages/adk/README.md
+  s_5f27fa5b8237cd::t_1c3a3879d39445 190
+CONTRIBUTING.md
+  s_5f27fa5b8237cd::t_17635a7b54ca88 18-19
+sdk-typescript/packages/mcp-server/README.md
+  s_5f27fa5b8237cd::t_46f459cb75df86 207
+README.md
+  s_5f27fa5b8237cd::t_d36ba0a590459f 7
+docs/CARVE-METHODOLOGY.md
+  s_5f27fa5b8237cd::t_6b98159515f5b4 9
+  s_5f27fa5b8237cd::t_bf5babc18a0367 201
+sdk-typescript/packages/adk/src/__tests__/AgentRuntime.test.ts
+  s_5f27fa5b8237cd::t_f52f367f746173 47
+scripts/carve.sh
+  s_5f27fa5b8237cd::t_e6aaea56ce2aa1 12
+scripts/carve-legacy-module.sh
+  s_5f27fa5b8237cd::t_451ebf1f0753db 22
+scripts/sync-from-monorepo.sh
+  s_5f27fa5b8237cd::t_4a04f744b9db08 5
+  s_5f27fa5b8237cd::t_7d9ccc35f84b42 19
+  s_5f27fa5b8237cd::t_79d00ec7f94918 22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "0ec7ecdb90208bfe2fd95727477bd3bd5ee52845",
+  "prompts": {},
+  "sessions": {
+    "s_5f27fa5b8237cd": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "15ec0bf8-6164-4260-bae1-00c610d449bb",
+        "model": "unknown"
+      },
+      "human_author": "Jake Fineman <jakefineman@gmail.com>"
+    }
+  }
+}
