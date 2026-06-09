@@ -6,7 +6,7 @@ about it is folklore. If you change the method, change this doc in the same PR.
 
 ## 1. Source of truth
 
-- **Canonical source = the private `wave-surfer-connect` monorepo, branch `origin/main`.**
+- **Canonical source = an internal WAVE monorepo, branch `origin/main`.**
   Never the local working tree. Tooling reads bytes with `git show origin/main:<path>` after a
   `git fetch`, so a stale or divergent local checkout can never feed a bad carve. (This is not
   hypothetical: a checkout 5,000+ commits behind on a pre-split branch once nearly produced a
@@ -198,7 +198,7 @@ follow-up so the source can be fixed and the divergence retired:
 | dropped `sdk-server.ts` | mcp-server | dead code, imports uninstalled peer, breaks build | remove from WSC or make it a guarded optional feature |
 | skipped 2 adk runtime tests + fixed tool-name assertions | adk `__tests__` | upstream tests are stale vs shipped v1.0.14 (`wave_` tool prefix; self-defeating `agent.start` mock) | fix the tests in WSC `packages/adk` |
 | per-package `LICENSE` added | all packages | each `package.json` lists `LICENSE` in `files[]` but only a repo-root `LICENSE` existed → tarballs omitted it | n/a (mirror-correct) |
-| flat error model vs nested envelope | TS/Python cores parse/spec-document `Error` differently | OpenAPI `Error` is flat `{message,code,errors}` but the **gateway actually emits nested `{error:{code,message}}`** (confirmed in `wave-gateway/src/worker.ts`) | fix the canonical `openapi.yaml` `Error` schema to the nested envelope; Go/Rust/Ruby cores already parse nested |
+| flat error model vs nested envelope | TS/Python cores parse/spec-document `Error` differently | OpenAPI `Error` is flat `{message,code,errors}` but the **gateway actually emits nested `{error:{code,message}}`** (confirmed in the WAVE API gateway worker) | fix the canonical `openapi.yaml` `Error` schema to the nested envelope; Go/Rust/Ruby cores already parse nested |
 | flat pagination vs `{data,pagination}` | Python `PaginatedResponse` is `{data,total,has_more,next_cursor}` | the spec wire shape is `{data, pagination:{page,perPage,total,totalPages}}` | reconcile Python to the spec wire shape (#122) |
 | legacy clip methods | TS/Python `clips` (`export_clip`, `detect_highlights`, `/v1/clips/highlights/*`) | hand-authored against an older internal surface absent from the frozen contract | retire in WSC; Go/Rust/Ruby are spec-faithful (#122/#123) |
 

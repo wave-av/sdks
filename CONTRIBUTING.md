@@ -15,8 +15,8 @@ sequence which previews get a live backend first.
 
 ## How the SDKs are built
 
-This repo is a **curated, allowlisted mirror** of the SDK client sources from the private
-`wave-surfer-connect` monorepo. Do not hand-edit the carved package sources — they are
+This repo is a **curated, allowlisted mirror** of the SDK client sources from an
+internal WAVE monorepo. Do not hand-edit the carved package sources — they are
 regenerated. See **[docs/CARVE-METHODOLOGY.md](docs/CARVE-METHODOLOGY.md)** for the full method
 (source of truth, the `<p>.ts`/`<p>-types.ts` split, import rewrites, build/test, granularity).
 

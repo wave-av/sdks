@@ -44,7 +44,7 @@ describe('AgentRuntime', () => {
 
   // SKIP (carve): stale upstream test — mocks agent.start() to a no-op, then asserts its
   // side effect (getHealth() === 'healthy' is derived from agent.isRunning, which only the
-  // real start() sets). Tracked for an upstream fix in wave-surfer-connect packages/adk.
+  // real start() sets). Tracked for an upstream fix in the internal WAVE monorepo packages/adk.
   it.skip('getHealth returns healthy after start', async () => {
     runtime = new AgentRuntime(agent, { healthPort: 0 });
 

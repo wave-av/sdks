@@ -2,7 +2,7 @@
 # sync-from-monorepo.sh — refresh the carved package SOURCES in this PUBLIC repo from the
 # CANONICAL monorepo source.
 #
-# CANONICAL SOURCE = wave-surfer-connect `origin/main` (NOT the local working tree). The script
+# CANONICAL SOURCE = the internal monorepo `origin/main` (NOT the local working tree). The script
 # reads bytes via `git show origin/main:` after a fetch, so it is immune to a stale or divergent
 # local branch. (A local checkout that was 5,000+ commits behind on a pre-split branch once
 # nearly produced a broken carve — reading origin/main removes that whole class of error.)
@@ -16,10 +16,10 @@
 #   4. The ONLY transform is the cross-package import rewrite (./client* -> @wave-av/core).
 #      The <p>.ts / <p>-types.ts split is preserved 1:1 (sibling ./<p>-types stays relative).
 #
-# Usage: scripts/sync-from-monorepo.sh /path/to/any-wave-surfer-connect-checkout
+# Usage: scripts/sync-from-monorepo.sh /path/to/any-internal-monorepo-checkout
 set -euo pipefail
 
-MONO="${1:?usage: sync-from-monorepo.sh <wave-surfer-connect checkout path>}"
+MONO="${1:?usage: sync-from-monorepo.sh <internal monorepo checkout path>}"
 REF="${SYNC_REF:-origin/main}"
 SRCPATH="packages/sdk-typescript/src"
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
