@@ -204,7 +204,7 @@ See [docs.wave.online/sdk/mcp-server](https://docs.wave.online/sdk/mcp-server) f
 
 ## Support
 
-Report issues at [github.com/wave-av/wave-surfer-connect/issues](https://github.com/wave-av/wave-surfer-connect/issues).
+Report issues at [github.com/wave-av/sdks/issues](https://github.com/wave-av/sdks/issues).
 
 ## Verify Install
 

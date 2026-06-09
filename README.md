@@ -4,7 +4,7 @@
 
 ## What this is
 
-- **Canonical source of truth is the private `wave-surfer-connect` monorepo.** This repo is a **curated, allowlisted mirror** of just the SDK sources — synced forward, never a push of the monorepo's git history.
+- **Canonical source of truth is an internal WAVE monorepo.** This repo is a **curated, allowlisted mirror** of just the SDK sources — synced forward, never a push of the monorepo's git history.
 - **Published from here** so npm provenance / Sigstore attestations work (they require a *public* source repo). Auth is **OIDC trusted publishing** — there is no long-lived npm/PyPI token to leak.
 - **Layered packages** (AWS-SDK-v3 model — one repo, many packages):
   - `@wave-av/core` — gateway client, auth, shared types. The base.
