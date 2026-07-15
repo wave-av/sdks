@@ -70,16 +70,17 @@ export function createKernelTools(config: KernelConfig): AgentTool[] {
   /**
    * Execute Playwright code in the browser VM. The code has access to `page`,
    * `context`, and `browser`, and returns via `return`. A non-success result is
-   * surfaced through the shared Kernel error taxonomy.
+   * surfaced through the shared Kernel error taxonomy. Returns the full
+   * execution response so callers can read `result`, `stdout`, and `stderr`.
    */
-  async function execute(browserId: string, code: string): Promise<unknown> {
+  async function execute(browserId: string, code: string) {
     const res = await kernel.browsers.playwright.execute(browserId, { code });
     if (!res.success) {
       throw new KernelApiError(res.error ?? 'Playwright execution failed', undefined, {
         browserId,
       });
     }
-    return res.result;
+    return res;
   }
 
   const browseSchema = z.object({
@@ -114,21 +115,23 @@ export function createKernelTools(config: KernelConfig): AgentTool[] {
         },
       },
       schema: browseSchema,
-      handler: async (params: Record<string, unknown>) =>
-        withBrowser(async (id) => {
-          const timeout = Number(params.timeoutMs ?? DEFAULT_TIMEOUT_MS);
-          const waitForSelector = params.waitForSelector
-            ? `await page.waitForSelector(${JSON.stringify(params.waitForSelector)}, { timeout: ${timeout} });`
+      handler: async (params: Record<string, unknown>) => {
+        const p = browseSchema.parse(params);
+        const timeout = p.timeoutMs ?? DEFAULT_TIMEOUT_MS;
+        return withBrowser(async (id) => {
+          const waitForSelector = p.waitForSelector
+            ? `await page.waitForSelector(${JSON.stringify(p.waitForSelector)}, { timeout: ${timeout} });`
             : '';
           const code = [
-            `await page.goto(${JSON.stringify(params.url)}, { waitUntil: 'load', timeout: ${timeout} });`,
+            `await page.goto(${JSON.stringify(p.url)}, { waitUntil: 'load', timeout: ${timeout} });`,
             waitForSelector,
             `return { title: await page.title(), content: await page.content() };`,
           ]
             .filter(Boolean)
             .join('\n');
-          return (await execute(id, code)) as { title: string; content: string };
-        }),
+          return (await execute(id, code)).result as { title: string; content: string };
+        });
+      },
     },
     {
       name: 'take_screenshot',
@@ -145,27 +148,27 @@ export function createKernelTools(config: KernelConfig): AgentTool[] {
         height: { type: 'number', description: 'Viewport height in pixels', required: false },
       },
       schema: screenshotSchema,
-      handler: async (params: Record<string, unknown>) =>
-        withBrowser(async (id) => {
-          const width = Number(params.width ?? DEFAULT_WIDTH);
-          const height = Number(params.height ?? DEFAULT_HEIGHT);
+      handler: async (params: Record<string, unknown>) => {
+        const p = screenshotSchema.parse(params);
+        const width = p.width ?? DEFAULT_WIDTH;
+        const height = p.height ?? DEFAULT_HEIGHT;
+        return withBrowser(async (id) => {
           // Element screenshots can't use fullPage; full-page shots can.
-          const target = params.selector
-            ? `page.locator(${JSON.stringify(params.selector)})`
-            : 'page';
-          const shotOpts = params.selector ? `{ type: 'png' }` : `{ type: 'png', fullPage: true }`;
+          const target = p.selector ? `page.locator(${JSON.stringify(p.selector)})` : 'page';
+          const shotOpts = p.selector ? `{ type: 'png' }` : `{ type: 'png', fullPage: true }`;
           const code = [
             `await page.setViewportSize({ width: ${width}, height: ${height} });`,
-            `await page.goto(${JSON.stringify(params.url)}, { waitUntil: 'load', timeout: ${DEFAULT_TIMEOUT_MS} });`,
+            `await page.goto(${JSON.stringify(p.url)}, { waitUntil: 'load', timeout: ${DEFAULT_TIMEOUT_MS} });`,
             `const buf = await ${target}.screenshot(${shotOpts});`,
             `return { screenshotBase64: buf.toString('base64'), width: ${width}, height: ${height} };`,
           ].join('\n');
-          return (await execute(id, code)) as {
+          return (await execute(id, code)).result as {
             screenshotBase64: string;
             width: number;
             height: number;
           };
-        }),
+        });
+      },
     },
     {
       name: 'run_playwright',
@@ -176,17 +179,22 @@ export function createKernelTools(config: KernelConfig): AgentTool[] {
         url: { type: 'string', description: 'Starting URL (optional)', required: false },
       },
       schema: playwrightSchema,
-      handler: async (params: Record<string, unknown>) =>
-        withBrowser(async (id) => {
-          if (params.url) {
+      handler: async (params: Record<string, unknown>) => {
+        const p = playwrightSchema.parse(params);
+        return withBrowser(async (id) => {
+          if (p.url) {
             await execute(
               id,
-              `await page.goto(${JSON.stringify(params.url)}, { waitUntil: 'load', timeout: ${DEFAULT_TIMEOUT_MS} });`,
+              `await page.goto(${JSON.stringify(p.url)}, { waitUntil: 'load', timeout: ${DEFAULT_TIMEOUT_MS} });`,
             );
           }
-          const result = await execute(id, String(params.code));
-          return { output: result ?? '', logs: [] as string[] };
-        }),
+          const res = await execute(id, p.code);
+          const logs = [res.stdout, res.stderr].filter(
+            (line): line is string => typeof line === 'string' && line.length > 0,
+          );
+          return { output: res.result ?? '', logs };
+        });
+      },
     },
   ];
 }

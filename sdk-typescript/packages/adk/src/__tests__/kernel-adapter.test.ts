@@ -96,6 +96,15 @@ describe('Kernel adapter — lifecycle', () => {
     expect(out).toEqual({ output: 'done', logs: [] });
   });
 
+  it('run_playwright surfaces stdout/stderr as logs', async () => {
+    execute.mockResolvedValue({ success: true, result: 'ok', stdout: 'hello', stderr: 'warn' });
+    const run = await tool('run_playwright');
+
+    const out = await run.handler({ code: 'return 1;' });
+
+    expect(out).toEqual({ output: 'ok', logs: ['hello', 'warn'] });
+  });
+
   it('a non-success execution surfaces a KernelApiError AND still tears the session down', async () => {
     const { KernelApiError } = await import('@wave-av/kernel');
     execute.mockResolvedValue({ success: false, error: 'boom' });
