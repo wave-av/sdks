@@ -10,6 +10,9 @@ importers:
 
   packages/adk:
     dependencies:
+      '@wave-av/kernel':
+        specifier: workspace:*
+        version: link:../kernel
       zod:
         specifier: ^3.23.0
         version: 3.25.76
