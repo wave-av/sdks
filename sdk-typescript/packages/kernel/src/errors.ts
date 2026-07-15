@@ -1,7 +1,7 @@
 /**
- * Kernel error taxonomy. Mirrors the WSC taxonomy
- * (wave-surfer-connect/src/lib/kernel/client.ts) so consumers can migrate
- * onto the shared client without rewriting error handling.
+ * Kernel error taxonomy. Mirrors WAVE's prior internal Kernel error taxonomy
+ * so consumers can migrate onto the shared client without rewriting error
+ * handling.
  */
 
 /** Stable, machine-readable Kernel error codes. */

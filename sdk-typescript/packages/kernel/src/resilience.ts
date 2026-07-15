@@ -6,12 +6,11 @@
  * public surface. Everything here is optional and inert in slice 1: the client
  * typechecks and runs without any of it wired up.
  *
- * TODO(slice-2): port from wave-surfer-connect —
+ * TODO(slice-2): port from WAVE's internal Kernel client —
  *   - opossum circuit breaker (errorThresholdPercentage: 50, resetTimeout:
- *     30000, volumeThreshold: 5) from src/lib/kernel/client.ts
- *   - Sentry capture (tags: { service: 'kernel' }) from src/lib/kernel/client.ts
- *   - WebBotAuth Ed25519 request signing (RFC 9421, fail-open) from
- *     src/lib/kernel/web-bot-auth.ts
+ *     30000, volumeThreshold: 5)
+ *   - Sentry capture (tags: { service: 'kernel' })
+ *   - WebBotAuth Ed25519 request signing (RFC 9421, fail-open)
  */
 
 /**

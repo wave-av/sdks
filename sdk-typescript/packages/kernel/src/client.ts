@@ -2,10 +2,10 @@
  * WAVE shared Kernel cloud-browser client.
  *
  * `WaveKernel` is the ONE Kernel entrypoint for all of WAVE (law:
- * kernel-substrate-governed). Every WAVE consumer — adk, render, and the
- * split-out wave-surfer-connect homes — talks to Kernel through this single
- * typed wrapper over `@onkernel/sdk`, never the raw SDK. That gives us one
- * place to add telemetry, resilience, and auth without touching callers.
+ * kernel-substrate-governed). Every WAVE consumer — adk, render, and the other
+ * product edge homes — talks to Kernel through this single typed wrapper over
+ * `@onkernel/sdk`, never the raw SDK. That gives us one place to add telemetry,
+ * resilience, and auth without touching callers.
  *
  * Base URL is the SDK default (`https://api.onkernel.com/`); we never point at
  * the legacy `api.kernel.sh` host.
