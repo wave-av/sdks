@@ -1,28 +1,42 @@
 /**
- * Kernel.sh Adapter for WAVE ADK
+ * Kernel Adapter for WAVE ADK
  *
- * Provides cloud browser capabilities to WAVE agents via Kernel.sh:
+ * Provides cloud browser capabilities to WAVE agents via Kernel:
  * - Screenshot live stream players for visual QA
  * - Interact with third-party dashboards (Mux, Cloudflare)
  * - Run visual regression on embedded players
  * - Scrape competitor streaming pages for intelligence
  *
- * Kernel provides managed cloud browsers (unikernel-based)
- * with Playwright API, session persistence, and file I/O.
+ * Kernel provides managed cloud browsers (unikernel-based) with a Playwright
+ * execution surface, session persistence, and file I/O.
+ *
+ * All Kernel access goes through the shared {@link WaveKernel} client
+ * (`@wave-av/kernel`), never a hand-rolled fetch — one place for telemetry,
+ * resilience, auth, and the SDK's real resource surface
+ * (law: kernel-substrate-governed).
  *
  * @see https://docs.onkernel.com
  */
 
+import { WaveKernel, KernelApiError } from '@wave-av/kernel';
 import { z } from 'zod';
 import type { AgentTool } from '../tools/AgentToolkit.js';
 
 export interface KernelConfig {
   readonly apiKey: string;
+  /** Override the Kernel API base URL. Defaults to the SDK default (`https://api.onkernel.com/`). */
   readonly baseUrl?: string;
 }
 
+const DEFAULT_TIMEOUT_MS = 30_000;
+const DEFAULT_WIDTH = 1920;
+const DEFAULT_HEIGHT = 1080;
+
 /**
- * Create WAVE ADK tools backed by Kernel.sh cloud browsers.
+ * Create WAVE ADK tools backed by Kernel cloud browsers.
+ *
+ * Each tool spins up a fresh Kernel browser session, drives it through the
+ * SDK's Playwright execution surface, and always tears the session down.
  *
  * Usage:
  * ```typescript
@@ -34,84 +48,152 @@ export interface KernelConfig {
  * ```
  */
 export function createKernelTools(config: KernelConfig): AgentTool[] {
-  const baseUrl = config.baseUrl ?? 'https://api.onkernel.com';
+  const kernel = new WaveKernel({
+    apiKey: config.apiKey,
+    ...(config.baseUrl !== undefined ? { baseURL: config.baseUrl } : {}),
+  });
 
-  async function kernelFetch<T>(path: string, body: Record<string, unknown>): Promise<T> {
-    const response = await fetch(`${baseUrl}${path}`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${config.apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Kernel API error: ${response.status} ${response.statusText}`);
+  /**
+   * Create a fresh cloud browser, run `fn` against its session id, and always
+   * terminate the session afterwards (even if `fn` throws). Teardown failures
+   * are swallowed so they never mask the real result/error.
+   */
+  async function withBrowser<T>(fn: (browserId: string) => Promise<T>): Promise<T> {
+    const browser = await kernel.browsers.create({});
+    try {
+      return await fn(browser.session_id);
+    } finally {
+      await kernel.browsers.deleteByID(browser.session_id).catch(() => {});
     }
-
-    return response.json() as Promise<T>;
   }
 
-  const browseSchema = z.object({ url: z.string().url(), waitForSelector: z.string().optional(), timeoutMs: z.number().optional() });
-  const screenshotSchema = z.object({ url: z.string().url(), selector: z.string().optional(), width: z.number().optional(), height: z.number().optional() });
+  /**
+   * Execute Playwright code in the browser VM. The code has access to `page`,
+   * `context`, and `browser`, and returns via `return`. A non-success result is
+   * surfaced through the shared Kernel error taxonomy. Returns the full
+   * execution response so callers can read `result`, `stdout`, and `stderr`.
+   */
+  async function execute(browserId: string, code: string) {
+    const res = await kernel.browsers.playwright.execute(browserId, { code });
+    if (!res.success) {
+      throw new KernelApiError(res.error ?? 'Playwright execution failed', undefined, {
+        browserId,
+      });
+    }
+    return res;
+  }
+
+  const browseSchema = z.object({
+    url: z.string().url(),
+    waitForSelector: z.string().optional(),
+    timeoutMs: z.number().optional(),
+  });
+  const screenshotSchema = z.object({
+    url: z.string().url(),
+    selector: z.string().optional(),
+    width: z.number().optional(),
+    height: z.number().optional(),
+  });
   const playwrightSchema = z.object({ code: z.string().min(1), url: z.string().url().optional() });
 
   return [
     {
       name: 'browse_url',
-      description: 'Navigate a cloud browser to a URL and return the page content/snapshot. Uses Kernel.sh managed browsers — no local browser needed.',
+      description:
+        'Navigate a cloud browser to a URL and return the page title + HTML content. Uses Kernel managed browsers — no local browser needed.',
       parameters: {
         url: { type: 'string', description: 'URL to navigate to', required: true },
-        waitForSelector: { type: 'string', description: 'CSS selector to wait for before capturing', required: false },
-        timeoutMs: { type: 'number', description: 'Navigation timeout in milliseconds', required: false },
+        waitForSelector: {
+          type: 'string',
+          description: 'CSS selector to wait for before capturing',
+          required: false,
+        },
+        timeoutMs: {
+          type: 'number',
+          description: 'Navigation timeout in milliseconds',
+          required: false,
+        },
       },
       schema: browseSchema,
       handler: async (params: Record<string, unknown>) => {
-        const result = await kernelFetch<{ browserId: string; content: string; title: string }>('/v1/browsers/navigate', {
-          url: params.url,
-          waitForSelector: params.waitForSelector,
-          timeout: params.timeoutMs ?? 30_000,
+        const p = browseSchema.parse(params);
+        const timeout = p.timeoutMs ?? DEFAULT_TIMEOUT_MS;
+        return withBrowser(async (id) => {
+          const waitForSelector = p.waitForSelector
+            ? `await page.waitForSelector(${JSON.stringify(p.waitForSelector)}, { timeout: ${timeout} });`
+            : '';
+          const code = [
+            `await page.goto(${JSON.stringify(p.url)}, { waitUntil: 'load', timeout: ${timeout} });`,
+            waitForSelector,
+            `return { title: await page.title(), content: await page.content() };`,
+          ]
+            .filter(Boolean)
+            .join('\n');
+          return (await execute(id, code)).result as { title: string; content: string };
         });
-        return result;
       },
     },
     {
       name: 'take_screenshot',
-      description: 'Take a screenshot of a URL using a cloud browser. Returns base64-encoded PNG. Useful for visual QA of live stream players.',
+      description:
+        'Take a screenshot of a URL using a cloud browser. Returns a base64-encoded PNG. Useful for visual QA of live stream players.',
       parameters: {
         url: { type: 'string', description: 'URL to screenshot', required: true },
-        selector: { type: 'string', description: 'CSS selector to screenshot (optional, defaults to full page)', required: false },
+        selector: {
+          type: 'string',
+          description: 'CSS selector to screenshot (optional, defaults to full page)',
+          required: false,
+        },
         width: { type: 'number', description: 'Viewport width in pixels', required: false },
         height: { type: 'number', description: 'Viewport height in pixels', required: false },
       },
       schema: screenshotSchema,
       handler: async (params: Record<string, unknown>) => {
-        const result = await kernelFetch<{ screenshotBase64: string; width: number; height: number }>('/v1/browsers/screenshot', {
-          url: params.url,
-          selector: params.selector,
-          viewport: {
-            width: params.width ?? 1920,
-            height: params.height ?? 1080,
-          },
+        const p = screenshotSchema.parse(params);
+        const width = p.width ?? DEFAULT_WIDTH;
+        const height = p.height ?? DEFAULT_HEIGHT;
+        return withBrowser(async (id) => {
+          // Element screenshots can't use fullPage; full-page shots can.
+          const target = p.selector ? `page.locator(${JSON.stringify(p.selector)})` : 'page';
+          const shotOpts = p.selector ? `{ type: 'png' }` : `{ type: 'png', fullPage: true }`;
+          const code = [
+            `await page.setViewportSize({ width: ${width}, height: ${height} });`,
+            `await page.goto(${JSON.stringify(p.url)}, { waitUntil: 'load', timeout: ${DEFAULT_TIMEOUT_MS} });`,
+            `const buf = await ${target}.screenshot(${shotOpts});`,
+            `return { screenshotBase64: buf.toString('base64'), width: ${width}, height: ${height} };`,
+          ].join('\n');
+          return (await execute(id, code)).result as {
+            screenshotBase64: string;
+            width: number;
+            height: number;
+          };
         });
-        return result;
       },
     },
     {
       name: 'run_playwright',
-      description: 'Execute Playwright code in a Kernel.sh cloud browser. For complex browser automation like testing embed players or monitoring dashboards.',
+      description:
+        'Execute Playwright code in a Kernel cloud browser. For complex browser automation like testing embed players or monitoring dashboards.',
       parameters: {
         code: { type: 'string', description: 'Playwright JavaScript code to execute', required: true },
         url: { type: 'string', description: 'Starting URL (optional)', required: false },
       },
       schema: playwrightSchema,
       handler: async (params: Record<string, unknown>) => {
-        const result = await kernelFetch<{ output: string; logs: string[] }>('/v1/browsers/execute', {
-          code: params.code,
-          url: params.url,
+        const p = playwrightSchema.parse(params);
+        return withBrowser(async (id) => {
+          if (p.url) {
+            await execute(
+              id,
+              `await page.goto(${JSON.stringify(p.url)}, { waitUntil: 'load', timeout: ${DEFAULT_TIMEOUT_MS} });`,
+            );
+          }
+          const res = await execute(id, p.code);
+          const logs = [res.stdout, res.stderr].filter(
+            (line): line is string => typeof line === 'string' && line.length > 0,
+          );
+          return { output: res.result ?? '', logs };
         });
-        return result;
       },
     },
   ];
