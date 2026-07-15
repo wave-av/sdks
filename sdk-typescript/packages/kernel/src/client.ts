@@ -123,4 +123,24 @@ export class WaveKernel {
   get deployments() {
     return this.kernel.deployments;
   }
+
+  /** Deployed apps. */
+  get apps() {
+    return this.kernel.apps;
+  }
+
+  /** Organization management. */
+  get organization() {
+    return this.kernel.organization;
+  }
+
+  /** Audit logs. */
+  get auditLogs() {
+    return this.kernel.auditLogs;
+  }
+
+  /** Browser extensions: upload / list / delete / download. */
+  get extensions() {
+    return this.kernel.extensions;
+  }
 }
