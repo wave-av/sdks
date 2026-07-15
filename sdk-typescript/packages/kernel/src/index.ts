@@ -40,9 +40,26 @@ export {
   type BrowserCreateParams,
 } from './telemetry.js';
 
-// Resilience seams (slice-2 wiring lands later)
+// Resilience seams (contracts)
 export type {
   ResilienceHooks,
   CircuitBreakerLike,
   SignerLike,
+  CaptureError,
+  CaptureBreadcrumb,
+  KernelBreadcrumb,
 } from './resilience.js';
+
+// Circuit breaker (opossum-backed, opt-in)
+export {
+  createCircuitBreaker,
+  OpossumCircuitBreaker,
+  type CircuitBreakerOptions,
+} from './circuit-breaker.js';
+
+// WebBotAuth request signing (RFC-9421 Ed25519, fail-open, opt-in)
+export {
+  createWebBotAuthSigner,
+  WebBotAuthSigner,
+  type WebBotAuthConfig,
+} from './web-bot-auth.js';

@@ -66,10 +66,13 @@
     "node": ">=18.0.0"
   },
   "dependencies": {
-    "@onkernel/sdk": "^0.78.0"
+    "@noble/ed25519": "^3.1.0",
+    "@onkernel/sdk": "^0.78.0",
+    "opossum": "^10.0.0"
   },
   "devDependencies": {
     "@types/node": "^25.0.3",
+    "@types/opossum": "^8.1.9",
     "tsup": "^8.0.0",
     "typescript": "^5.9.0",
     "vitest": "^4.1.4"

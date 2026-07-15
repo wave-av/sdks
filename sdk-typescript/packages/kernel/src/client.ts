@@ -19,7 +19,13 @@
  * ```
  */
 import { Kernel } from '@onkernel/sdk';
-import type { ResilienceHooks } from './resilience.js';
+import type { ResilienceHooks, SignerLike } from './resilience.js';
+
+/** A `fetch`-compatible function, as accepted by the underlying SDK. */
+type FetchLike = (
+  input: string | URL | Request,
+  init?: RequestInit,
+) => Promise<Response>;
 
 /** Default request timeout in milliseconds. */
 export const DEFAULT_TIMEOUT_MS = 30_000;
@@ -35,8 +41,9 @@ export interface WaveKernelConfig {
   /** Request timeout in milliseconds. Defaults to {@link DEFAULT_TIMEOUT_MS}. */
   timeoutMs?: number;
   /**
-   * Optional resilience hooks (circuit breaker, signer). Inert in slice 1 —
-   * see {@link ResilienceHooks} and `src/resilience.ts`.
+   * Optional resilience hooks (circuit breaker, request signer, observability
+   * capture). Every field is optional and inert by default — see
+   * {@link ResilienceHooks}, `createCircuitBreaker`, and `createWebBotAuthSigner`.
    */
   resilience?: ResilienceHooks;
 }
@@ -54,6 +61,7 @@ export class WaveKernel {
 
   constructor(config: WaveKernelConfig = {}) {
     this.resilience = config.resilience;
+    const signer = this.resilience?.signer;
     this.kernel = new Kernel({
       apiKey: config.apiKey ?? process.env.KERNEL_API_KEY,
       // Only override baseURL when explicitly provided so the SDK default
@@ -61,7 +69,65 @@ export class WaveKernel {
       ...(config.baseURL !== undefined ? { baseURL: config.baseURL } : {}),
       ...(config.projectID !== undefined ? { projectID: config.projectID } : {}),
       timeout: config.timeoutMs ?? DEFAULT_TIMEOUT_MS,
+      // Wire the WebBotAuth signer into the SDK's request path only when a
+      // signer is configured. Absent = the SDK uses global fetch, unchanged.
+      ...(signer ? { fetch: this.buildSigningFetch(signer) } : {}),
     });
+  }
+
+  /**
+   * Run an SDK action through the configured circuit breaker. When no breaker
+   * is wired the action runs directly (behavior unchanged). Errors surfaced by
+   * the breaker are reported through the injected `captureError` hook.
+   *
+   * @example
+   * ```typescript
+   * const browser = await kernel.run(() => kernel.browsers.create({}));
+   * ```
+   */
+  async run<T>(action: () => Promise<T>): Promise<T> {
+    const breaker = this.resilience?.breaker;
+    if (!breaker) return action();
+    try {
+      return await breaker.fire(action);
+    } catch (error) {
+      this.resilience?.captureError?.(error, { service: 'kernel' });
+      throw error;
+    }
+  }
+
+  /**
+   * Build a `fetch` wrapper that adds WebBotAuth signature headers to every
+   * outbound SDK request. Fail-open: any signing error is captured and the
+   * request proceeds unsigned (the signer itself also fails open).
+   */
+  private buildSigningFetch(signer: SignerLike): FetchLike {
+    return async (input, init) => {
+      const headers = new Headers(init?.headers);
+      try {
+        const method = (init?.method ?? 'GET').toUpperCase();
+        const url =
+          typeof input === 'string'
+            ? input
+            : input instanceof URL
+              ? input.href
+              : input.url;
+        const record: Record<string, string> = {};
+        headers.forEach((value, key) => {
+          record[key] = value;
+        });
+        const signed = await signer.sign({ method, url, headers: record });
+        for (const [key, value] of Object.entries(signed)) {
+          headers.set(key, value);
+        }
+      } catch (error) {
+        this.resilience?.captureError?.(error, {
+          service: 'kernel',
+          component: 'web-bot-auth',
+        });
+      }
+      return globalThis.fetch(input, { ...init, headers });
+    };
   }
 
   /** Escape hatch to the underlying SDK client. Prefer the typed getters below. */

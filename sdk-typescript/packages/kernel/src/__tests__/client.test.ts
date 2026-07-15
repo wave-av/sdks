@@ -7,6 +7,10 @@ import {
   isKernelApiError,
 } from '../errors.js';
 import { withTelemetry, WAVE_TELEMETRY_DEFAULT } from '../telemetry.js';
+import { createCircuitBreaker } from '../circuit-breaker.js';
+import { createWebBotAuthSigner } from '../web-bot-auth.js';
+
+const TEST_KEY_HEX = '00'.repeat(31) + '07';
 
 describe('WaveKernel', () => {
   it('constructs with an explicit apiKey without throwing (no network)', () => {
@@ -55,6 +59,44 @@ describe('WaveKernel', () => {
       baseURL: 'https://kernel.test.internal/',
     });
     expect(kernel.raw.baseURL).toBe('https://kernel.test.internal/');
+  });
+});
+
+describe('WaveKernel resilience wiring', () => {
+  it('run() executes directly when no breaker is configured (inert)', async () => {
+    const kernel = new WaveKernel({ apiKey: 'x' });
+    await expect(kernel.run(async () => 'ok')).resolves.toBe('ok');
+  });
+
+  it('run() routes through the breaker and reports errors via captureError', async () => {
+    const errors: unknown[] = [];
+    const breaker = createCircuitBreaker({ volumeThreshold: 100 });
+    const kernel = new WaveKernel({
+      apiKey: 'x',
+      resilience: { breaker, captureError: (e) => errors.push(e) },
+    });
+    await expect(
+      kernel.run(async () => {
+        throw new Error('nope');
+      }),
+    ).rejects.toThrow('nope');
+    expect(errors).toHaveLength(1);
+  });
+
+  it('constructs with a signer wired in without throwing (no network)', () => {
+    const signer = createWebBotAuthSigner({
+      privateKey: TEST_KEY_HEX,
+      keyId: 'k1',
+    });
+    expect(
+      () => new WaveKernel({ apiKey: 'x', resilience: { signer } }),
+    ).not.toThrow();
+  });
+
+  it('exposes the resilience hooks it was constructed with', () => {
+    const breaker = createCircuitBreaker();
+    const kernel = new WaveKernel({ apiKey: 'x', resilience: { breaker } });
+    expect(kernel.resilience?.breaker).toBe(breaker);
   });
 });
 

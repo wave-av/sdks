@@ -1,21 +1,56 @@
 /**
- * Resilience seams — SLICE 1 provides interfaces only, no implementation.
+ * Resilience seams — the clean boundaries the WaveKernel constructor accepts.
  *
- * These are the clean boundaries the WaveKernel constructor accepts so that
- * slice 2 can drop in the real circuit breaker + signing without changing the
- * public surface. Everything here is optional and inert in slice 1: the client
- * typechecks and runs without any of it wired up.
+ * These interfaces let concrete resilience layers (circuit breaker, request
+ * signer, observability capture) drop in without changing the public surface.
+ * Everything here is optional and inert by default: the client typechecks and
+ * runs unchanged when none of it is wired up.
  *
- * TODO(slice-2): port from WAVE's internal Kernel client —
- *   - opossum circuit breaker (errorThresholdPercentage: 50, resetTimeout:
- *     30000, volumeThreshold: 5)
- *   - Sentry capture (tags: { service: 'kernel' })
- *   - WebBotAuth Ed25519 request signing (RFC 9421, fail-open)
+ * Concrete implementations of these seams live alongside this module:
+ *   - `createCircuitBreaker` (opossum-backed; errorThresholdPercentage 50,
+ *     resetTimeout 30000, rollingCountTimeout 60000, volumeThreshold 5)
+ *   - `createWebBotAuthSigner` (RFC-9421 Ed25519 request signing, fail-open)
+ * Observability is injected, not imported — see {@link CaptureError} /
+ * {@link CaptureBreadcrumb}. This package never hard-depends on any error
+ * reporter, so it stays usable from non-framework hosts.
  */
 
 /**
- * Minimal circuit-breaker contract. Slice 2 will back this with opossum
- * (errorThresholdPercentage: 50, resetTimeout: 30000, volumeThreshold: 5).
+ * A structured breadcrumb describing a resilience event (e.g. a circuit-breaker
+ * state transition). The consumer maps this onto its own reporter (Sentry,
+ * OpenTelemetry, a logger). Mirrors the breadcrumb shape used by common error
+ * reporters without importing one.
+ */
+export interface KernelBreadcrumb {
+  /** Grouping category — always `'kernel'` for signals from this client. */
+  category: string;
+  /** Human-readable message describing the event. */
+  message: string;
+  /** Severity of the event. */
+  level?: 'info' | 'warning' | 'error';
+  /** Optional structured context (e.g. `{ state: 'open' }`). */
+  data?: Record<string, unknown>;
+}
+
+/**
+ * Injected error-capture sink (e.g. wired to `Sentry.captureException`).
+ * Implementations SHOULD tag captures with `service: 'kernel'`.
+ */
+export type CaptureError = (
+  error: unknown,
+  context?: Record<string, unknown>,
+) => void;
+
+/**
+ * Injected breadcrumb sink (e.g. wired to `Sentry.addBreadcrumb`). Receives
+ * resilience events such as circuit-breaker open/halfOpen/close transitions.
+ */
+export type CaptureBreadcrumb = (breadcrumb: KernelBreadcrumb) => void;
+
+/**
+ * Minimal circuit-breaker contract. Backed by opossum via
+ * `createCircuitBreaker` (errorThresholdPercentage 50, resetTimeout 30000,
+ * rollingCountTimeout 60000, volumeThreshold 5).
  */
 export interface CircuitBreakerLike {
   /** Run `action` through the breaker; rejects fast with a circuit-open error while open. */
@@ -25,9 +60,9 @@ export interface CircuitBreakerLike {
 }
 
 /**
- * WebBotAuth (RFC 9421 HTTP Message Signatures) signer contract. Slice 2 will
- * back this with an Ed25519 signer that FAILS OPEN — a signing failure must
- * never block a request.
+ * WebBotAuth (RFC 9421 HTTP Message Signatures) signer contract. Backed by an
+ * Ed25519 signer via `createWebBotAuthSigner` that FAILS OPEN — a signing
+ * failure must never block a request.
  */
 export interface SignerLike {
   /**
@@ -42,14 +77,17 @@ export interface SignerLike {
 }
 
 /**
- * Optional resilience wiring accepted by the WaveKernel constructor. Inert in
- * slice 1; every field is optional.
+ * Optional resilience wiring accepted by the WaveKernel constructor. Every
+ * field is optional and inert by default — a client constructed without any of
+ * these behaves exactly like the plain SDK wrapper.
  */
 export interface ResilienceHooks {
-  /** Circuit breaker guarding Kernel calls. */
+  /** Circuit breaker guarding Kernel calls (see `createCircuitBreaker`). */
   breaker?: CircuitBreakerLike;
-  /** WebBotAuth request signer (fail-open). */
+  /** WebBotAuth request signer, fail-open (see `createWebBotAuthSigner`). */
   signer?: SignerLike;
-  /** Capture sink for errors (e.g. Sentry), tagged `service: 'kernel'` in slice 2. */
-  captureError?: (error: unknown, context?: Record<string, unknown>) => void;
+  /** Capture sink for errors (e.g. Sentry), tagged `service: 'kernel'`. */
+  captureError?: CaptureError;
+  /** Breadcrumb sink for resilience events (e.g. breaker state transitions). */
+  captureBreadcrumb?: CaptureBreadcrumb;
 }
