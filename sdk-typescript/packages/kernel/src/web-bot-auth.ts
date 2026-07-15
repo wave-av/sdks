@@ -39,8 +39,8 @@ export interface WebBotAuthConfig {
   expiresInMs?: number;
   /**
    * RFC-9421 covered component identifiers. Defaults to
-   * `['@authority', '@method', '@path']`, plus `'signature-agent'` when
-   * {@link signatureAgent} is set.
+   * `['@authority', '@method', '@path', '@query']`, plus `'signature-agent'`
+   * when {@link signatureAgent} is set.
    */
   coveredComponents?: string[];
   /** Signature label. Default `'sig1'`. */
@@ -103,7 +103,7 @@ export class WebBotAuthSigner implements SignerLike {
 
       const covered =
         this.config.coveredComponents ??
-        ['@authority', '@method', '@path', ...(agent ? ['signature-agent'] : [])];
+        ['@authority', '@method', '@path', '@query', ...(agent ? ['signature-agent'] : [])];
 
       const lowerHeaders: Record<string, string> = {};
       for (const [k, v] of Object.entries(input.headers)) {
@@ -117,11 +117,15 @@ export class WebBotAuthSigner implements SignerLike {
           case '@authority':
             return url.host;
           case '@path':
-            return url.pathname + url.search;
+            // RFC-9421 2.2.6: absolute path only; the query is a SEPARATE
+            // "@query" derived component and must never be glommed onto "@path".
+            return url.pathname;
           case '@target-uri':
             return url.href;
           case '@query':
-            return url.search;
+            // RFC-9421 2.2.7: the full query string including the leading "?".
+            // When the query is absent, the value is the "?" character alone.
+            return url.search || '?';
           case 'signature-agent':
             return agent;
           default:
