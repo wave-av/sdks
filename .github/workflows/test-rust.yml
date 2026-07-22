@@ -14,6 +14,9 @@ on:
     paths:
       - "sdk-rust/**"
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 
