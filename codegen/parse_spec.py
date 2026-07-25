@@ -236,18 +236,34 @@ def _classify_schema(name: str, sch: dict) -> dict:
     return {"name": name, "kind": "map"}
 
 
+def _scalar_type(fsch: dict) -> str | None:
+    """The `type` of a schema, collapsing an OpenAPI 3.1 nullable union to its concrete type.
+
+    3.1 spells "nullable string" as `type: [string, null]` — a LIST, not a string. Every renderer
+    keys a dict on this value (`{"string": "String", ...}[t]`), so an un-normalized list raised
+    `TypeError: cannot use 'list' as a dict key` and killed the whole run. Optionality is already
+    carried by the field's `required` flag in the IR, so dropping the `null` member loses nothing:
+    a non-required field is already rendered as an optional/nullable type in each language.
+    """
+    t = fsch.get("type")
+    if isinstance(t, list):
+        concrete = [x for x in t if x != "null"]
+        return concrete[0] if concrete else None
+    return t
+
+
 def _field_type(fsch: dict) -> dict:
     """Map an openapi field schema to a neutral type descriptor."""
     ref = _schema_type_ref(fsch)
     if ref:
         return {"t": "ref", "ref": ref}
-    t = fsch.get("type")
+    t = _scalar_type(fsch)
     if t == "array":
         inner = fsch.get("items", {})
         iref = _schema_type_ref(inner)
         if iref:
             return {"t": "array", "item": {"t": "ref", "ref": iref}}
-        return {"t": "array", "item": {"t": inner.get("type", "string")}}
+        return {"t": "array", "item": {"t": _scalar_type(inner) or "string"}}
     if t == "object" or t is None:
         return {"t": "map"}
     return {"t": t}  # string|integer|number|boolean
