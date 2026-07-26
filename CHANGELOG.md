@@ -5,3 +5,15 @@ All notable changes to this project are documented here. The format is based on
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+### Fixed
+
+- **Codegen crashed on any OpenAPI 3.1 nullable union** (`codegen/parse_spec.py`).
+  `type: [string, null]` — 3.1's spelling of a nullable field — was passed through to the
+  renderers as a Python list, and every renderer keys its type map on that value, so the run died
+  with `TypeError: cannot use 'list' as a dict key`. Reproduced against the current
+  `wave-av/api-spec` `main` spec, whose `Attestation.sig` / `WaveAttestation.sig` use that form:
+  the harness could not generate any SDK from the live contract. `_scalar_type` now collapses the
+  union to its concrete member (optionality is already carried by the field's `required` flag).
+  The IR for the vendored `codegen/openapi.yaml` is byte-identical before and after, so no
+  generated SDK changes.
