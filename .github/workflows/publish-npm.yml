@@ -196,6 +196,63 @@ jobs:
             exit 0
           fi
 
+          # Publish DEPENDENCIES FIRST. `packages/*/` globs alphabetically, which is not dependency
+          # order: measured on this workspace, 49 packages carry 23 ordering violations — twelve of
+          # them sort ahead of `@wave-av/core`, and `adk` sorts ahead of its own dep `kernel`. The
+          # loop below runs under `set -euo pipefail`, so a failure partway through leaves every
+          # package before it already live. npm does not check that a dependency exists at publish
+          # time and a published version can NEVER be replaced, so an alphabetical run that dies in
+          # the middle can strand a permanently-broken package as `latest`. Ordering the release
+          # topologically means anything already published is complete on its own. See #46.
+          #
+          # Only edges to packages IN THIS RELEASE constrain the order — a dependency already on the
+          # registry is satisfied no matter when we publish, so it imposes nothing.
+          if ! topo_sorted=$(printf '%s' "$publishable" | node -e '
+            const fs = require("fs");
+            // Dirs come from the workflows own packages/*/ glob, but this script builds a
+            // filesystem path from each one, so re-validate rather than trusting provenance.
+            const dirs = fs.readFileSync(0, "utf8").split("\n").filter(Boolean);
+            for (const d of dirs) {
+              if (!/^packages\/[a-z0-9][a-z0-9._-]*\/$/.test(d)) {
+                console.error("::error::refusing to publish — unexpected package path: " + d);
+                process.exit(1);
+              }
+            }
+            // null-prototype maps: package names are keys here, and a package literally named
+            // __proto__ would otherwise corrupt the lookup rather than just being wrong.
+            const nameOf = Object.create(null), depsOf = Object.create(null);
+            for (const d of dirs) {
+              const p = JSON.parse(fs.readFileSync(d + "package.json", "utf8"));
+              nameOf[p.name] = d;
+              depsOf[p.name] = Object.keys(p.dependencies || {}).filter(n => n.startsWith("@wave-av/"));
+            }
+            const out = [], state = Object.create(null);
+            const visit = (n, stack) => {
+              if (state[n] === "done") return;
+              if (state[n] === "open") {
+                console.error("::error::dependency cycle among the packages being published: " +
+                  [...stack.slice(stack.indexOf(n)), n].join(" -> "));
+                process.exit(1);   // no order is safe — publish nothing
+              }
+              state[n] = "open";
+              for (const dep of depsOf[n].filter(x => nameOf[x]).sort()) visit(dep, [...stack, n]);
+              state[n] = "done";
+              out.push(nameOf[n]);
+            };
+            for (const n of Object.keys(nameOf).sort()) visit(n, []);   // sorted seed => stable output
+            process.stdout.write(out.join("\n"));
+          '); then
+            echo "::error::could not compute a safe publish order — publishing nothing."
+            exit 1
+          fi
+
+          # A silent empty result must not read as "nothing to do": we already know $publishable is
+          # non-empty, so an empty order means the sort failed in a way that did not exit non-zero.
+          if [ -z "$topo_sorted" ]; then
+            echo "::error::publish order came back empty for a non-empty release — publishing nothing."
+            exit 1
+          fi
+
           while IFS= read -r dir; do
             [ -n "$dir" ] || continue
             ver=$(node -p "require('./${dir}package.json').version")
@@ -203,4 +260,4 @@ jobs:
             tag=latest; case "$ver" in 0.0.*) tag=preview ;; esac
             echo "publishing $name@$ver --tag $tag"
             ( cd "$dir" && pnpm publish --access public --provenance --no-git-checks --tag "$tag" )
-          done <<< "$publishable"
+          done <<< "$topo_sorted"
