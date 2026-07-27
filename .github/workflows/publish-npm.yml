@@ -62,10 +62,12 @@ jobs:
           # no room for that. Args: $1 = package name, $2 = version or "" for dist-tags.latest.
           registry_meta() {
             local slug="${1#@wave-av/}"
-            case "$slug" in
-              [a-z0-9]*) ;;
-              *) echo "0.0.0 0"; return 0 ;;
-            esac
+            # Validate the WHOLE slug, not just its first character. `case "$slug" in [a-z0-9]*)`
+            # only anchors the start, so `a/../../x` or `a?spec=y` would pass and then be spliced
+            # into the URL below.
+            if ! [[ "$slug" =~ ^[a-z0-9][a-z0-9._-]*$ ]]; then
+              echo "0.0.0 0"; return 0
+            fi
             curl -sS --max-time 20 "https://registry.npmjs.org/@wave-av%2F${slug}" \
               | node -e '
                 let s = "";
@@ -77,6 +79,47 @@ jobs:
                   console.log(v + " " + ((rel && rel.dist && rel.dist.unpackedSize) || 0));
                 });
               ' 2>/dev/null || echo "0.0.0 0"
+          }
+
+          # Names of every @wave-av package in this workspace. A dependency is satisfiable if it
+          # is EITHER already on the registry OR shipping in this same release — 45 of the 49
+          # packages depend on `@wave-av/core`, which is itself unpublished, so a registry-only
+          # check would reject essentially the whole workspace on the first coordinated release.
+          # A gate that always fires teaches people to bypass it.
+          workspace_names=$(
+            for d in packages/*/; do
+              node -p "require('./${d}package.json').name" 2>/dev/null || true
+            done | tr '\n' ' '
+          )
+
+          # Flag dependencies that exist NOWHERE — not on the registry, not in this workspace.
+          # That is a genuine broken reference (a rename, a typo, a package deleted out from under
+          # a dependent), and it can never be satisfied by publishing harder.
+          unresolved_deps() {
+            local pkgdir="$1" dep slug code deps out=""
+            # The path goes to node as an argv, not spliced into the script text.
+            deps=$(node -e '
+              let p; try { p = require(process.argv[1] + "/package.json"); } catch { process.exit(0); }
+              const d = Object.assign({}, p.dependencies);
+              console.log(Object.keys(d).filter(n => n.startsWith("@wave-av/")).join("\n"));
+            ' "$PWD/${pkgdir%/}" 2>/dev/null) || return 0
+            while IFS= read -r dep; do
+              [ -n "$dep" ] || continue
+              # Shipping in this same release — satisfiable without asking the registry.
+              case " $workspace_names " in *" $dep "*) continue ;; esac
+              slug="${dep#@wave-av/}"
+              if ! [[ "$slug" =~ ^[a-z0-9][a-z0-9._-]*$ ]]; then
+                out="$out $dep(invalid-name)"
+                continue
+              fi
+              # A transport failure must not read as "published" — curl failing yields 000, which
+              # is not 200, so the package is reported unresolved and the release stops. Failing
+              # closed is the only safe direction for a publish gate.
+              code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 15 \
+                "https://registry.npmjs.org/@wave-av%2F${slug}" 2>/dev/null) || code="000"
+              [ "$code" = "200" ] || out="$out $dep"
+            done <<< "$deps"
+            printf '%s' "$out"
           }
 
           # TWO PASSES, deliberately. Validating inline and publishing in the same loop means one
@@ -112,11 +155,25 @@ jobs:
               continue
             fi
 
-            # A higher version number does not mean a fuller package. `packages/sdk` is 3 files
-            # against a published 2.0.14 of 286 files — numerically ahead, substantively a shell,
-            # and semver would hand it to every consumer as the newest stable release. Compare what
-            # is actually in the tarball, not just the version string. Runs after the build step,
-            # so dist/ is present and the measurement is of the real artifact.
+            missing_deps=$(unresolved_deps "$dir")
+            if [ -n "$missing_deps" ]; then
+              echo "::error::$name@$ver depends on packages that exist neither on the registry nor in this workspace —$missing_deps"
+              problems=$((problems + 1))
+              continue
+            fi
+
+            # A higher version number does not mean a fuller package: a truncated build can carry
+            # a bumped version and semver would hand it to every consumer as the newest stable
+            # release. Compare what is actually in the tarball, not just the version string. Runs
+            # after the build step, so dist/ is present and the measurement is of the real
+            # artifact.
+            #
+            # `packages/sdk` is the known false positive here. An earlier version of this comment
+            # called it "3 files … substantively a shell"; that was wrong. It is a re-export
+            # barrel over 44 product packages, and being small is what correct looks like for one.
+            # It trips this check purely on size, so when the umbrella is genuinely ready to ship
+            # this guard is the thing that will be in the way — that is the moment to narrow it
+            # (e.g. exempt packages whose tarball is a barrel), NOT to delete it.
             local_size=$( cd "$dir" && npm pack --dry-run --json 2>/dev/null \
               | node -p "JSON.parse(require('fs').readFileSync(0,'utf8'))[0].unpackedSize" 2>/dev/null || echo 0 )
             if [ "${prev_size:-0}" -gt 0 ] && [ "${local_size:-0}" -lt $((prev_size / 2)) ]; then
