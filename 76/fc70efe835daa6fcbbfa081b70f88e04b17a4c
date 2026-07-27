@@ -1,0 +1,21 @@
+sdk-typescript/packages/adk/src/__tests__/adapters.test.ts
+  s_e2e3e43d0638c5::t_515a42490c9574 109-140
+sdk-typescript/packages/adk/src/adapters/langgraph.ts
+  s_e2e3e43d0638c5::t_13dcfc993bbe5c 76,79,105,108
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "76fc70efe835daa6fcbbfa081b70f88e04b17a4c",
+  "prompts": {},
+  "sessions": {
+    "s_e2e3e43d0638c5": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1c78a7f2-132a-470e-8dae-4f28336b528f",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Jake Fineman <jakefineman@gmail.com>"
+    }
+  }
+}
