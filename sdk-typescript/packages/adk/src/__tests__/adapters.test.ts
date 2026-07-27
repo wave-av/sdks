@@ -106,3 +106,35 @@ describe('Kernel adapter', () => {
     expect(playwrightTool?.parameters.code?.required).toBe(true);
   });
 });
+
+describe('LangGraph graph nodes resolve their tools', () => {
+  // Regression: both factories looked up 'monitor_stream' / 'create_clip', but AgentToolkit names
+  // every tool with a wave_ prefix. The lookups could never succeed, so each node returned
+  // { error: '<name> tool not found' } on every invocation and never made a network call. Asserting
+  // the ABSENCE of that error is the point — a shape-only test misses it entirely, which is how it
+  // shipped in @wave-av/adk@1.0.14.
+  it('createStreamMonitorNode finds wave_monitor_stream', async () => {
+    const { createStreamMonitorNode } = await import('../adapters/langgraph');
+    const node = createStreamMonitorNode({
+      apiKey: 'test-key',
+      streamId: '00000000-0000-4000-8000-000000000000',
+    });
+
+    const result = await node({});
+    expect(result.error).toBeUndefined();
+    expect(result.streamId).toBe('00000000-0000-4000-8000-000000000000');
+  });
+
+  it('createClipNode finds wave_create_clip', async () => {
+    const { createClipNode } = await import('../adapters/langgraph');
+    const node = createClipNode({ apiKey: 'test-key' });
+
+    const result = await node({
+      streamId: '00000000-0000-4000-8000-000000000000',
+      clipStart: 0,
+      clipEnd: 10,
+    });
+    expect(result.error).toBeUndefined();
+    expect(result).toHaveProperty('clip');
+  });
+});
