@@ -9,6 +9,9 @@
     "test": "pnpm -r test",
     "type-check": "pnpm -r type-check"
   },
+  "devDependencies": {
+    "vite": "^8.0.16"
+  },
   "pnpm": {
     "onlyBuiltDependencies": ["esbuild"]
   }
