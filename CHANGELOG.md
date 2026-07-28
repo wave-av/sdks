@@ -6,6 +6,13 @@ All notable changes to this project are documented here. The format is based on
 
 ## [Unreleased]
 
+### Security
+
+- **Bumped `@modelcontextprotocol/sdk` to `^1.30.0`** in `sdk-typescript/packages/mcp-server`.
+  SDK 1.30.0 widens its `@hono/node-server` range to `^1.19.9 || ^2.0.5`, moving the transitive
+  dependency from 1.19.14 to 2.0.12 and clearing the moderate advisory affecting versions
+  below 2.0.5. No override or pin needed; the SDK update is the whole fix. (#49)
+
 ### Fixed
 
 - **Codegen crashed on any OpenAPI 3.1 nullable union** (`codegen/parse_spec.py`).
