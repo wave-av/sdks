@@ -57,6 +57,11 @@ expect 1 'internal-only marker' \
 AKID_FIXTURE="AKI""A1234567890ABCDEF"
 expect 1 'AWS access key id' \
   "The failing job had ${AKID_FIXTURE} configured."
+# Regression: the about-the-control allowlist is scoped to the prose rules and
+# must NOT exempt the credential rules — naming the gate or SECURITY.md on the
+# same line as a live key does not make the key safe to publish.
+expect 1 'credential on a line that talks about the control' \
+  "Rotating per SECURITY.md: the exposed key was ${AKID_FIXTURE}."
 expect 1 'internal tailscale IP' \
   'It resolves to 100.71.4.19 from inside the fleet.'
 
@@ -67,6 +72,13 @@ expect 0 'two private repos, no operational detail' \
   'Both wave-gateway and wave-transports will need a follow-up for this.'
 expect 0 'credential NAME with no private repo nearby' \
   'The handler now reads SOME_API_TOKEN from the environment instead of a literal.'
+# Regression: `(?i)` must stay scoped to the repo NAMES. An unscoped flag spreads
+# across the whole pattern and turns lowercase prose (auth_token, api_key) into
+# an "operational detail" match, blocking ordinary engineering discussion.
+expect 0 'lowercase variable name near a private repo' \
+  'Companion to wave-transports#260; refactors the auth_token plumbing.'
+expect 0 'lowercase api_key near a private repo' \
+  'wave-gateway now stores the api_key in KV.'
 expect 0 'public runner path is not an operator path' \
   'CI checks out to /home/runner/work/repo/repo before the scan runs.'  # enforce-ignore (fixture)
 expect 0 'talking about the control' \

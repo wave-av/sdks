@@ -85,8 +85,25 @@ jobs:
       - name: gitleaks (secret scan — published tree)
         run: gitleaks detect --no-git --source . --config .gitleaks.toml --redact --no-banner --exit-code 1
 
-      - name: Install ripgrep
-        run: command -v rg >/dev/null || (sudo apt-get update -qq && sudo apt-get install -y -qq ripgrep)
+      # Both policy scripts run every rule through `rg -P` (PCRE2), and not every
+      # rg build has it: Ubuntu 22.04's apt package is built WITHOUT PCRE2, which
+      # would make every rule fail closed on perfectly clean input. Accept a
+      # preinstalled rg only if it actually has PCRE2; otherwise install the
+      # official release binary (which bundles PCRE2), pinned and SHA-256-verified
+      # the same way gitleaks is above.
+      - name: Install ripgrep (PCRE2-enabled, pinned + checksum-verified)
+        env:
+          RIPGREP_VERSION: "14.1.1"
+          RIPGREP_SHA256: "4cf9f2741e6c465ffdb7c26f38056a59e2a2544b51f7cc128ef28337eeae4d8e"
+        run: |
+          if rg --pcre2-version >/dev/null 2>&1; then exit 0; fi
+          curl -fsSL --proto '=https' --tlsv1.2 -o ripgrep.tar.gz \
+            "https://github.com/BurntSushi/ripgrep/releases/download/${RIPGREP_VERSION}/ripgrep-${RIPGREP_VERSION}-x86_64-unknown-linux-musl.tar.gz"
+          echo "${RIPGREP_SHA256}  ripgrep.tar.gz" | sha256sum -c -
+          tar -xzf ripgrep.tar.gz --strip-components=1 "ripgrep-${RIPGREP_VERSION}-x86_64-unknown-linux-musl/rg"
+          sudo install -m 0755 rg /usr/local/bin/rg
+          rm -f rg ripgrep.tar.gz
+          rg --pcre2-version
 
       - name: content policy (WAVE trade-secret / internal-leak gate)
         env:
@@ -125,15 +142,35 @@ jobs:
       cancel-in-progress: false
     runs-on: ubuntu-latest
     steps:
+      # TRUST BOUNDARY: on `pull_request` the default checkout is the PR's merge
+      # ref, which would let a fork PR ship a neutered body-policy.sh and pass its
+      # own body — the PR would supply the very script that gates it. This job
+      # needs no PR code at all (the text under test comes from the event payload),
+      # so it checks out the BASE repo's default branch and always runs the
+      # already-reviewed copy of the scanner. A PR that changes body-policy.sh
+      # still has its copy exercised — by the self-test step in `guard`, against
+      # fixtures on the tree, where the required check reviews it.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
+          ref: ${{ github.event.repository.default_branch }}
           # Only the gate's own scripts are needed — no reason to pay for the whole
           # tree on every comment.
           sparse-checkout: scripts/public-repo-guard
           sparse-checkout-cone-mode: false
 
-      - name: Install ripgrep
-        run: command -v rg >/dev/null || (sudo apt-get update -qq && sudo apt-get install -y -qq ripgrep)
+      - name: Install ripgrep (PCRE2-enabled, pinned + checksum-verified)
+        env:
+          RIPGREP_VERSION: "14.1.1"
+          RIPGREP_SHA256: "4cf9f2741e6c465ffdb7c26f38056a59e2a2544b51f7cc128ef28337eeae4d8e"
+        run: |
+          if rg --pcre2-version >/dev/null 2>&1; then exit 0; fi
+          curl -fsSL --proto '=https' --tlsv1.2 -o ripgrep.tar.gz \
+            "https://github.com/BurntSushi/ripgrep/releases/download/${RIPGREP_VERSION}/ripgrep-${RIPGREP_VERSION}-x86_64-unknown-linux-musl.tar.gz"
+          echo "${RIPGREP_SHA256}  ripgrep.tar.gz" | sha256sum -c -
+          tar -xzf ripgrep.tar.gz --strip-components=1 "ripgrep-${RIPGREP_VERSION}-x86_64-unknown-linux-musl/rg"
+          sudo install -m 0755 rg /usr/local/bin/rg
+          rm -f rg ripgrep.tar.gz
+          rg --pcre2-version
 
       # The body is read straight out of the event payload FILE and written to
       # another file. It is never interpolated into a run: block and never placed
@@ -160,4 +197,15 @@ jobs:
       - name: body policy (PR / issue / comment text)
         env:
           GUARD_PRIVATE_REPOS: ${{ vars.GUARD_PRIVATE_REPOS }}
-        run: bash scripts/public-repo-guard/body-policy.sh "$RUNNER_TEMP/bodyscan/body.txt"
+        run: |
+          # Bootstrap window: on the PR that first installs this gate, the default
+          # branch does not carry body-policy.sh yet, so the trusted checkout above
+          # cannot supply it. Only push access to the default branch can create or
+          # clear that state — a fork PR cannot remove the script from main — so a
+          # loud skip here is not a bypass. The moment the installing PR merges,
+          # this path is dead.
+          if [ ! -f scripts/public-repo-guard/body-policy.sh ]; then
+            echo "::warning title=public-repo-guard (body-guard)::body-policy.sh is not on the default branch yet (gate still bootstrapping) — the body scan activates once the installing PR merges."
+            exit 0
+          fi
+          bash scripts/public-repo-guard/body-policy.sh "$RUNNER_TEMP/bodyscan/body.txt"

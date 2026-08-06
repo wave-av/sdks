@@ -25,6 +25,11 @@ set -uo pipefail
 FILE="${1:-}"
 [[ -n "$FILE" && -f "$FILE" ]] || { echo "::error::body-policy: usage: body-policy.sh <file>"; exit 2; }
 command -v rg >/dev/null 2>&1 || { echo "::error::body-policy: ripgrep (rg) required"; exit 2; }
+# Every rule below runs through -P (PCRE2), and not every rg build has it —
+# Ubuntu 22.04's apt package is built WITHOUT PCRE2. On such a build every rule
+# would exit >=2 and the gate would fail closed on perfectly clean bodies.
+# Refuse up front with one message that says why, not eight per-rule failures.
+rg --pcre2-version >/dev/null 2>&1 || { echo "::error::body-policy: this ripgrep build lacks PCRE2 (-P) — install a PCRE2-enabled rg"; exit 2; }
 
 VIOLATIONS=0
 
@@ -32,6 +37,13 @@ VIOLATIONS=0
 # the gate blocks its own pull requests and every security discussion — the
 # self-referential trap that gets a gate switched off. Ported verbatim in intent
 # from the client-side gate's allowlist, which was built for exactly this.
+#
+# SCOPE: applied only to the prose-shaped rules (internal-marker,
+# private-repo-ops), where discussing the gate is routine and over-blocking is
+# what gets it disabled. The credential/infra rules are NEVER filtered by it:
+# "Rotating per SECURITY.md: AKIA…" still contains a live key, and mentioning
+# the control must not launder one past the gate. For those rules the single,
+# visible escape hatch is `guard:allow <reason>`.
 ABOUT_THE_CONTROL='(public-repo-guard|body-policy|content-policy|public-github-write-gate|\bNDA\s+(gate|guard|policy|denylist|sweep|scan|hook)\b|\bno\s+NDA\b|responsib\w*\s+disclos|SECURITY\.md)'
 
 # check <BLOCK|WARN> <name> <regex> <why>
@@ -51,8 +63,13 @@ check() {
   # disagree with itself depending on where it ran. rg is already required above.
   local matches
   matches="$(printf '%s' "$raw" \
-    | rg -vN -- 'guard:allow[[:space:]]+[^[:space:]]' \
-    | rg -vNiP -- "$ABOUT_THE_CONTROL" || true)"
+    | rg -vN -- 'guard:allow[[:space:]]+[^[:space:]]' || true)"
+  # About-the-control exemption for prose rules only — see the SCOPE note above.
+  case "$name" in
+    internal-marker|private-repo-ops)
+      matches="$(printf '%s' "$matches" | rg -vNiP -- "$ABOUT_THE_CONTROL" || true)"
+      ;;
+  esac
   [[ -z "$matches" ]] && return 0
   local count; count="$(printf '%s\n' "$matches" | grep -c '')"
   # Print the LINE NUMBER only — never the matched text. This annotation is itself
@@ -125,9 +142,13 @@ if [[ -n "${GUARD_PRIVATE_REPOS:-}" ]]; then
     _ALT="${_ALT:+$_ALT|}${_esc}"
   done
   if [[ -n "$_ALT" ]]; then
-    # Both orders: name-then-detail and detail-then-name.
+    # Both orders: name-then-detail and detail-then-name. `(?i)` is scoped to the
+    # NAMES only — a leading `(?i)` runs to the end of a PCRE2 pattern, across the
+    # top-level `|`, and would make the SCREAMING_CASE credential-name pattern in
+    # OPS_DETAIL match ordinary lowercase prose (auth_token, api_key), blocking
+    # exactly the harmless cross-repo chatter this rule was shaped to permit.
     check BLOCK private-repo-ops \
-      "(?i)\\b(?:${_ALT})\\b[^\\n]{0,140}?\\b${OPS_DETAIL}|${OPS_DETAIL}[^\\n]{0,140}?\\b(?:${_ALT})\\b" \
+      "\\b(?i:${_ALT})\\b[^\\n]{0,140}?\\b${OPS_DETAIL}|${OPS_DETAIL}[^\\n]{0,140}?\\b(?i:${_ALT})\\b" \
       'A private WAVE repo named alongside internal operational detail (credential name, secret binding, or secret count) — the wiring topology is not public'
   fi
 fi
