@@ -61,13 +61,25 @@ check() {
   # Filter with rg, not grep: BSD/macOS grep has no -P, so a `grep -P` allowlist
   # silently errors out locally while working on GNU/CI — the gate would then
   # disagree with itself depending on where it ran. rg is already required above.
+  #
+  # The filter stages FAIL CLOSED too. For `rg -v`, exit 1 only means "every line
+  # was filtered out" — that is a legitimate all-allowlisted result — but >=2 is
+  # a real error, and swallowing it would turn a broken filter into a pass: the
+  # exact failure mode the primary scan above refuses.
   local matches
-  matches="$(printf '%s' "$raw" \
-    | rg -vN -- 'guard:allow[[:space:]]+[^[:space:]]' || true)"
+  matches="$(printf '%s' "$raw" | rg -vN -- 'guard:allow[[:space:]]+[^[:space:]]')"; rc=$?
+  if (( rc >= 2 )); then
+    echo "::error title=public-repo-guard ($name)::ripgrep failed (exit $rc) filtering guard:allow lines for rule '$name' — failing closed."
+    exit 2
+  fi
   # About-the-control exemption for prose rules only — see the SCOPE note above.
   case "$name" in
     internal-marker|private-repo-ops)
-      matches="$(printf '%s' "$matches" | rg -vNiP -- "$ABOUT_THE_CONTROL" || true)"
+      matches="$(printf '%s' "$matches" | rg -vNiP -- "$ABOUT_THE_CONTROL")"; rc=$?
+      if (( rc >= 2 )); then
+        echo "::error title=public-repo-guard ($name)::ripgrep failed (exit $rc) applying the about-the-control allowlist for rule '$name' — failing closed."
+        exit 2
+      fi
       ;;
   esac
   [[ -z "$matches" ]] && return 0
