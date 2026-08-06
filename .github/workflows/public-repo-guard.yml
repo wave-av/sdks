@@ -149,10 +149,19 @@ jobs:
       # issue events all report the default branch and a ref-keyed group would let
       # two comments cancel each other, leaving one unscanned.
       #
+      # The comment/review IDs must come FIRST. Review events carry a
+      # `pull_request` object in their payload too, so a PR-number-first chain
+      # would coalesce every review and line comment on a PR into ONE group —
+      # and GitHub keeps at most one pending run per group, silently dropping
+      # the rest of a batch unscanned. Each distinct piece of text gets its own
+      # group; the PR number is only the fallback for `pull_request` events,
+      # where dropping an intermediate edit is fine because the newest queued
+      # run scans the current body.
+      #
       # cancel-in-progress is deliberately FALSE. Every version of a body deserves a
       # verdict, the job is seconds long, and a cancelled check-run lingers on the
       # commit and makes an otherwise-green PR look broken.
-      group: public-repo-guard-body-${{ github.event.pull_request.number || github.event.comment.id || github.event.issue.number || github.ref }}
+      group: public-repo-guard-body-${{ github.event.comment.id || github.event.review.id || github.event.pull_request.number || github.event.issue.number || github.ref }}
       cancel-in-progress: false
     runs-on: ubuntu-latest
     steps:

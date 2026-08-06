@@ -86,6 +86,17 @@ expect 0 'lowercase api_key near a private repo' \
   'example-private-a now stores the api_key in KV.'
 expect 0 'public runner path is not an operator path' \
   'CI checks out to /home/runner/work/repo/repo before the scan runs.'  # enforce-ignore (fixture)
+# Regression: abs-user-path is anchored to a path START. Prose is full of
+# repo-relative segments and URL paths containing "/home/" mid-path; an
+# unanchored match hard-blocked ordinary discussion.
+expect 0 'repo-relative path segment is not a home path' \
+  'The layout moved: see packages/home/foo/index.ts for the new entrypoint.'
+expect 0 'URL path containing /home/ is not a home path' \
+  'Docs are at https://example.com/home/docs/setup for the new flow.'
+# ...but the anchor must not require whitespace: a real paste usually arrives
+# wrapped in backticks, quotes, or parens, and those must still block.
+expect 1 'operator home path in a code span' \
+  'It only reproduces under `/home/someoperator/dev/` on my machine.'  # enforce-ignore (fixture)
 expect 0 'talking about the control' \
   'body-policy blocks a private repo named next to a SECRET_TOKEN; that is intended.'
 expect 0 'explicit guard:allow with a reason' \
