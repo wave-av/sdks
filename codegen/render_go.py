@@ -84,7 +84,7 @@ def render(ir: dict, root: str) -> list[str]:
     with open(os.path.join(root, "go.mod"), "w") as f:
         f.write(
             f"module {MODULE}\n\n"
-            "go 1.24.0\n\n"
+            "go 1.25.0\n\n"
             "require github.com/ethereum/go-ethereum v1.17.3\n"
         )
     written.append(os.path.join(root, "go.mod"))
