@@ -28,6 +28,15 @@ All notable changes to this project are documented here. The format is based on
   never the operative version. A floor that ships inside `go.mod` cannot be fixed by a workflow
   change.
 
+  **The bump is applied in the GENERATOR, not only in the emitted file.** `sdk-go/go.mod` is
+  codegen output: `codegen/render_go.py` writes the `go` directive on every render, and it
+  hardcoded `1.24.0`. Changing the emitted `go.mod` alone would therefore have been **silently
+  reverted by the next `codegen/generate.py` run** — the floor would have looked fixed in the
+  tree and regressed the moment anyone regenerated. The version now lives in a single named
+  constant, `GO_VERSION` in `codegen/render_go.py`, so the generator and its artifact cannot
+  drift apart again. Verified by running the real generator: the regenerated `sdk-go/go.mod` is
+  byte-identical to the committed one.
+
 ### Fixed
 
 - **Codegen crashed on any OpenAPI 3.1 nullable union** (`codegen/parse_spec.py`).
