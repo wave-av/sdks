@@ -6,12 +6,14 @@ All notable changes to this project are documented here. The format is based on
 
 ## [Unreleased]
 
-### Changed
+### Removed
 
-- **Removed the retired `dash0` value from `ConsoleSourceResult['source']`** in the TypeScript Console
-  module. Dash0 is retired from the WAVE stack; the union now reads
-  `'argus' | 'sentry' | 'supabase' | …`. **Breaking** for any consumer switching on the `'dash0'`
-  member — it now type-errors, which is the point (no Dash0 console backend exists to query).
+- **`'dash0'` dropped from the exported `ConsoleSourceResult['source']` union** (`@wave-av/console`).
+  Dash0 is retired from the WAVE stack, so the published type no longer advertises it as a valid
+  console source. This narrows the public typed surface: consumers switching on `result.source`
+  with a `'dash0'` arm or assigning the literal will now fail to typecheck. Type-level only, no
+  runtime change. The `@wave-av/adk` `AgentLogger` doc comment and the console module header were
+  updated to match (Sentry + OTLP ingest).
 
 ### Fixed
 
