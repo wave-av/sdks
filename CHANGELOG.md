@@ -6,6 +6,13 @@ All notable changes to this project are documented here. The format is based on
 
 ## [Unreleased]
 
+### Changed
+
+- **Removed the retired `dash0` value from `ConsoleSourceResult['source']`** in the TypeScript Console
+  module. Dash0 is retired from the WAVE stack; the union now reads
+  `'argus' | 'sentry' | 'supabase' | …`. **Breaking** for any consumer switching on the `'dash0'`
+  member — it now type-errors, which is the point (no Dash0 console backend exists to query).
+
 ### Fixed
 
 - **Codegen crashed on any OpenAPI 3.1 nullable union** (`codegen/parse_spec.py`).
