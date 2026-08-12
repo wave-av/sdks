@@ -49,7 +49,6 @@ export interface ConsoleQueryInput {
 export interface ConsoleSourceResult<T = unknown> {
   source:
     | 'argus'
-    | 'dash0'
     | 'sentry'
     | 'supabase'
     | 'posthog'
