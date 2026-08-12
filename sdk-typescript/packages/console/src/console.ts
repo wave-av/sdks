@@ -6,7 +6,7 @@
  *   GET  /v1/wave-console/health
  *
  * Customer agents use this to query their own org's data across 15+
- * vendor sources (Stripe, Sentry, Dash0, PostHog, Mux, LiveKit, Vercel,
+ * vendor sources (Stripe, Sentry, PostHog, Mux, LiveKit, Vercel,
  * Twilio, etc.) with one call. The API gates by RBAC — agent's API key
  * must match the org_id passed.
  *
