@@ -1,0 +1,19 @@
+sdk-typescript/packages/console/src/control-plane.test.ts
+  s_698bf2658b3146::t_614f60ba69a70e 16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "6c7eb51a3b82252ce2bbb1da1c2e0051955085e9",
+  "prompts": {},
+  "sessions": {
+    "s_698bf2658b3146": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "968b7da8-2338-4c75-b96e-b606f0948603",
+        "model": "unknown"
+      },
+      "human_author": "Jake Fineman <jakefineman@gmail.com>"
+    }
+  }
+}
