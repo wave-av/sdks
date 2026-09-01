@@ -13,7 +13,7 @@ describe("ControlPlaneModule", () => {
   it("review posts the repo to the review plane", async () => {
     fetchMock.mockResolvedValue({ ok: true, json: async () => ({ results: [{ reviewer: "wave" }] }) });
     const m = new ControlPlaneModule(config);
-    const r = await m.review("wave-av/wave-gateway");
+    const r = await m.review("wave-av/example-repo");
     expect(fetchMock.mock.calls[0][0]).toBe("https://review.wave.online/v1/review");
     expect(r.results?.length).toBe(1);
   });
