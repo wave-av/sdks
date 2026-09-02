@@ -6,6 +6,15 @@ All notable changes to this project are documented here. The format is based on
 
 ## [Unreleased]
 
+### Removed
+
+- **`'dash0'` dropped from the exported `ConsoleSourceResult['source']` union** (`@wave-av/console`).
+  Dash0 is retired from the WAVE stack, so the published type no longer advertises it as a valid
+  console source. This narrows the public typed surface: consumers switching on `result.source`
+  with a `'dash0'` arm or assigning the literal will now fail to typecheck. Type-level only, no
+  runtime change. The `@wave-av/adk` `AgentLogger` doc comment and the console module header were
+  updated to match (Sentry + OTLP ingest).
+
 ### Fixed
 
 - **Codegen crashed on any OpenAPI 3.1 nullable union** (`codegen/parse_spec.py`).
