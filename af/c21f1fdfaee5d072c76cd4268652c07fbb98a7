@@ -1,0 +1,19 @@
+sdk-typescript/pnpm-lock.yaml
+  s_293affce3db927::t_f523830acbf6f8 1685,2440
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "afc21f1fdfaee5d072c76cd4268652c07fbb98a7",
+  "prompts": {},
+  "sessions": {
+    "s_293affce3db927": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cad921ff-40f1-4f4f-90de-90328ad7a010",
+        "model": "unknown"
+      },
+      "human_author": "Jake Fineman <jakefineman@gmail.com>"
+    }
+  }
+}
