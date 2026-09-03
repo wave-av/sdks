@@ -1,0 +1,39 @@
+.github/workflows/publish-crates.yml
+  s_293affce3db927::t_d88dfbc9449324 31-32,51-52,54
+.github/workflows/publish-npm.yml
+  s_293affce3db927::t_724836d2d208ef 30-31,34,36
+.github/workflows/publish-pypi.yml
+  s_293affce3db927::t_9b3c7c1eedad59 28-29,36,51,56
+.github/workflows/publish-rubygems.yml
+  s_293affce3db927::t_241b8506b96e05 28-29,49,52
+.github/workflows/registry-parity.yml
+  s_293affce3db927::t_a3b8b8bcdbd10e 27-28,31
+.github/workflows/release-go.yml
+  s_293affce3db927::t_3eb61d8c82bfa7 22-23,25
+.github/workflows/test-go.yml
+  s_293affce3db927::t_62716a05fae73a 31-32
+.github/workflows/test-python.yml
+  s_293affce3db927::t_d7f75262bea8ea 32-33
+.github/workflows/test-ruby.yml
+  s_293affce3db927::t_0cd3bb813a986b 32-33
+.github/workflows/test-rust.yml
+  s_293affce3db927::t_f7761444014aed 30-31,34
+sdk-typescript/pnpm-lock.yaml
+  s_293affce3db927::t_67f092855bc675 7-9,28,47,69,91,113,135,157,179,201,223,245,267,292,314,336,358,380,402,424,446,468,490,521,540,565,581,603,625,647,669,691,713,735,757,779,801,949,968,990,1012,1034,1056,1078,1100,1122,1144,1166,1188,1210,1417-1419,1421-1422,1688,1899-1900,1969-1970,2109-2110,2157-2158,2190-2191,2443,2625,2680,2851,3005,3042,3044,3046,3116,3218,3248,3260,3264,3266,3268,3440,3459-3460,3473,3484,3490,3493,3522-3523,3545,3549
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "e04358355f3d20d2d3c06bda5cf420cd701f0c6d",
+  "prompts": {},
+  "sessions": {
+    "s_293affce3db927": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cad921ff-40f1-4f4f-90de-90328ad7a010",
+        "model": "unknown"
+      },
+      "human_author": "Jake Fineman <jakefineman@gmail.com>"
+    }
+  }
+}
