@@ -1,6 +1,6 @@
 module github.com/wave-av/sdks/sdk-go
 
-go 1.24.0
+go 1.25.0
 
 require github.com/ethereum/go-ethereum v1.17.3
 

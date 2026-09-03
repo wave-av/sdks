@@ -12,6 +12,11 @@ import os
 from render_common import model_schemas, pascal
 
 MODULE = "github.com/wave-av/sdks/sdk-go"
+# The `go` directive emitted into the GENERATED sdk-go/go.mod — i.e. the published module's
+# minimum Go for every consumer, not a local build preference. Keep it on the oldest release still
+# getting security fixes. Named here because editing the emitted go.mod alone is reverted by the
+# next render.
+GO_VERSION = "1.25.0"
 _INITIALISMS = {"Id": "ID", "Url": "URL", "Api": "API", "Json": "JSON", "Http": "HTTP"}
 
 
@@ -84,7 +89,7 @@ def render(ir: dict, root: str) -> list[str]:
     with open(os.path.join(root, "go.mod"), "w") as f:
         f.write(
             f"module {MODULE}\n\n"
-            "go 1.24.0\n\n"
+            f"go {GO_VERSION}\n\n"
             "require github.com/ethereum/go-ethereum v1.17.3\n"
         )
     written.append(os.path.join(root, "go.mod"))
