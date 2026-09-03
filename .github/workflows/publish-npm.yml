@@ -27,11 +27,13 @@ jobs:
       run:
         working-directory: sdk-typescript
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      # SHA-pinned: a mutable tag can be silently repointed by the action owner, and this is the
+      # one workflow in the repo that holds publish rights. Same v4 releases, just immutable.
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4.3.0
         with:
           version: 9
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: "22"
           registry-url: "https://registry.npmjs.org"
@@ -52,11 +54,153 @@ jobs:
         # provenance requires each package.json repository.url == this repo (satisfied).
         run: |
           set -euo pipefail
+
+          # Read the PUBLIC registry directly rather than via `npm view`. A scoped
+          # `@wave-av:registry` setting takes precedence over `--registry`, so `npm view` here can
+          # silently answer about GitHub Packages instead of npmjs.org — which is exactly how the
+          # publisher of these packages got mis-identified in the first place (#42). curl leaves
+          # no room for that. Args: $1 = package name, $2 = version or "" for dist-tags.latest.
+          registry_meta() {
+            local slug="${1#@wave-av/}"
+            # Validate the WHOLE slug, not just its first character. `case "$slug" in [a-z0-9]*)`
+            # only anchors the start, so `a/../../x` or `a?spec=y` would pass and then be spliced
+            # into the URL below.
+            if ! [[ "$slug" =~ ^[a-z0-9][a-z0-9._-]*$ ]]; then
+              echo "0.0.0 0"; return 0
+            fi
+            curl -sS --max-time 20 "https://registry.npmjs.org/@wave-av%2F${slug}" \
+              | node -e '
+                let s = "";
+                process.stdin.on("data", d => s += d).on("end", () => {
+                  let m; try { m = JSON.parse(s); } catch { return console.log("0.0.0 0"); }
+                  if (!m || m.error || !m["dist-tags"]) return console.log("0.0.0 0");
+                  const v = m["dist-tags"].latest;
+                  const rel = m.versions && m.versions[v];
+                  console.log(v + " " + ((rel && rel.dist && rel.dist.unpackedSize) || 0));
+                });
+              ' 2>/dev/null || echo "0.0.0 0"
+          }
+
+          # Names of every @wave-av package in this workspace. A dependency is satisfiable if it
+          # is EITHER already on the registry OR shipping in this same release — 45 of the 49
+          # packages depend on `@wave-av/core`, which is itself unpublished, so a registry-only
+          # check would reject essentially the whole workspace on the first coordinated release.
+          # A gate that always fires teaches people to bypass it.
+          workspace_names=$(
+            for d in packages/*/; do
+              node -p "require('./${d}package.json').name" 2>/dev/null || true
+            done | tr '\n' ' '
+          )
+
+          # Flag dependencies that exist NOWHERE — not on the registry, not in this workspace.
+          # That is a genuine broken reference (a rename, a typo, a package deleted out from under
+          # a dependent), and it can never be satisfied by publishing harder.
+          unresolved_deps() {
+            local pkgdir="$1" dep slug code deps out=""
+            # The path goes to node as an argv, not spliced into the script text.
+            deps=$(node -e '
+              let p; try { p = require(process.argv[1] + "/package.json"); } catch { process.exit(0); }
+              const d = Object.assign({}, p.dependencies);
+              console.log(Object.keys(d).filter(n => n.startsWith("@wave-av/")).join("\n"));
+            ' "$PWD/${pkgdir%/}" 2>/dev/null) || return 0
+            while IFS= read -r dep; do
+              [ -n "$dep" ] || continue
+              # Shipping in this same release — satisfiable without asking the registry.
+              case " $workspace_names " in *" $dep "*) continue ;; esac
+              slug="${dep#@wave-av/}"
+              if ! [[ "$slug" =~ ^[a-z0-9][a-z0-9._-]*$ ]]; then
+                out="$out $dep(invalid-name)"
+                continue
+              fi
+              # A transport failure must not read as "published" — curl failing yields 000, which
+              # is not 200, so the package is reported unresolved and the release stops. Failing
+              # closed is the only safe direction for a publish gate.
+              code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 15 \
+                "https://registry.npmjs.org/@wave-av%2F${slug}" 2>/dev/null) || code="000"
+              [ "$code" = "200" ] || out="$out $dep"
+            done <<< "$deps"
+            printf '%s' "$out"
+          }
+
+          # TWO PASSES, deliberately. Validating inline and publishing in the same loop means one
+          # bad package silently strands every package that sorts after it — `sdk` failing would
+          # drop search…zoom, twelve packages that were fine. Decide the whole release first, then
+          # execute it. A release is either coherent or it does not go.
+          publishable=""
+          problems=0
+
           for dir in packages/*/; do
             name=$(node -p "require('./${dir}package.json').name" 2>/dev/null) || continue
             case "$name" in @wave-av/*) ;; *) continue ;; esac
             ver=$(node -p "require('./${dir}package.json').version")
+            read -r published prev_size < <(registry_meta "$name")
+
+            # A monorepo-wide tag always sweeps up packages that did not change. Republishing an
+            # existing version is a 403 from npm, and under `set -e` that killed the whole job on
+            # the FIRST such package — `packages/adk/` sorts first and is already on the registry,
+            # so no tag push could ever get past it. "Already published" is the normal case, not
+            # an error.
+            if [ "$ver" = "$published" ]; then
+              echo "skip     $name@$ver — already published"
+              continue
+            fi
+
+            # Publishing BEHIND the registry is never intended: it means this copy is not the
+            # source of truth for that package, and semver would still present it to consumers as
+            # the newest release. See #42.
+            newest=$(printf '%s\n%s\n' "$ver" "$published" | sort -V | tail -1)
+            if [ "$newest" != "$ver" ]; then
+              echo "::error::$name is $ver here but npm serves $published — refusing to publish backwards (see #42, #44)"
+              problems=$((problems + 1))
+              continue
+            fi
+
+            missing_deps=$(unresolved_deps "$dir")
+            if [ -n "$missing_deps" ]; then
+              echo "::error::$name@$ver depends on packages that exist neither on the registry nor in this workspace —$missing_deps"
+              problems=$((problems + 1))
+              continue
+            fi
+
+            # A higher version number does not mean a fuller package: a truncated build can carry
+            # a bumped version and semver would hand it to every consumer as the newest stable
+            # release. Compare what is actually in the tarball, not just the version string. Runs
+            # after the build step, so dist/ is present and the measurement is of the real
+            # artifact.
+            #
+            # `packages/sdk` is the known false positive here. An earlier version of this comment
+            # called it "3 files … substantively a shell"; that was wrong. It is a re-export
+            # barrel over 44 product packages, and being small is what correct looks like for one.
+            # It trips this check purely on size, so when the umbrella is genuinely ready to ship
+            # this guard is the thing that will be in the way — that is the moment to narrow it
+            # (e.g. exempt packages whose tarball is a barrel), NOT to delete it.
+            local_size=$( cd "$dir" && npm pack --dry-run --json 2>/dev/null \
+              | node -p "JSON.parse(require('fs').readFileSync(0,'utf8'))[0].unpackedSize" 2>/dev/null || echo 0 )
+            if [ "${prev_size:-0}" -gt 0 ] && [ "${local_size:-0}" -lt $((prev_size / 2)) ]; then
+              echo "::error::$name@$ver packs ${local_size}B but $published packs ${prev_size}B — refusing to publish a package less than half the size of the one it replaces (see #44)"
+              problems=$((problems + 1))
+              continue
+            fi
+
+            echo "eligible $name@$ver (npm has ${published})"
+            publishable="${publishable}${dir}"$'\n'
+          done
+
+          if [ "$problems" -gt 0 ]; then
+            echo "::error::$problems package(s) failed release validation — publishing nothing. Fix them or drop them from the tag."
+            exit 1
+          fi
+
+          if [ -z "$publishable" ]; then
+            echo "nothing to publish — every @wave-av package is already at its published version."
+            exit 0
+          fi
+
+          while IFS= read -r dir; do
+            [ -n "$dir" ] || continue
+            ver=$(node -p "require('./${dir}package.json').version")
+            name=$(node -p "require('./${dir}package.json').name")
             tag=latest; case "$ver" in 0.0.*) tag=preview ;; esac
             echo "publishing $name@$ver --tag $tag"
             ( cd "$dir" && pnpm publish --access public --provenance --no-git-checks --tag "$tag" )
-          done
+          done <<< "$publishable"
