@@ -1,0 +1,22 @@
+.github/workflows/release-go.yml
+  h_af5ac1a9798224 26
+.github/workflows/test-go.yml
+  h_af5ac1a9798224 34
+CHANGELOG.md
+  h_af5ac1a9798224 9-39
+codegen/render_go.py
+  h_af5ac1a9798224 15-19,92
+sdk-go/go.mod
+  h_af5ac1a9798224 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "50472a6a7f45da9f5374501ae8b4fbe2e37ad65f",
+  "prompts": {},
+  "humans": {
+    "h_af5ac1a9798224": {
+      "author": "Jake Fineman <jakefineman@gmail.com>"
+    }
+  }
+}
