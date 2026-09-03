@@ -28,7 +28,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "3.3"
+          ruby-version: "3.4.10"
       - name: Test + build
         run: |
           ruby -Ilib test/smoke_test.rb
@@ -51,7 +51,7 @@ jobs:
           persist-credentials: false
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "3.3"
+          ruby-version: "3.4.10"
       # NOTE: we deliberately do NOT use rubygems/release-gem here. That action runs
       # `bundle exec rake release`, and bundler/gem_tasks derives the release tag as
       # `v<version>` — but this monorepo tags per-language as `sdk-ruby-v<version>`. With
