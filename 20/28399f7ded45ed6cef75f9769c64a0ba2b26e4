@@ -1,0 +1,21 @@
+scripts/ga/cleanroom-targets.mjs
+  s_418f585ff58cb5::t_11ca3517287f50 21-24
+scripts/ga/cleanroom-util.mjs
+  s_418f585ff58cb5::t_318d58d5ec3dc2 41-57
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "2028399f7ded45ed6cef75f9769c64a0ba2b26e4",
+  "prompts": {},
+  "sessions": {
+    "s_418f585ff58cb5": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e5b410ce-aa9a-48d6-be5d-09400395b1b6",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Jake Fineman <jakefineman@gmail.com>"
+    }
+  }
+}
