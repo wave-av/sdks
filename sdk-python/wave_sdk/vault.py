@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import Any
 from pydantic import BaseModel
-from wave.client import WaveClient
+from wave_sdk.client import WaveClient
 
 class Recording(BaseModel):
     id: str; organization_id: str; stream_id: str | None = None; title: str; status: str; duration_seconds: float = 0; file_size_bytes: int = 0; format: str | None = None; storage_tier: str = "hot"; playback_url: str | None = None; download_url: str | None = None; tags: list[str] | None = None; created_at: str; updated_at: str

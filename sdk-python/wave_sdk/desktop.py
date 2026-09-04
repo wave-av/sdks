@@ -1,7 +1,7 @@
 """WAVE SDK - Desktop API. Desktop Node application management."""
 from __future__ import annotations
 from typing import Any
-from wave.client import WaveClient
+from wave_sdk.client import WaveClient
 
 class DesktopAPI:
     def __init__(self, client: WaveClient): self._client = client; self._base = "/v1/desktop"

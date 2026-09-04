@@ -1,7 +1,7 @@
 """WAVE SDK - Pulse Analytics API. Streaming analytics and BI."""
 from __future__ import annotations
 from typing import Any
-from wave.client import WaveClient
+from wave_sdk.client import WaveClient
 
 class PulseAPI:
     def __init__(self, client: WaveClient): self._client = client; self._base = "/v1/analytics"

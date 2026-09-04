@@ -5,7 +5,7 @@ Async HTTP client with authentication, rate limiting, and retry logic.
 Uses httpx.AsyncClient for non-blocking I/O.
 
 Example:
-    >>> from wave.async_client import AsyncWaveClient
+    >>> from wave_sdk.async_client import AsyncWaveClient
     >>> async with AsyncWaveClient(api_key="key") as client:
     ...     streams = await client.get("/v1/streams")
 """
@@ -19,7 +19,7 @@ from typing import Any
 
 import httpx
 
-from wave.client import WaveError, RateLimitError
+from wave_sdk.client import WaveError, RateLimitError
 
 logger = logging.getLogger("wave")
 

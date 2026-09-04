@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import Any
 from pydantic import BaseModel
-from wave.client import WaveClient
+from wave_sdk.client import WaveClient
 
 class Display(BaseModel):
     id: str; organization_id: str; name: str; status: str; resolution: str | None = None; orientation: str = "landscape"; location: str | None = None; current_playlist_id: str | None = None; last_seen_at: str | None = None; created_at: str; updated_at: str

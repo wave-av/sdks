@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import Any
 from pydantic import BaseModel
-from wave.client import WaveClient
+from wave_sdk.client import WaveClient
 
 class GhostSession(BaseModel):
     id: str; production_id: str; mode: str; style: str; status: str; confidence_threshold: float = 0.7; created_at: str | None = None

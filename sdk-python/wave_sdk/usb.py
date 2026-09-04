@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import Any
 from pydantic import BaseModel
-from wave.client import WaveClient
+from wave_sdk.client import WaveClient
 
 class USBDevice(BaseModel):
     id: str; node_id: str; name: str; vendor_id: str; product_id: str; device_class: str; status: str; manufacturer: str | None = None; speed: str; capabilities: list[str] | None = None; connected_at: str; updated_at: str

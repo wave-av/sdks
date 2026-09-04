@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import Any
 from pydantic import BaseModel
-from wave.client import WaveClient
+from wave_sdk.client import WaveClient
 
 class CreatorProfile(BaseModel):
     id: str; user_id: str; display_name: str; subscriber_count: int = 0; total_revenue_cents: int = 0; verified: bool = False; tier: str = "starter"; created_at: str; updated_at: str

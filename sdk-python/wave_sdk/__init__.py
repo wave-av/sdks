@@ -4,62 +4,62 @@ WAVE SDK for Python
 Official Python SDK for the WAVE API by WAVE Inc.
 
 Example:
-    >>> from wave import Wave
+    >>> from wave_sdk import Wave
     >>> client = Wave(api_key="your-api-key")
     >>> streams = client.pipeline.list()
     >>> clips = client.clips.list()
 """
 
-from wave.client import WaveClient, WaveError, RateLimitError
+from wave_sdk.client import WaveClient, WaveError, RateLimitError
 
 # Existing P3 modules
-from wave.clips import ClipsAPI
-from wave.editor import EditorAPI
-from wave.voice import VoiceAPI
-from wave.phone import PhoneAPI
-from wave.collab import CollabAPI
-from wave.captions import CaptionsAPI
-from wave.chapters import ChaptersAPI
-from wave.studio_ai import StudioAIAPI
-from wave.transcribe import TranscribeAPI
-from wave.sentiment import SentimentAPI
-from wave.search import SearchAPI
-from wave.scene import SceneAPI
+from wave_sdk.clips import ClipsAPI
+from wave_sdk.editor import EditorAPI
+from wave_sdk.voice import VoiceAPI
+from wave_sdk.phone import PhoneAPI
+from wave_sdk.collab import CollabAPI
+from wave_sdk.captions import CaptionsAPI
+from wave_sdk.chapters import ChaptersAPI
+from wave_sdk.studio_ai import StudioAIAPI
+from wave_sdk.transcribe import TranscribeAPI
+from wave_sdk.sentiment import SentimentAPI
+from wave_sdk.search import SearchAPI
+from wave_sdk.scene import SceneAPI
 
 # P1 modules
-from wave.pipeline import PipelineAPI
-from wave.studio import StudioAPI
+from wave_sdk.pipeline import PipelineAPI
+from wave_sdk.studio import StudioAPI
 
 # P2 modules
-from wave.fleet import FleetAPI
-from wave.ghost import GhostAPI
-from wave.mesh import MeshAPI
-from wave.edge import EdgeAPI
-from wave.pulse import PulseAPI
-from wave.prism import PrismAPI
-from wave.zoom import ZoomAPI
+from wave_sdk.fleet import FleetAPI
+from wave_sdk.ghost import GhostAPI
+from wave_sdk.mesh import MeshAPI
+from wave_sdk.edge import EdgeAPI
+from wave_sdk.pulse import PulseAPI
+from wave_sdk.prism import PrismAPI
+from wave_sdk.zoom import ZoomAPI
 
 # P3 new modules
-from wave.vault import VaultAPI
-from wave.marketplace import MarketplaceAPI
-from wave.connect import ConnectAPI
-from wave.distribution import DistributionAPI
-from wave.desktop import DesktopAPI
-from wave.signage import SignageAPI
-from wave.qr import QrAPI
-from wave.audience import AudienceAPI
-from wave.creator import CreatorAPI
+from wave_sdk.vault import VaultAPI
+from wave_sdk.marketplace import MarketplaceAPI
+from wave_sdk.connect import ConnectAPI
+from wave_sdk.distribution import DistributionAPI
+from wave_sdk.desktop import DesktopAPI
+from wave_sdk.signage import SignageAPI
+from wave_sdk.qr import QrAPI
+from wave_sdk.audience import AudienceAPI
+from wave_sdk.creator import CreatorAPI
 
 # P4 modules
-from wave.podcast import PodcastAPI
-from wave.slides import SlidesAPI
-from wave.usb import UsbAPI
+from wave_sdk.podcast import PodcastAPI
+from wave_sdk.slides import SlidesAPI
+from wave_sdk.usb import UsbAPI
 
 # Cross-cutting
-from wave.notifications import NotificationsAPI
-from wave.drm import DrmAPI
+from wave_sdk.notifications import NotificationsAPI
+from wave_sdk.drm import DrmAPI
 
-__version__ = "2.0.0"
+__version__ = "3.0.0"
 __all__ = [
     "Wave",
     "WaveClient",
@@ -89,7 +89,7 @@ class Wave:
     Full WAVE SDK client with all APIs attached.
 
     Example:
-        >>> from wave import Wave
+        >>> from wave_sdk import Wave
         >>> wave = Wave(api_key="your-api-key", organization_id="org_123")
         >>> streams = wave.pipeline.list()
         >>> clips = wave.clips.list()

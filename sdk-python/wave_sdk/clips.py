@@ -10,7 +10,7 @@ import time
 from typing import Any, Literal
 from pydantic import BaseModel
 
-from wave.client import WaveClient
+from wave_sdk.client import WaveClient
 
 
 class ClipSource(BaseModel):
@@ -78,7 +78,7 @@ class ClipsAPI:
     Clips API client.
 
     Example:
-        >>> from wave import Wave
+        >>> from wave_sdk import Wave
         >>> wave = Wave(api_key="your-api-key")
         >>> clip = wave.clips.create(
         ...     title="Best Moment",

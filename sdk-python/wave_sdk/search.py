@@ -3,7 +3,7 @@ from __future__ import annotations
 import time
 from typing import Any
 from pydantic import BaseModel
-from wave.client import WaveClient
+from wave_sdk.client import WaveClient
 
 class SearchResult(BaseModel):
     id: str; type: str; title: str; score: float; highlights: list[dict] | None = None; thumbnail_url: str | None = None; created_at: str

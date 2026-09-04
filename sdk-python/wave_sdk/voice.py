@@ -3,7 +3,7 @@ from __future__ import annotations
 import time
 from typing import Any
 from pydantic import BaseModel
-from wave.client import WaveClient
+from wave_sdk.client import WaveClient
 
 class Voice(BaseModel):
     id: str; name: str; language: str; gender: str | None = None; model_type: str; preview_url: str | None = None; is_custom: bool = False; created_at: str; updated_at: str

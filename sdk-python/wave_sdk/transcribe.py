@@ -3,7 +3,7 @@ from __future__ import annotations
 import time
 from typing import Any
 from pydantic import BaseModel
-from wave.client import WaveClient
+from wave_sdk.client import WaveClient
 
 class Speaker(BaseModel):
     id: str; label: str; segments_count: int = 0; total_duration: float = 0

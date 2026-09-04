@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import Any
 from pydantic import BaseModel
-from wave.client import WaveClient
+from wave_sdk.client import WaveClient
 
 class Integration(BaseModel):
     id: str; organization_id: str; name: str; type: str; provider: str; status: str; scopes: list[str] | None = None; last_sync_at: str | None = None; error_message: str | None = None; created_at: str; updated_at: str

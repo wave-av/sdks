@@ -3,7 +3,7 @@ from __future__ import annotations
 import time
 from typing import Any
 from pydantic import BaseModel
-from wave.client import WaveClient
+from wave_sdk.client import WaveClient
 
 class SentimentAnalysis(BaseModel):
     id: str; asset_id: str; status: str; overall_sentiment: str | None = None; overall_score: float = 0; segments_count: int = 0; created_at: str; updated_at: str
