@@ -1,0 +1,31 @@
+sdk-python/pyproject.toml
+  s_418f585ff58cb5::t_4eb2a6a2c58006 10-17
+  s_418f585ff58cb5::t_601d61a169abbc 84
+sdk-python/CHANGELOG.md
+  s_418f585ff58cb5::t_c042494ebf8131 8-31
+.github/workflows/registry-cleanroom.yml
+  s_418f585ff58cb5::t_90777d10ba50e0 17-43
+  s_418f585ff58cb5::t_6ceb3c7e1b5d96 156-166
+GA-READINESS.md
+  s_418f585ff58cb5::t_40eafa9669db0a 153-193,196-200
+sdk-python/README.md
+  s_418f585ff58cb5::t_3af180066d9ef0 14,96
+sdk-python/tests/conftest.py
+  s_418f585ff58cb5::t_6e1b96e57c4d8d 12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "b6cc6399b5d41f7b2d6e6270bbcfa241b07683d8",
+  "prompts": {},
+  "sessions": {
+    "s_418f585ff58cb5": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e5b410ce-aa9a-48d6-be5d-09400395b1b6",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Jake Fineman <jakefineman@gmail.com>"
+    }
+  }
+}
