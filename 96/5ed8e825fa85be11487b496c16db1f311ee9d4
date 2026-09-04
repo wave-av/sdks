@@ -1,0 +1,36 @@
+GA-READINESS.md
+  s_418f585ff58cb5::t_dfe8bd66f49dd3 10,13
+  s_418f585ff58cb5::t_ea65c3161abaf4 72-74,77,82-89,92-97
+  s_418f585ff58cb5::t_f6b9298296f7fa 136-138,141,149-150,153-157
+  s_418f585ff58cb5::t_7718dae7d6beaf 105-107,110,117-127
+  s_418f585ff58cb5::t_82ddf3abdfe15b 175-205,209-212
+sdk-typescript/packages/mcp-server/package.json
+  s_418f585ff58cb5::t_f2b20b79098657 73-74
+  s_418f585ff58cb5::t_4dc7d7b56d2974 29
+sdk-typescript/packages/mcp-server/src/server.ts
+  s_418f585ff58cb5::t_296f99d8dd12f1 31
+  s_418f585ff58cb5::t_4cc4a8d7900c27 15
+sdk-typescript/packages/mcp-server/__tests__/version.test.ts
+  s_418f585ff58cb5::t_4153f007e2b847 1,3-34
+  s_418f585ff58cb5::t_73bedf47faa571 2
+sdk-typescript/packages/mcp-server/src/version.ts
+  s_418f585ff58cb5::t_5ef481723ad586 1-55
+sdk-typescript/pnpm-lock.yaml
+  s_418f585ff58cb5::t_a627bad6196bbd 566-568,2805-2812,3527-3538,3551-3578
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "965ed8e825fa85be11487b496c16db1f311ee9d4",
+  "prompts": {},
+  "sessions": {
+    "s_418f585ff58cb5": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e5b410ce-aa9a-48d6-be5d-09400395b1b6",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Jake Fineman <jakefineman@gmail.com>"
+    }
+  }
+}
