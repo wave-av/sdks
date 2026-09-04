@@ -1,4 +1,28 @@
-# wave-sdk Changelog
+# wave-av-sdk Changelog
+
+> This directory builds the PyPI package **`wave-av-sdk`** (`[project] name` in
+> `pyproject.toml`). This file was previously headed "wave-sdk Changelog", which is a
+> *different* package published from a different repository (`wave-av/sdk-python`). The two
+> are not the same distribution and their version numbers are unrelated.
+
+## 2.0.1 (2026-09-03)
+
+### Fixed
+
+- **License metadata now reaches the index.** `pyproject.toml` declares `Apache-2.0`, but the
+  only release on PyPI — `wave-av-sdk 2.0.0` — was published carrying `License: MIT` and the
+  MIT trove classifier. PyPI releases are immutable, so that correction could never reach a
+  user while the source still said `2.0.0`, and the next `sdk-python-v*` tag push would have
+  built `2.0.0` and failed on `400 File already exists`. Bumped to `2.0.1` so the Apache-2.0
+  metadata can actually ship. The published `2.0.0` stays as published; it cannot be changed.
+
+### Added
+
+- `scripts/registry_license_truth.py` — compares this package's declared license and version
+  against what is actually on PyPI, and fails when the version is already taken or when a
+  release at the same version string declares a different license. Covered by
+  `tests/test_registry_license_truth.py`, which runs offline against a checked-in snapshot of
+  the real registry response.
 
 ## 2.0.0 (2026-04-05)
 
