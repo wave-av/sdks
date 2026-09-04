@@ -5,6 +5,30 @@
 > *different* package published from a different repository (`wave-av/sdk-python`). The two
 > are not the same distribution and their version numbers are unrelated.
 
+## 3.0.0 (2026-09-04)
+
+### Fixed (ART-001 — GA registry clean-room acceptance)
+
+- **The importable top-level module is now `wave_sdk`, not `wave`.** Every release through
+  `2.0.1` shipped a distribution whose only top-level name was `wave`, which collides with the
+  CPython stdlib module of the same name (`wave` ∈ `sys.stdlib_module_names`). Because the
+  stdlib directory precedes site-packages on `sys.path`, `import wave` in a real installation
+  always resolved to the stdlib WAV-file reader, never to this SDK — the documented
+  `from wave import Wave` entry point could not succeed for any customer. `scripts/ga/
+  registry-cleanroom.mjs` in `wave-av/sdks` proved this against the live PyPI artifact
+  (`py-no-stdlib-shadow` / `py-import-module`, both FAIL on `wave-av-sdk@2.0.0`).
+  Renamed `wave/` -> `wave_sdk/` and every internal absolute import
+  (`from wave.X import` -> `from wave_sdk.X import`). Public API is otherwise unchanged
+  (`from wave_sdk import Wave`). This is a correctness fix, not a break of a working
+  integration, and the major version bump reflects the import-path change, not a functional
+  regression — there is no prior version where the old import path actually worked.
+- This fix is **source-only in this commit**. It reaches PyPI only on the next
+  `sdk-python-v*` tag publish (`.github/workflows/publish-pypi.yml`), which is an
+  operator-gated action (PyPI Trusted Publisher + `pypi-publish` environment
+  required-reviewer). Until that publish happens, `registry-cleanroom` will continue to report
+  `wave-av-sdk@2.0.0 py-import-module` / `py-no-stdlib-shadow` as FAIL, correctly, because it
+  tests what PyPI actually serves — not this checkout.
+
 ## 2.0.1 (2026-09-03)
 
 ### Fixed

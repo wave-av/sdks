@@ -150,15 +150,53 @@ notes: |
   branch-protection attestation.
 ```
 
+## Arming window (2026-09-04 false-green remediation)
+
+`registry-cleanroom.yml`'s `pull_request` trigger used to run the same checks and then paper
+over a failure with a `::warning` while still exiting `0` — so the GitHub check conclusion read
+**SUCCESS** on a PR whose own log ended `REGISTRY CLEAN-ROOM FAILED: 8 check(s)`. sdks#79 merged
+2026-09-04T18:25:54Z on the strength of that green rollup. As of this commit, every trigger
+(including `pull_request`) hard-fails the job when a check fails — the gate can no longer report
+green while failing.
+
+It is **not yet a required branch-protection status check**, deliberately. `cleanroom` also
+tests artifacts published from **two other repositories** — `wave-av/cli` (`@wave-av/cli`) and
+`wave-av/sdk-python` (`wave-sdk` on PyPI) — that an `sdks` PR cannot fix by itself. Requiring it
+today would red every future `sdks` PR for a defect it did not introduce, training reviewers to
+override rather than read it. Sequence:
+
+1. This repo's own defect (`wave-av-sdk`'s `wave`/stdlib collision, ART-001) is fixed **in
+   source** in this same change (`wave/` renamed to `wave_sdk/`, version bumped to `3.0.0`) but
+   remains **unpublished** — publishing to PyPI is an operator-gated action (Trusted Publisher
+   registration + the `pypi-publish` environment's required reviewer), not something this lane
+   may cross. `cleanroom` will keep reporting `wave-av-sdk py-import-module` /
+   `py-no-stdlib-shadow` as FAIL against the live registry until that publish happens — correctly,
+   because it tests what PyPI serves, never this checkout.
+2. `wave-av/cli` fixes and republishes with: `wave --version` reading from its own
+   `package.json` (not a stale constant), `@wave-av/sdk` pinned exact rather than `^2.0.11`, and
+   npm provenance attestation present.
+3. `wave-av/sdk-python` fixes the same stdlib-collision defect in `wave-sdk` (that package is a
+   distinct source tree from this repo's `wave-av-sdk` — see `CHANGELOG.md`'s note — so this
+   commit does not touch it).
+4. Once `node scripts/ga/registry-cleanroom.mjs` reports **zero** failing checks against the
+   live registries, add `registry clean-room acceptance / cleanroom` to the default branch's
+   required status checks. It already runs on every PR with no path filter, so it can be made
+   required without a permanently-unreported gap.
+
+`@wave-av/mcp-server`'s `serverInfo.version` mismatch (0.1.0 vs 0.2.0), one of the original 8
+failures, is **already resolved**: the live registry now serves `@wave-av/mcp-server@0.2.1` with
+`serverInfo.version` `0.2.1` (re-verified 2026-09-04 against `registry.npmjs.org` and the
+package's own stdio `initialize` response — see the clean-room run below). 7 checks remain
+failing, all pre-existing and none introduced by this change: 3 in `wave-av/cli`, 2 in
+`wave-av/sdk-python`, 2 (`wave-av-sdk` import + stdlib-shadow) fixed in source here and pending
+publish.
+
 ## Operator actions to finish these criteria
 
-1. **Make the release gate blocking.** The clean-room job hard-fails on schedule, release and
-   dispatch, but it is not yet a *required* status check. Add
-   `registry clean-room acceptance / cleanroom` to the default branch's required checks. It runs on
-   every pull request with no path filter precisely so it can be made required without going
-   permanently unreported.
-2. **Fix the three artifact defects the gate found** (each needs a publish, which is a named floor
-   and not this lane's to cross): the CLI version constant, the MCP server's `serverInfo.version`,
-   and the Python distribution's top-level module name.
+1. **Make the release gate blocking** once the arming window above closes (all 7 checks pass).
+2. **Fix the remaining artifact defects the gate found** (each needs a publish, which is a named
+   floor and not this lane's to cross): the CLI version constant and dependency pin live in
+   `wave-av/cli`; the Python distribution's top-level module name for `wave-sdk` lives in
+   `wave-av/sdk-python`. `wave-av-sdk`'s equivalent is fixed in source in this commit.
 3. **Republish the CLI through the provenance-emitting workflow** so `dist.attestations` is
    populated, and exact-pin its first-party dependency.
