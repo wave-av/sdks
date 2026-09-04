@@ -38,7 +38,23 @@ export async function fetchJson(url) {
 export function ok(name, detail) { return { name, ok: true, detail }; }
 export function bad(name, detail) { return { name, ok: false, detail }; }
 
-export function npmEncode(pkg) { return pkg.replace('/', '%2f'); }
+/**
+ * Encode one value as a SINGLE npm-registry URL path segment.
+ *
+ * `encodeURIComponent`, not a hand-rolled `replace`. `pkg.replace('/', '%2f')` — the previous
+ * implementation — escapes only the FIRST occurrence, because a string (rather than a global regex)
+ * first argument replaces once. Every later separator survives into the URL as a real path
+ * separator: `'a/../../x'.replace('/', '%2f')` is `'a%2f../../x'`, so the fetch resolves against a
+ * different registry endpoint than the caller asked for. That matters here because the values are
+ * not all repo-controlled — `--versions` pins arrive from the `workflow_dispatch` input via
+ * `CLEANROOM_VERSIONS` — and because a gate that can be steered onto the wrong endpoint is a gate
+ * that can be made to report on an artifact nobody installs.
+ *
+ * The platform primitive escapes every occurrence and every other URL meta-character, and is the
+ * encoding the PyPI path in this suite already uses. It is the identity function for ordinary
+ * semver, including prereleases.
+ */
+export function npmEncode(value) { return encodeURIComponent(value); }
 
 /** Install one package from the PUBLIC npm registry into a throwaway directory. */
 export function npmCleanRoom(pkgName, version) {

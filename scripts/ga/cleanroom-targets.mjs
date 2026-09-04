@@ -18,7 +18,10 @@ export async function runNpmTarget(target, args) {
   const pkg = target.package;
   const latest = await fetchJson(`${PUBLIC_NPM}/${npmEncode(pkg)}/latest`);
   const version = args.versions[pkg] || latest.version;
-  const packument = version === latest.version ? latest : await fetchJson(`${PUBLIC_NPM}/${npmEncode(pkg)}/${version}`);
+  // `version` is encoded for the same reason the package name is: it can come from the
+  // `workflow_dispatch` versions input, so it is not repo-controlled and must not be able to
+  // introduce a path separator. The PyPI path below already encodes both halves.
+  const packument = version === latest.version ? latest : await fetchJson(`${PUBLIC_NPM}/${npmEncode(pkg)}/${npmEncode(version)}`);
 
   const result = {
     id: target.id,
