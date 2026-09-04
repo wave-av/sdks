@@ -1,0 +1,155 @@
+name: registry clean-room acceptance
+
+# Tests ONLY what the public registries serve — never this checkout.
+#
+# `registry parity` (the sibling workflow) answers "does the declared version equal the published
+# version". That is necessary and not sufficient: it never installs anything, so it cannot see a
+# package whose version number is right and whose CONTENTS are broken. Every artifact regression in
+# the pre-GA audit was of that second kind — CI green on source while npm and PyPI served a broken
+# build for days. This workflow installs the published artifact into a throwaway directory or venv
+# and asserts it actually works.
+#
+# WHY NIGHTLY AND NOT ONLY ON RELEASE
+# A published package can break with NO commit anywhere. @wave-av/cli's own published dependency
+# range on @wave-av/sdk is a caret range, so what a customer receives is decided by npm's resolver
+# on the day they install, not by anything in this repo. Only a scheduled run catches that.
+#
+# BLOCKING BEHAVIOUR
+# schedule / workflow_run(release) / workflow_dispatch -> HARD FAIL, and open-or-update an issue.
+# pull_request                                         -> informational only.
+# A PR is not the cause of an already-published defect, so a PR is not blocked by one. The PR run
+# exists so that a change to the gate itself is exercised before it merges. There is deliberately
+# NO path filter: the check reports on every PR, which is what makes it eligible to become a
+# required status check later (a path-filtered required check stays permanently unreported and
+# blocks every PR that misses the filter — the lesson already recorded in registry-parity.yml).
+
+on:
+  schedule:
+    # 09:00 UTC — deliberately offset from `registry parity` (14:00) so a registry outage does not
+    # take out both signals in the same window.
+    - cron: "0 9 * * *"
+  workflow_dispatch:
+    inputs:
+      versions:
+        description: 'Exact versions to accept, e.g. "@wave-av/cli=1.0.9,wave-sdk=2.1.0" (default: registry latest)'
+        type: string
+        required: false
+      only:
+        description: 'Comma-separated target ids to run (default: all). Ids are in scripts/ga/cleanroom-targets.json'
+        type: string
+        required: false
+  workflow_run:
+    # Runs after a real publish so a release is verified against the registry it just wrote to.
+    workflows: ["npm publish (OIDC + provenance)"]
+    types: [completed]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  cleanroom:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # On workflow_run, only a SUCCESSFUL publish is worth verifying; a failed publish has its own
+    # error and would produce a confusing second failure here.
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    permissions:
+      contents: read
+      issues: write # fail-loud: open or update the tracking issue
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "22"
+
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.12"
+
+      - name: Run clean-room acceptance against the public registries
+        id: cleanroom
+        env:
+          CLEANROOM_VERSIONS: ${{ inputs.versions }}
+          ONLY: ${{ inputs.only }}
+        run: |
+          set -uo pipefail
+          args=(--python python3 --out-dir "$GITHUB_WORKSPACE/ga-out")
+          [ -n "${ONLY:-}" ] && args+=(--only "$ONLY")
+          set +e
+          node scripts/ga/registry-cleanroom.mjs "${args[@]}" 2>&1 | tee "$RUNNER_TEMP/cleanroom.log"
+          code=${PIPESTATUS[0]}
+          set -e
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          {
+            echo "## Registry clean-room acceptance"
+            echo
+            echo "Exit code \`$code\` (0 = all checks passed, 1 = an artifact failed, 2 = the gate could not run)."
+            echo
+            echo '```'
+            cat "$RUNNER_TEMP/cleanroom.log"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit 0
+
+      - name: Upload GA evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: ga-evidence-registry-cleanroom
+          path: ga-out/
+          if-no-files-found: warn
+          retention-days: 90
+
+      - name: Fail loudly — open or update the tracking issue
+        # A nightly that fails quietly is worse than no nightly at all.
+        if: steps.cleanroom.outputs.exit_code != '0' && github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          EXIT_CODE: ${{ steps.cleanroom.outputs.exit_code }}
+        run: |
+          set -euo pipefail
+          title="registry clean-room acceptance is failing"
+          # Only the failing-check lines: the issue must say WHAT is broken, not page a human to
+          # go read a log to find out.
+          summary=$(sed -n '/^REGISTRY CLEAN-ROOM FAILED/,$p' "$RUNNER_TEMP/cleanroom.log" | head -40)
+          [ -z "$summary" ] && summary="The gate did not complete (exit $EXIT_CODE). See the run log."
+          body=$(printf '%s\n\n```\n%s\n```\n\nRun: %s\nEvent: %s\n\nThe published artifacts do not satisfy ART-001 / SUPPLY-001 / VER-001. A green source branch does not certify these — the registry is what customers install.\n' \
+            "Clean-room acceptance against the public registries failed." "$summary" "$RUN_URL" "$GITHUB_EVENT_NAME")
+          existing=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --search "$title in:title" --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --repo "$GITHUB_REPOSITORY" --body "$body"
+            echo "updated issue #$existing"
+          else
+            gh issue create --repo "$GITHUB_REPOSITORY" --title "$title" --body "$body" \
+              || echo "::warning::could not open the tracking issue; the job still fails below"
+          fi
+
+      - name: Enforce
+        # Hard-fail everywhere the result is actionable. A pull request is informational: it did not
+        # publish the artifact under test and cannot fix it.
+        if: github.event_name != 'pull_request'
+        env:
+          CODE: ${{ steps.cleanroom.outputs.exit_code }}
+        run: |
+          if [ "$CODE" != "0" ]; then
+            echo "::error title=registry clean-room::published artifacts failed clean-room acceptance (exit $CODE) — see the job summary"
+            exit 1
+          fi
+          echo "registry clean-room acceptance passed"
+
+      - name: Report (pull request, informational)
+        if: github.event_name == 'pull_request'
+        env:
+          CODE: ${{ steps.cleanroom.outputs.exit_code }}
+        run: |
+          [ "$CODE" = "0" ] && echo "clean-room acceptance passed" \
+            || echo "::warning title=registry clean-room::published artifacts fail clean-room acceptance (exit $CODE). Not blocking this PR — see the job summary."
