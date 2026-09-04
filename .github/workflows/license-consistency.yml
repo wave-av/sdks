@@ -1,0 +1,44 @@
+name: license consistency
+
+# Every publishable package here must ship the license text it declares.
+#
+# On 2026-09-03 all 49 `sdk-typescript/packages/*` manifests declared Apache-2.0 while the
+# LICENSE file beside each of them was the MIT text, and so did `sdk-python/` and two of the
+# three Rust crates. The repository ROOT LICENSE was Apache-2.0 the whole time, which is why
+# it went unseen: every existing check looked at the root, and npm/pip/cargo pack the LICENSE
+# from the PACKAGE directory. `@wave-av/workflow-sdk@1.0.6` is on npm today carrying the MIT
+# text from a source tree that declares Apache-2.0.
+#
+# Runs on every PR: the gate reads only files in the repo, needs nothing installed, and
+# finishes in about a second, so it is safe to require.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  licenses:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      # Dependency-free by design — this repo has no root package.json, so the gate must
+      # run against a bare checkout with nothing installed.
+      - name: Declared license vs shipped license text
+        run: node scripts/license-consistency.mjs
