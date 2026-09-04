@@ -11,7 +11,7 @@ pip install wave-av-sdk
 ## Quick start
 
 ```python
-from wave import Wave
+from wave_av_sdk import Wave
 
 wave = Wave(api_key="your-api-key", organization_id="org_123")
 
@@ -93,7 +93,7 @@ viewers = wave.pulse.get_viewer_analytics(time_range="24h")
 ## Error handling
 
 ```python
-from wave import WaveError, RateLimitError
+from wave_av_sdk import WaveError, RateLimitError
 
 try:
     wave.pipeline.get("invalid-id")
