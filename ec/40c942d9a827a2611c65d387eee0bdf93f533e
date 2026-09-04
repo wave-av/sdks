@@ -1,0 +1,93 @@
+sdk-python/tests/test_sdk_exports.py
+  s_046aea13c8af51::t_27f03aa754cd01 12-13,32,40,47,101,109,117,125,132-134,139,152
+sdk-python/wave_sdk/__init__.py
+  s_046aea13c8af51::t_ec1e5dcea695da 7,13,16-27,30-31,34-40,43-51,54-56,59-60,62,92
+sdk-python/wave_sdk/async_client.py
+  s_046aea13c8af51::t_f3c164a7efecf9 8,22
+sdk-python/wave_sdk/audience.py
+  s_046aea13c8af51::t_fe197dda074bfe 5
+sdk-python/wave_sdk/captions.py
+  s_046aea13c8af51::t_5ad0469ee87e5c 6
+sdk-python/wave_sdk/chapters.py
+  s_046aea13c8af51::t_a9f3d682c062b8 6
+sdk-python/wave_sdk/clips.py
+  s_046aea13c8af51::t_4add14d5d517d3 13,81
+sdk-python/wave_sdk/collab.py
+  s_046aea13c8af51::t_e7162f07331e2c 5
+sdk-python/wave_sdk/connect.py
+  s_046aea13c8af51::t_b7087f5aa60f6e 5
+sdk-python/wave_sdk/creator.py
+  s_046aea13c8af51::t_6015880fe4842e 5
+sdk-python/wave_sdk/desktop.py
+  s_046aea13c8af51::t_9a5c98c35a6ef8 4
+sdk-python/wave_sdk/distribution.py
+  s_046aea13c8af51::t_0db9f5d2c7cb0b 5
+sdk-python/wave_sdk/drm.py
+  s_046aea13c8af51::t_461d5165e09ef2 5
+sdk-python/wave_sdk/edge.py
+  s_046aea13c8af51::t_195c26f241e8cd 5
+sdk-python/wave_sdk/editor.py
+  s_046aea13c8af51::t_6fefe3862390ec 6
+sdk-python/wave_sdk/fleet.py
+  s_046aea13c8af51::t_09b7c3928ff33b 6
+sdk-python/wave_sdk/ghost.py
+  s_046aea13c8af51::t_abc63b7cc06a3a 5
+sdk-python/wave_sdk/marketplace.py
+  s_046aea13c8af51::t_25b7c65266c0b3 5
+sdk-python/wave_sdk/mesh.py
+  s_046aea13c8af51::t_5e426098db075b 5
+sdk-python/wave_sdk/notifications.py
+  s_046aea13c8af51::t_b5ef0431b8e8c7 5
+sdk-python/wave_sdk/phone.py
+  s_046aea13c8af51::t_6db19150dfbec2 6
+sdk-python/wave_sdk/pipeline.py
+  s_046aea13c8af51::t_d0c4a382d1f765 6
+sdk-python/wave_sdk/podcast.py
+  s_046aea13c8af51::t_929e2c6cc4c396 5
+sdk-python/wave_sdk/prism.py
+  s_046aea13c8af51::t_bf94a7338d99ae 5
+sdk-python/wave_sdk/pulse.py
+  s_046aea13c8af51::t_74a8bf4453c27b 4
+sdk-python/wave_sdk/qr.py
+  s_046aea13c8af51::t_2999040fa921bc 5
+sdk-python/wave_sdk/scene.py
+  s_046aea13c8af51::t_1947dd0f6bab0d 6
+sdk-python/wave_sdk/search.py
+  s_046aea13c8af51::t_f344965eb10cec 6
+sdk-python/wave_sdk/sentiment.py
+  s_046aea13c8af51::t_5c66ef199ed97a 6
+sdk-python/wave_sdk/signage.py
+  s_046aea13c8af51::t_aefed3736845a6 5
+sdk-python/wave_sdk/slides.py
+  s_046aea13c8af51::t_d61b3b02c9995d 6
+sdk-python/wave_sdk/studio.py
+  s_046aea13c8af51::t_368b5a7f145f0a 5
+sdk-python/wave_sdk/studio_ai.py
+  s_046aea13c8af51::t_86568c09e8a45a 5
+sdk-python/wave_sdk/transcribe.py
+  s_046aea13c8af51::t_01aeb0ccdc996f 6
+sdk-python/wave_sdk/usb.py
+  s_046aea13c8af51::t_9f8a367621ee09 5
+sdk-python/wave_sdk/vault.py
+  s_046aea13c8af51::t_9680502294e4e7 5
+sdk-python/wave_sdk/voice.py
+  s_046aea13c8af51::t_3a46e564375652 6
+sdk-python/wave_sdk/zoom.py
+  s_046aea13c8af51::t_dee4344e1eacf4 5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "ec40c942d9a827a2611c65d387eee0bdf93f533e",
+  "prompts": {},
+  "sessions": {
+    "s_046aea13c8af51": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "agent-a52eb9c7382f389b6",
+        "model": "unknown"
+      },
+      "human_author": "Jake Fineman <jakefineman@gmail.com>"
+    }
+  }
+}
