@@ -4,7 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "wave-av-sdk"
-version = "2.0.0"
+# 2.0.0 is already on PyPI, published as MIT, and PyPI releases are immutable. The Apache-2.0
+# licensing this file declares can therefore only reach a user at a NEW version — see
+# scripts/registry_license_truth.py, which fails the build if this ever collides again.
+version = "2.0.1"
 description = "Official WAVE SDK for Python - 33 API modules for streaming, production, analytics, and more"
 readme = "README.md"
 license = {text = "Apache-2.0"}
