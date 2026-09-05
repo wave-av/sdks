@@ -84,9 +84,15 @@ def main() -> int:
     checks: list[dict] = []
 
     # Guard: a repo checkout on sys.path would make this whole run meaningless.
+    # Keyed on `args.module` (the same name the import check below uses), not a literal
+    # "wave" — that literal was the pre-rename package directory name, and after the
+    # `wave` -> `wave_sdk` rename (ART-001, this repo's sdk-python and the sibling
+    # wave-av/sdk-python repo both moved) a hardcoded "wave" here silently stopped
+    # matching either checkout's real layout, leaving this guard permanently blind
+    # to the exact repo-on-sys.path leak it exists to catch.
     repo_marker_on_path = [
         p for p in sys.path
-        if p and os.path.isdir(os.path.join(p, "sdk-python", "wave"))
+        if p and os.path.isdir(os.path.join(p, "sdk-python", args.module))
     ]
     checks.append(check(
         "cleanroom-isolation",
