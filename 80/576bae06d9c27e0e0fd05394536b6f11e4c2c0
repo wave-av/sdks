@@ -1,0 +1,25 @@
+.github/workflows/test-python.yml
+  s_418f585ff58cb5::t_f177441ccfe066 10,16,42-86
+scripts/ga/cleanroom_python_assert.py
+  s_418f585ff58cb5::t_361dc2936aede3 87-92,95
+sdk-python/pyproject.toml
+  s_418f585ff58cb5::t_8a775273653967 74-76
+sdk-python/tests/test_packaging.py
+  s_418f585ff58cb5::t_755d6c18fad9ab 1-149
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "80576bae06d9c27e0e0fd05394536b6f11e4c2c0",
+  "prompts": {},
+  "sessions": {
+    "s_418f585ff58cb5": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e5b410ce-aa9a-48d6-be5d-09400395b1b6",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Jake Fineman <jakefineman@gmail.com>"
+    }
+  }
+}
