@@ -39,6 +39,69 @@ def check(name: str, ok: bool, detail: str) -> dict:
     return {"name": name, "ok": bool(ok), "detail": detail}
 
 
+# Source-root layouts a checkout can present for the module under test. The clean room must
+# not be able to satisfy `import <module>` from ANY of them, and the guard must not be keyed
+# on one repository's directory names — that is precisely how it went blind before:
+#   ""             wave-av/sdk-python -> `wave_sdk/` at the repository root
+#   "sdk-python"   wave-av/sdks       -> `sdk-python/wave_sdk/`
+#   "src"/"python" the two other conventional source roots, so a future re-layout of either
+#                  repo does not silently disarm this check again
+CHECKOUT_SUBROOTS: tuple[str, ...] = ("", "sdk-python", "src", "python")
+
+
+def interpreter_owned(path: str) -> bool:
+    """True when a sys.path entry belongs to the interpreter/venv under test.
+
+    site-packages (where the published wheel legitimately installs), the stdlib, and
+    everything else under the venv's own prefix are not leaks. They must be excluded
+    explicitly, because the leak test below asks "can this entry supply the module?" and
+    the correct answer for site-packages is yes. The install roots are read from sysconfig
+    and `site` rather than assumed to live under `sys.prefix`, so a `--user` install (which
+    does not) cannot be mistaken for a checkout.
+    """
+    rp = realpath(path)
+    if not rp:
+        return False
+    roots = [realpath(sys.prefix), realpath(getattr(sys, "base_prefix", sys.prefix))]
+    paths = sysconfig.get_paths()
+    roots += [realpath(paths[k]) for k in ("purelib", "platlib", "stdlib", "platstdlib") if k in paths]
+    try:
+        import site
+
+        roots += [realpath(p) for p in (getattr(site, "USER_SITE", None), getattr(site, "USER_BASE", None)) if p]
+    except ImportError:  # pragma: no cover - `site` is unimportable only under -S
+        pass
+    return any(r and (rp == r or rp.startswith(r + os.sep)) for r in roots)
+
+
+def checkout_paths_providing(paths: list[str], module: str) -> list[str]:
+    """sys.path entries from which a SOURCE CHECKOUT could satisfy `import <module>`.
+
+    Layout-independent on purpose. The previous implementation looked for one hardcoded
+    path (`<entry>/sdk-python/wave`); when `wave` was renamed to `wave_sdk` it matched
+    nothing anywhere and reported "no repo checkout on sys.path" unconditionally — a guard
+    that cannot fail, which is worse than no guard, because the whole clean-room result
+    rests on it. Keying on the module actually under test, across the layouts a checkout
+    can have, is what makes it self-maintaining.
+    """
+    hits: list[str] = []
+    for p in paths:
+        entry = p or os.getcwd()  # '' means cwd, which can absolutely be a checkout
+        if interpreter_owned(entry):
+            continue
+        for sub in CHECKOUT_SUBROOTS:
+            base = os.path.join(entry, sub) if sub else entry
+            pkg_dir = os.path.join(base, module)
+            mod_file = os.path.join(base, module + ".py")
+            if os.path.isdir(pkg_dir):
+                hits.append(pkg_dir)
+                break
+            if os.path.isfile(mod_file):
+                hits.append(mod_file)
+                break
+    return hits
+
+
 def dist_top_level(dist_name: str) -> list[str]:
     """Top-level import names the installed distribution claims.
 
@@ -84,16 +147,13 @@ def main() -> int:
     checks: list[dict] = []
 
     # Guard: a repo checkout on sys.path would make this whole run meaningless.
-    # Keyed on `args.module` (the same name the import check below uses), not a literal
-    # "wave" — that literal was the pre-rename package directory name, and after the
-    # `wave` -> `wave_sdk` rename (ART-001, this repo's sdk-python and the sibling
-    # wave-av/sdk-python repo both moved) a hardcoded "wave" here silently stopped
-    # matching either checkout's real layout, leaving this guard permanently blind
-    # to the exact repo-on-sys.path leak it exists to catch.
-    repo_marker_on_path = [
-        p for p in sys.path
-        if p and os.path.isdir(os.path.join(p, "sdk-python", args.module))
-    ]
+    # Keyed on `args.module` (the same name the import check below uses) and on every
+    # source-root layout a checkout can present, not on a literal `sdk-python/wave`:
+    # that literal was the pre-rename package directory of ONE of the two repositories
+    # this probe runs against, so after the `wave` -> `wave_sdk` rename (ART-001) it
+    # matched nothing at all and this guard reported a pass unconditionally — blind to
+    # the exact repo-on-sys.path leak it exists to catch. See checkout_paths_providing().
+    repo_marker_on_path = checkout_paths_providing(list(sys.path), args.module)
     checks.append(check(
         "cleanroom-isolation",
         not repo_marker_on_path,

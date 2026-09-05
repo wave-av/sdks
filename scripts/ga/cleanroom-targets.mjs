@@ -2,7 +2,7 @@
 // hand a context to the checks. Nothing here reads the repository checkout.
 
 import { createHash } from 'node:crypto';
-import { mkdtempSync, writeFileSync } from 'node:fs';
+import { copyFileSync, mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -131,7 +131,16 @@ export async function runPypiTarget(target, args) {
   // cwd is the throwaway room, never the repo: a checkout on sys.path could satisfy an import the
   // published wheel is supposed to satisfy — exactly the illusion this suite exists to destroy.
   // cleanroom_python_assert.py re-verifies that independently and reports it as its own check.
-  const argv = [join(HERE, 'cleanroom_python_assert.py'), '--dist', name, '--module', target.import_module];
+  //
+  // The probe is COPIED into the room before it runs. Python unconditionally prepends the
+  // executed script's own directory to sys.path, so running it in place put `<repo>/scripts/ga`
+  // — a repository directory — first on the path of every clean-room probe, which is the one
+  // thing this whole suite promises never happens. (`-P`/PYTHONSAFEPATH would also fix it but
+  // is 3.11+; the venv's interpreter version is not ours to assume.) `.github/workflows/
+  // test-python.yml`'s smoke-install job already copies the probe for the same reason.
+  const probePath = join(room, 'cleanroom_python_assert.py');
+  copyFileSync(join(HERE, 'cleanroom_python_assert.py'), probePath);
+  const argv = [probePath, '--dist', name, '--module', target.import_module];
   if (target.import_symbol) argv.push('--symbol', target.import_symbol);
   const probe = run(py, argv, { cwd: room, timeout: 180000 });
   let parsed;
