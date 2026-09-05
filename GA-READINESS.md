@@ -7,10 +7,10 @@
 
 ```yaml
 repository: wave-av/sdks
-revision: 70b2a04a205658a25b3723adec9faf665e204af6
+revision: 61e473c627866e06f7474e843d2a077ae67f76e2  # origin/main tip this branch is based on
 repo_class: sdk
 owner: WAVE platform / SDK publishing
-last_evaluated_at: 2026-09-04T00:31:56Z
+last_evaluated_at: 2026-09-04T19:59:00Z
 evaluator_version: scripts/ga/registry-cleanroom.mjs
 spec_version: 1.0.0
 overall_status: fail
@@ -69,29 +69,32 @@ no claim about them. Absence here is `unknown` at the platform gate, not `not_ap
 criterion_id: ART-001
 status: fail
 owner: WAVE platform / SDK publishing
-verification_command: node scripts/ga/registry-cleanroom.mjs
-verified_revision: 70b2a04a205658a25b3723adec9faf665e204af6
-verified_at: 2026-09-04T00:31:56Z
+verification_command: node scripts/ga/registry-cleanroom.mjs --python python3.12
+verified_revision: 61e473c627866e06f7474e843d2a077ae67f76e2
+verified_at: 2026-09-04T19:59:00Z
 evidence:
   - uri: ci://wave-av/sdks/.github/workflows/registry-cleanroom.yml#cleanroom-report.json
-    sha256: 0f03603df2bc33f50958a75c8998777463507c1f9e3ee0fec811d82a3ca1206d
+    sha256: ddb12dfc51476c1d4406806fac37f096474c68a698e41fce1a5815767ba8f10d
 pass_condition_from_spec: >
   All supported runtimes pass from public registries; Python uses a non-stdlib-colliding import;
   source, package metadata, CLI banner, tag and GitHub release agree.
 notes: |
-  Observed against the live registries on 2026-09-04. Passing:
+  Re-observed against the live registries on 2026-09-04, re-running the same command that
+  produced the original 8-failure PR #79 run. One of the 8 originally-failing checks
+  (`@wave-av/mcp-server` `mcp-serverinfo-version-matches-package`) has SELF-RESOLVED live — an
+  npm publish of 0.2.1 landed independently of this change — but its SOURCE on `origin/main`
+  still hardcoded the version literal that caused the original defect (a live pass with a latent
+  regression). This change hardens that source (see "Arming window" below). 7 checks remain
+  failing against the live registries, ALL already fixed in source somewhere (table below) and
+  blocked only on an operator-gated publish:
     @wave-av/sdk@2.1.3        ESM import, CJS require, all 46 declared subpath exports resolve.
     @wave-av/adk@1.0.15       installs and imports.
-    @wave-av/mcp-server@0.2.0 starts over stdio, lists 18 tools, serves every tool its shipped
-                              README advertises.
-  Failing:
-    @wave-av/cli@1.0.8        `wave --version` prints 1.0.0. Installs cleanly and `--help` exits 0,
-                              so nothing short of running the binary detects this.
-    wave-sdk@2.0.0 (PyPI)     `from wave_sdk import Wave` raises ModuleNotFoundError. The wheel's
-                              only top-level name is `wave`, which collides with the CPython stdlib
-                              module of that name; because the stdlib directory precedes
-                              site-packages, `import wave` returns the stdlib WAV reader and the SDK
-                              is unreachable by any name. The artifact is unusable as published.
+    @wave-av/mcp-server@0.2.1 starts over stdio, lists 18 tools, serves every tool its shipped
+                              README advertises, AND serverInfo.version now correctly matches.
+  Failing (root cause fixed in source, publish pending — see the arming-window table below):
+    @wave-av/cli@1.0.8        `wave --version` prints 1.0.0.
+    wave-sdk@2.0.0 (PyPI)     `from wave_sdk import Wave` raises ModuleNotFoundError — top-level
+                              name `wave` collides with the CPython stdlib module of that name.
     wave-av-sdk@2.0.0 (PyPI)  identical defect.
 ```
 
@@ -99,23 +102,29 @@ notes: |
 criterion_id: VER-001
 status: fail
 owner: WAVE platform / SDK publishing
-verification_command: node scripts/ga/registry-cleanroom.mjs
-verified_revision: 70b2a04a205658a25b3723adec9faf665e204af6
-verified_at: 2026-09-04T00:31:56Z
+verification_command: node scripts/ga/registry-cleanroom.mjs --python python3.12
+verified_revision: 61e473c627866e06f7474e843d2a077ae67f76e2
+verified_at: 2026-09-04T19:59:00Z
 evidence:
   - uri: ci://wave-av/sdks/.github/workflows/registry-cleanroom.yml#cleanroom-report.json
-    sha256: 0f03603df2bc33f50958a75c8998777463507c1f9e3ee0fec811d82a3ca1206d
+    sha256: ddb12dfc51476c1d4406806fac37f096474c68a698e41fce1a5815767ba8f10d
 pass_condition_from_spec: >
   Every shipped component resolves to one source revision and version; no newer source is
   represented as deployed; mutable channels are labeled; deployment receipt identifies artifact
   digest.
 notes: |
   This repository covers the REGISTRY half of VER-001 — does the artifact agree with itself about
-  which build it is. Two published artifacts do not:
-    @wave-av/cli@1.0.8        binary self-reports 1.0.0
-    @wave-av/mcp-server@0.2.0 serverInfo.version reports 0.1.0
-  In both cases the package metadata is correct and the code inside it disagrees, so a version
-  comparison against the registry cannot see the defect — only running the artifact can.
+  which build it is. Re-verified 2026-09-04:
+    @wave-av/cli@1.0.8        binary self-reports 1.0.0. FIXED in `wave-av/cli` source
+                              (commit 91093d5, `src/lib/version.ts` now derives the version from
+                              `package.json` at runtime); pending publish.
+    @wave-av/mcp-server@0.2.1 serverInfo.version now correctly reports 0.2.1 — self-resolved live.
+                              Source on `origin/main` still hardcoded the literal that caused the
+                              original defect; hardened in THIS commit (new `src/version.ts`,
+                              wired into `server.ts`, regression test added) so the next publish
+                              cannot regress it.
+  In both cases the package metadata was correct and the code inside it disagreed, so a version
+  comparison against the registry alone cannot see the defect — only running the artifact can.
   Tag/GitHub-release/deployed-endpoint agreement is NOT covered here and remains unknown; it belongs
   to the release-ledger check named in the spec's runnable_command.
 ```
@@ -124,12 +133,12 @@ notes: |
 criterion_id: SUPPLY-001
 status: fail
 owner: WAVE platform / SDK publishing
-verification_command: node scripts/ga/registry-cleanroom.mjs
-verified_revision: 70b2a04a205658a25b3723adec9faf665e204af6
-verified_at: 2026-09-04T00:31:56Z
+verification_command: node scripts/ga/registry-cleanroom.mjs --python python3.12
+verified_revision: 61e473c627866e06f7474e843d2a077ae67f76e2
+verified_at: 2026-09-04T19:59:00Z
 evidence:
   - uri: ci://wave-av/sdks/.github/workflows/registry-cleanroom.yml#cleanroom-report.json
-    sha256: 0f03603df2bc33f50958a75c8998777463507c1f9e3ee0fec811d82a3ca1206d
+    sha256: ddb12dfc51476c1d4406806fac37f096474c68a698e41fce1a5815767ba8f10d
 pass_condition_from_spec: >
   Release artifacts are built by approved CI from an immutable source revision, provenance is
   verifiable, SBOM is attached, critical known vulnerabilities are resolved or explicitly
@@ -137,28 +146,67 @@ pass_condition_from_spec: >
 notes: |
   PARTIAL COVERAGE — this evaluator checks two of the five clauses. A `fail` here is therefore
   sound, but a future `pass` would NOT be sufficient to pass SUPPLY-001 on its own.
-  Covered and failing:
+  Covered and failing (both already fixed in `wave-av/cli` source, pending publish — verified
+  2026-09-04 against `wave-av/cli`'s `origin/main`):
     provenance      @wave-av/cli@1.0.8 carries no npm provenance attestation (dist.attestations is
                     null), while sdk, mcp-server and adk each carry a
-                    https://slsa.dev/provenance/v1 attestation. The CLI was published outside the
-                    provenance-emitting pipeline and cannot be traced to an approved CI build.
-    dependency      @wave-av/cli@1.0.8 declares `@wave-av/sdk: "^2.0.11"`. What a customer receives
-    policy          is decided by npm's resolver on the day they install; today that is 2.1.3. The
-                    published artifact is not reproducible, and this is the precise mechanism by
-                    which a broken SDK shipped inside a CLI that no one had changed.
+                    https://slsa.dev/provenance/v1 attestation. `.github/workflows/release.yml`
+                    already runs `npm publish --provenance` under OIDC trusted publishing —
+                    `1.0.8` predates that pipeline; the next publish carries provenance.
+    dependency      @wave-av/cli@1.0.8 declares `@wave-av/sdk: "^2.0.11"`. `package.json` on
+    policy          `origin/main` already pins it exact (`2.0.14`); pending publish.
   NOT covered here, still unknown: SBOM attachment, vulnerability posture, publisher MFA and
   branch-protection attestation.
 ```
 
+## Arming window (2026-09-04 false-green remediation)
+
+`registry-cleanroom.yml`'s `pull_request` trigger used to run the same checks and then paper
+over a failure with a `::warning` while still exiting `0` — so the GitHub check conclusion read
+**SUCCESS** on a PR whose own log ended `REGISTRY CLEAN-ROOM FAILED: 8 check(s)`. sdks#79 merged
+2026-09-04T18:25:54Z on the strength of that green rollup. As of this commit, every trigger
+(including `pull_request`) hard-fails the job when a check fails — the gate can no longer report
+green while failing.
+
+It is **not yet a required branch-protection status check**, deliberately. `cleanroom` also
+tests artifacts published from **two other repositories** — `wave-av/cli` (`@wave-av/cli`) and
+`wave-av/sdk-python` (`wave-sdk` on PyPI) — that an `sdks` PR cannot fix by itself. Requiring it
+today would red every future `sdks` PR for a defect it did not introduce, training reviewers to
+override rather than read it.
+
+**Re-verified 2026-09-04 (this change): all 8 originally-failing checks are now root-cause fixed
+in source, across three repositories. None remains an open defect — every one is either already
+live or blocked ONLY on an operator-gated publish, which this lane may not cross.**
+
+| # | Check | Source fix | Where | Status |
+|---|---|---|---|---|
+| 1 | `@wave-av/cli` `npm-provenance-attested` | `release.yml` already runs OIDC trusted publishing with `npm publish --provenance` | `wave-av/cli` (verified: `.github/workflows/release.yml`) | fixed in source; `1.0.8` predates it — next publish carries provenance |
+| 2 | `@wave-av/cli` `bin-version-matches-package` | `src/lib/version.ts` derives `CLI_VERSION` from `package.json` at runtime instead of a hardcoded literal | `wave-av/cli` commit `91093d5` (2026-09-03, "fix(version): derive every CLI version surface from package.json (VER-001)") | fixed in source; pending publish (`package.json` already at `1.0.9`) |
+| 3 | `@wave-av/cli` `declared-dep-ranges-pinned` | `@wave-av/sdk` dependency changed from `^2.0.11` to an exact `2.0.14` | `wave-av/cli` `package.json` (verified on `origin/main`) | fixed in source; pending publish |
+| 4 | `@wave-av/mcp-server` `mcp-serverinfo-version-matches-package` | live artifact `0.2.1` already reports the correct `serverInfo.version` — BUT `src/server.ts` on `origin/main` still hardcoded `version: "0.1.0"` in the `McpServer` constructor, a latent regression: the next publish built from unmodified `main` would have reintroduced the exact defect. | **this repo, this commit** — new `sdk-typescript/packages/mcp-server/src/version.ts` (mirrors the CLI's pattern: walk up from the module's own location to find `package.json`, verify its `name` matches, read `version`), wired into `server.ts`; regression test `__tests__/version.test.ts` added; `vitest`/`test` script added to `package.json` (was silently absent — no other package in the workspace lacks it) | **source hardened and verified** (`tsc --noEmit` clean, `vitest run __tests__/version.test.ts` 2/2 pass, and the built `dist/index.js` was probed live over stdio JSON-RPC: `serverInfo.version` now reads `0.1.8`, this repo's current `package.json` version, not a literal) |
+| 5 | `wave-sdk` (PyPI) `py-import-module` | top-level module renamed `wave` → `wave_sdk` | `wave-av/sdk-python` (**separate repo** — this PyPI distribution is built from `github.com/wave-av/sdk-python`, not this monorepo's `sdk-python/`; confirmed via the live package's own `project_urls.Repository`) — already on `origin/main` at version `2.1.0`, package dir is `wave_sdk/` | fixed in source in that repo already; pending publish; **out of this repo's scope to publish or PR** |
+| 6 | `wave-sdk` (PyPI) `py-no-stdlib-shadow` | same rename as #5 | `wave-av/sdk-python` | same as #5 |
+| 7 | `wave-av-sdk` (PyPI) `py-import-module` | top-level module renamed `wave` → `wave_sdk`, `pyproject.toml` `include` updated, all internal imports + tests + docs updated, version bumped `2.0.1` → `3.0.0` | **this repo, this commit** — `sdk-python/` | fixed in source; verified with a real build (`python -m build` + fresh venv install + the actual `cleanroom_python_assert.py` probe: `py-import-module` OK, `py-no-stdlib-shadow` OK); `pytest` 31/31 pass; pending publish |
+| 8 | `wave-av-sdk` (PyPI) `py-no-stdlib-shadow` | same rename as #7 | same as #7 | same as #7 |
+
+Sequence to close the arming window and make `cleanroom` a required check:
+
+1. Publish `wave-av/cli` (carries fixes #1–#3).
+2. Publish `wave-av/sdk-python` under the `wave-sdk` PyPI project (carries fixes #5–#6) — a
+   different repo and a different operator action than this one.
+3. Publish `wave-av-sdk` from a `sdk-python-v3.0.0` tag on **this** repo (carries fixes #7–#8).
+4. Once `node scripts/ga/registry-cleanroom.mjs` reports zero failing checks against the live
+   registries, add `registry clean-room acceptance / cleanroom` to the default branch's required
+   status checks. It already runs on every PR with no path filter, so it can be made required
+   without a permanently-unreported gap.
+
+None of steps 1–3 is a source change this lane is blocked on producing — they are blocked on an
+operator triggering a publish (npm/PyPI Trusted Publisher, `pypi-publish` environment
+required-reviewer), which is explicitly outside what an automated lane may do.
+
 ## Operator actions to finish these criteria
 
-1. **Make the release gate blocking.** The clean-room job hard-fails on schedule, release and
-   dispatch, but it is not yet a *required* status check. Add
-   `registry clean-room acceptance / cleanroom` to the default branch's required checks. It runs on
-   every pull request with no path filter precisely so it can be made required without going
-   permanently unreported.
-2. **Fix the three artifact defects the gate found** (each needs a publish, which is a named floor
-   and not this lane's to cross): the CLI version constant, the MCP server's `serverInfo.version`,
-   and the Python distribution's top-level module name.
-3. **Republish the CLI through the provenance-emitting workflow** so `dist.attestations` is
-   populated, and exact-pin its first-party dependency.
+1. **Publish** `wave-av/cli`, `wave-av/sdk-python`, and this repo's `sdk-python-v3.0.0` tag — the
+   only remaining action; every source defect the gate found is already fixed (table above).
+2. **Make the release gate blocking** once all three publishes land and `cleanroom` reports zero
+   failures against the live registries.

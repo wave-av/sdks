@@ -12,6 +12,7 @@ import { registerAgenticMediaTools } from "./tools/agentic-media.js";
 import { registerGatewayTools } from "./tools/gateway.js";
 import { registerStreamResources } from "./resources/streams.js";
 import { registerProductionResources } from "./resources/productions.js";
+import { MCP_SERVER_VERSION } from "./version.js";
 
 export async function startServer(): Promise<void> {
   // P18.4 #4 — Initialize Dash0 OTLP visibility (no-op when DASH0_AUTH_TOKEN unset).
@@ -27,7 +28,7 @@ export async function startServer(): Promise<void> {
 
   const server = new McpServer({
     name: "wave-mcp-server",
-    version: "0.1.0",
+    version: MCP_SERVER_VERSION,
   });
 
   // Register tools

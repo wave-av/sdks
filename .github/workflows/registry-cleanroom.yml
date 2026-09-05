@@ -14,14 +14,33 @@ name: registry clean-room acceptance
 # range on @wave-av/sdk is a caret range, so what a customer receives is decided by npm's resolver
 # on the day they install, not by anything in this repo. Only a scheduled run catches that.
 #
-# BLOCKING BEHAVIOUR
-# schedule / workflow_run(release) / workflow_dispatch -> HARD FAIL, and open-or-update an issue.
-# pull_request                                         -> informational only.
-# A PR is not the cause of an already-published defect, so a PR is not blocked by one. The PR run
-# exists so that a change to the gate itself is exercised before it merges. There is deliberately
-# NO path filter: the check reports on every PR, which is what makes it eligible to become a
-# required status check later (a path-filtered required check stays permanently unreported and
-# blocks every PR that misses the filter — the lesson already recorded in registry-parity.yml).
+# BLOCKING BEHAVIOUR (revised 2026-09-04, GA false-green remediation)
+# Every trigger — schedule / workflow_run(release) / workflow_dispatch / pull_request — HARD
+# FAILS the job (non-zero exit) when a published artifact fails clean-room acceptance.
+# schedule / workflow_run / workflow_dispatch additionally open-or-update a tracking issue,
+# because a nightly that fails quietly is worse than no nightly at all.
+#
+# Until 2026-09-04 pull_request ran the identical checks but always exited 0 — a `::warning`
+# annotation stood in for a real result, so the GitHub check CONCLUSION read SUCCESS even when
+# the run's own log ended "REGISTRY CLEAN-ROOM FAILED: 8 check(s)". sdks#79 merged on the
+# strength of that green rollup, carrying the 8 known artifact defects onto main un-remediated.
+# That is now impossible: this job reports its true state on every event.
+#
+# WHY IT IS NOT (yet) A *REQUIRED* STATUS CHECK
+# Failing honestly and being required to merge are two different questions. As of 2026-09-04
+# this repo's own published artifacts, plus artifacts published from wave-av/cli and
+# wave-av/sdk-python that this gate also tests, carry known defects (see GA-READINESS.md,
+# "Arming window") that cannot be cleared by an sdks PR alone — some require a publish this
+# workflow cannot make (npm/PyPI publish is operator-gated), some require a fix landing in a
+# different repo. Making this check *required* today would red every future sdks PR for a
+# defect that PR did not introduce and cannot fix — training reviewers to override or ignore a
+# required check is worse than not having one. So: loud-but-advisory now (this job fails
+# honestly, and that failure is visible on statusCheckRollup), required later, once
+# GA-READINESS.md's "Arming window" section reports zero outstanding cleanroom failures. There
+# is deliberately NO path filter: the check reports on every PR, which is what makes it eligible
+# to become a required status check later without a permanently-unreported gap (a path-filtered
+# required check blocks every PR that misses the filter — the lesson already recorded in
+# registry-parity.yml).
 
 on:
   schedule:
@@ -134,9 +153,17 @@ jobs:
           fi
 
       - name: Enforce
-        # Hard-fail everywhere the result is actionable. A pull request is informational: it did not
-        # publish the artifact under test and cannot fix it.
-        if: github.event_name != 'pull_request'
+        # Hard-fail on every trigger, including pull_request. A PR did not publish the artifact
+        # under test and cannot fix it by itself — but that is an argument against making this a
+        # *required* branch-protection check while known registry defects are outstanding
+        # (tracked separately; see GA-READINESS.md "Arming window"), never an argument for
+        # reporting a false SUCCESS. Before 2026-09-04 this step no-opped on pull_request and a
+        # sibling "informational" step printed a ::warning while still exiting 0 — so the check
+        # conclusion read SUCCESS on a PR whose own log said "REGISTRY CLEAN-ROOM FAILED: 8
+        # check(s)" (sdks#79, merged 2026-09-04T18:25:54Z on the strength of that green rollup).
+        # A gate that cannot fail is not a gate. This step now fails loud on every event; the
+        # only thing pull_request changes is whether GitHub treats that failure as *required*,
+        # and that is controlled by branch protection, not by this workflow.
         env:
           CODE: ${{ steps.cleanroom.outputs.exit_code }}
         run: |
@@ -145,11 +172,3 @@ jobs:
             exit 1
           fi
           echo "registry clean-room acceptance passed"
-
-      - name: Report (pull request, informational)
-        if: github.event_name == 'pull_request'
-        env:
-          CODE: ${{ steps.cleanroom.outputs.exit_code }}
-        run: |
-          [ "$CODE" = "0" ] && echo "clean-room acceptance passed" \
-            || echo "::warning title=registry clean-room::published artifacts fail clean-room acceptance (exit $CODE). Not blocking this PR — see the job summary."
