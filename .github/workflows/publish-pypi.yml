@@ -5,6 +5,11 @@ name: pypi publish (OIDC trusted publishing)
 # leak/rotate; a Trusted Publisher must be registered on pypi.org for this repo + this workflow
 # file + the `pypi-publish` environment before a real publish. Inert until then: tag pushes +
 # the dry-run dispatch only build + validate the distributions.
+#
+# Canonical publisher of record for wave-sdk is now the standalone wave-av/sdk-python repo
+# (Option A, ratified 2026-09-06 — see governance/evidence/ga/OWNER-BINDING-sdks-2026-09-05.md,
+# ART-001/OWNER-BINDING). Jobs below are gated off by default; set the MONOREPO_NPM_PYPI_PUBLISH
+# repo variable to "true" to re-enable this pipeline.
 on:
   push:
     tags: ["sdk-python-v*"]
@@ -20,6 +25,7 @@ permissions:
 
 jobs:
   build:
+    if: vars.MONOREPO_NPM_PYPI_PUBLISH == 'true'
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -43,7 +49,9 @@ jobs:
     runs-on: ubuntu-latest
     # Only on a real tag push (not the dry-run dispatch). Requires the PyPI Trusted Publisher
     # + this environment to be registered first; otherwise the job is never reached on dispatch.
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/sdk-python-v')
+    # Also requires the MONOREPO_NPM_PYPI_PUBLISH repo variable (see header) since this pipeline
+    # is frozen under Option A (2026-09-06).
+    if: vars.MONOREPO_NPM_PYPI_PUBLISH == 'true' && github.event_name == 'push' && startsWith(github.ref, 'refs/tags/sdk-python-v')
     environment: pypi-publish      # required-reviewer gate on real publishes
     permissions:
       id-token: write              # OIDC trusted publishing + provenance attestation

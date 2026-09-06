@@ -1,5 +1,9 @@
 # @wave-av/sdk
 
+> **Canonical package:** The supported package is `@wave-av/sdk` published from
+> [github.com/wave-av/sdk](https://github.com/wave-av/sdk). This monorepo (`wave-av/sdks`) no
+> longer publishes npm packages.
+
 The **umbrella** SDK — re-exports `@wave-av/core` plus every `@wave-av/<product>` client for one-install discovery.
 
 ```bash
