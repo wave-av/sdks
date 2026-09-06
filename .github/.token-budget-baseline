@@ -1,0 +1,6 @@
+# Seeded 2026-08-31 (the token-budget census lane): codegen/openapi.yaml is the VENDORED copy of
+# the gateway OpenAPI (api-spec/openapi.yaml) the polyglot codegen consumes as input (#7). It is a
+# copy, not a generator output — no AUTO-GENERATED marker — and it is too load-bearing to split.
+# Baselined at origin size so the ratchet forbids drift-growth; the honest lifecycle is tracking
+# the PARENT spec, which is baselined to shrink (api-spec#70). Burndown, not parking.
+codegen/openapi.yaml	55447

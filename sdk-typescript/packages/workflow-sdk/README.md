@@ -1,5 +1,9 @@
 # @wave-av/workflow-sdk
 
+> **Canonical package:** The supported package is `@wave-av/workflow-sdk` published from
+> [github.com/wave-av/workflow-sdk](https://github.com/wave-av/workflow-sdk). This monorepo
+> (`wave-av/sdks`) no longer publishes npm packages.
+
 [![npm version](https://img.shields.io/npm/v/@wave-av/workflow-sdk.svg)](https://www.npmjs.com/package/@wave-av/workflow-sdk)
 [![npm downloads](https://img.shields.io/npm/dm/@wave-av/workflow-sdk.svg)](https://www.npmjs.com/package/@wave-av/workflow-sdk)
 [![license](https://img.shields.io/npm/l/@wave-av/workflow-sdk.svg)](https://github.com/wave-av/sdks/blob/main/LICENSE)
