@@ -1,0 +1,19 @@
+.github/workflows/publish-npm.yml
+  s_34a65985852f2e::t_57ccb418bfd55a 8-12,29,36-37,40,42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "081cba27c7c5d2b84933d2023602e06fffbc3624",
+  "prompts": {},
+  "sessions": {
+    "s_34a65985852f2e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "agent-a24ffff93393105fe",
+        "model": "unknown"
+      },
+      "human_author": "Jake Fineman <jakefineman@gmail.com>"
+    }
+  }
+}
