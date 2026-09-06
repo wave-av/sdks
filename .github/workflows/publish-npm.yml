@@ -5,6 +5,11 @@ name: npm publish (OIDC + provenance)
 # (NO NPM_TOKEN to leak/rotate); a Trusted Publisher must be registered on npmjs.com for
 # this repo + this workflow file + the `npm-publish` environment before a real publish.
 # Inert until then: tag pushes + the dry-run dispatch only pack/validate.
+#
+# Canonical publisher of record for @wave-av/sdk is now the standalone wave-av/sdk repo
+# (Option A, ratified 2026-09-06 — see governance/evidence/ga/OWNER-BINDING-sdks-2026-09-05.md,
+# ART-001/OWNER-BINDING). Jobs below are gated off by default; set the MONOREPO_NPM_PYPI_PUBLISH
+# repo variable to "true" to re-enable this pipeline.
 on:
   push:
     tags: ["sdks-v*"]
@@ -21,18 +26,20 @@ permissions:
 
 jobs:
   publish:
+    if: vars.MONOREPO_NPM_PYPI_PUBLISH == 'true'
     runs-on: ubuntu-latest
     environment: npm-publish     # required-reviewer gate on real publishes
     defaults:
       run:
         working-directory: sdk-typescript
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
         with:
           version: 9
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
+          package-manager-cache: false
           node-version: "22"
           registry-url: "https://registry.npmjs.org"
       - name: Upgrade npm (OIDC trusted publishing needs npm >= 11.5)
