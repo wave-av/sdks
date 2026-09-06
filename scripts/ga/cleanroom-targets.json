@@ -1,0 +1,96 @@
+{
+  "$comment": [
+    "Declarative target manifest for scripts/ga/registry-cleanroom.mjs.",
+    "Every entry describes an artifact THE PUBLIC REGISTRY SERVES — never a local checkout.",
+    "`checks` names are implemented in registry-cleanroom.mjs (CHECKS table); each check",
+    "maps to the GA criterion IDs it produces evidence for. Adding a package here is the",
+    "only edit needed to bring it under the clean-room gate."
+  ],
+  "spec_version": "1.0.0",
+  "repository": "wave-av/sdks",
+  "targets": [
+    {
+      "id": "npm-sdk",
+      "ecosystem": "npm",
+      "package": "@wave-av/sdk",
+      "checks": [
+        "npm-provenance-attested",
+        "esm-import",
+        "cjs-require",
+        "subpath-exports"
+      ]
+    },
+    {
+      "id": "npm-cli",
+      "ecosystem": "npm",
+      "package": "@wave-av/cli",
+      "bin": "wave",
+      "checks": [
+        "npm-provenance-attested",
+        "bin-help-exit-zero",
+        "bin-version-matches-package",
+        "bin-help-banner-version-consistent",
+        "declared-dep-ranges-pinned"
+      ]
+    },
+    {
+      "id": "npm-mcp-server",
+      "ecosystem": "npm",
+      "package": "@wave-av/mcp-server",
+      "bin": "wave-mcp-server",
+      "checks": [
+        "npm-provenance-attested",
+        "esm-import",
+        "mcp-server-lists-tools",
+        "mcp-serverinfo-version-matches-package",
+        "mcp-advertised-tools-are-served"
+      ]
+    },
+    {
+      "id": "npm-adk",
+      "ecosystem": "npm",
+      "package": "@wave-av/adk",
+      "checks": [
+        "npm-provenance-attested",
+        "esm-import"
+      ]
+    },
+    {
+      "id": "pypi-wave-sdk",
+      "ecosystem": "pypi",
+      "package": "wave-sdk",
+      "import_module": "wave_sdk",
+      "import_symbol": "Wave",
+      "checks": [
+        "py-import-module",
+        "py-no-stdlib-shadow"
+      ]
+    },
+    {
+      "id": "pypi-wave-av-sdk",
+      "ecosystem": "pypi",
+      "package": "wave-av-sdk",
+      "import_module": "wave_sdk",
+      "import_symbol": "Wave",
+      "checks": [
+        "py-import-module",
+        "py-no-stdlib-shadow"
+      ]
+    }
+  ],
+  "criteria_map": {
+    "npm-provenance-attested": ["SUPPLY-001"],
+    "esm-import": ["ART-001"],
+    "cjs-require": ["ART-001"],
+    "subpath-exports": ["ART-001"],
+    "bin-help-exit-zero": ["ART-001"],
+    "bin-version-matches-package": ["ART-001", "VER-001"],
+    "bin-help-banner-version-consistent": ["ART-001", "VER-001"],
+    "declared-dep-ranges-pinned": ["SUPPLY-001", "VER-001"],
+    "mcp-server-lists-tools": ["ART-001"],
+    "mcp-serverinfo-version-matches-package": ["ART-001", "VER-001"],
+    "mcp-advertised-tools-are-served": ["ART-001"],
+    "py-import-module": ["ART-001"],
+    "py-no-stdlib-shadow": ["ART-001"]
+  }
+}

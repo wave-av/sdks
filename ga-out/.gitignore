@@ -1,0 +1,8 @@
+# Clean-room run output (cleanroom-report.json, ga-evidence.json) is a CI artifact, never a
+# committed one: evidence must describe a run that actually happened, in the environment that
+# happened to run it. Committing a locally generated report would let a stale file masquerade as
+# current evidence — the exact failure mode the GA gate exists to prevent.
+#
+# Self-ignoring so the root .gitignore does not need to change.
+*
+!.gitignore
