@@ -98,3 +98,71 @@ export function installedFile(room, pkgName, ...rel) {
   const p = join(room, 'node_modules', ...pkgName.split('/'), ...rel);
   return existsSync(p) ? p : null;
 }
+
+/**
+ * PEP 440 version ordering, good enough for the plain `MAJOR.MINOR.PATCH[.pre]`-style versions
+ * this suite's targets actually publish. Compares numerically, segment by segment, so `2.10.0`
+ * sorts after `2.9.0` (a naive string/lexicographic compare would get that backwards). A missing
+ * trailing segment is treated as `0` (`2.2` == `2.2.0`). Not a full PEP 440 parser (no epochs, no
+ * pre/post/dev-release ordering) — deliberately: a hand-rolled partial semver parser is exactly
+ * the kind of "close enough" that hides a real defect, so this stays intentionally narrow and the
+ * caller (`latestNonYankedVersion`) falls back to `null` (skip the cross-check) rather than guess
+ * on any version string it cannot confidently parse.
+ */
+export function parsePyVersion(v) {
+  const m = /^(\d+(?:\.\d+)*)$/.exec(String(v).trim());
+  if (!m) return null;
+  return m[1].split('.').map((n) => Number.parseInt(n, 10));
+}
+
+export function comparePyVersions(a, b) {
+  const pa = parsePyVersion(a);
+  const pb = parsePyVersion(b);
+  if (!pa || !pb) return null;
+  const len = Math.max(pa.length, pb.length);
+  for (let i = 0; i < len; i += 1) {
+    const da = pa[i] ?? 0;
+    const db = pb[i] ?? 0;
+    if (da !== db) return da < db ? -1 : 1;
+  }
+  return 0;
+}
+
+/** True when every file PyPI lists for a release is yanked (PEP 592) — i.e. the release itself
+ * is yanked, whether or not `info.yanked` also says so (the per-file flag is authoritative; a
+ * release with zero files is not "yanked", it is unpublished/missing and callers handle that
+ * separately). */
+export function releaseIsYanked(files) {
+  return Array.isArray(files) && files.length > 0 && files.every((f) => f?.yanked === true);
+}
+
+export function yankReason(versionMeta) {
+  const reasons = new Set();
+  if (versionMeta?.info?.yanked_reason) reasons.add(versionMeta.info.yanked_reason);
+  for (const f of versionMeta?.urls || []) {
+    if (f?.yanked && f?.yanked_reason) reasons.add(f.yanked_reason);
+  }
+  return reasons.size > 0 ? [...reasons].join('; ') : '(no reason given)';
+}
+
+/**
+ * The version a real, unconstrained `pip install <name>` resolves to: the highest release whose
+ * files are NOT all yanked. This is deliberately NOT `projectMeta.info.version` — PyPI keeps
+ * `info.version` pointed at the most-recently-published release even after every file in it (and
+ * every earlier release) has been yanked (verified live against `pypi.org/pypi/wave-av-sdk/json`
+ * on 2026-09-08: `info.version` "3.0.0", `info.yanked` true, releases 2.0.0 and 3.0.0 both fully
+ * yanked). Returns `null` when no comparably-parseable non-yanked release exists (all yanked, or
+ * every version string is outside the narrow scheme `comparePyVersions` understands) — callers
+ * treat `null` as "cannot cross-check", never as "no constraint".
+ */
+export function latestNonYankedVersion(projectMeta) {
+  const releases = projectMeta?.releases || {};
+  let best = null;
+  for (const [version, files] of Object.entries(releases)) {
+    if (releaseIsYanked(files)) continue;
+    if (!Array.isArray(files) || files.length === 0) continue; // no files published under this version
+    if (parsePyVersion(version) === null) continue;
+    if (best === null || comparePyVersions(version, best) > 0) best = version;
+  }
+  return best;
+}

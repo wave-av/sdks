@@ -5,6 +5,11 @@ name: npm publish (OIDC + provenance)
 # (NO NPM_TOKEN to leak/rotate); a Trusted Publisher must be registered on npmjs.com for
 # this repo + this workflow file + the `npm-publish` environment before a real publish.
 # Inert until then: tag pushes + the dry-run dispatch only pack/validate.
+#
+# Canonical publisher of record for @wave-av/sdk is now the standalone wave-av/sdk repo
+# (Option A, ratified 2026-09-06 — see governance/evidence/ga/OWNER-BINDING-sdks-2026-09-05.md,
+# ART-001/OWNER-BINDING). Jobs below are gated off by default; set the MONOREPO_NPM_PYPI_PUBLISH
+# repo variable to "true" to re-enable this pipeline.
 on:
   push:
     tags: ["sdks-v*"]
@@ -21,6 +26,7 @@ permissions:
 
 jobs:
   publish:
+    if: vars.MONOREPO_NPM_PYPI_PUBLISH == 'true'
     runs-on: ubuntu-latest
     environment: npm-publish     # required-reviewer gate on real publishes
     defaults:

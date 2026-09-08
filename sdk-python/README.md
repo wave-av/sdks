@@ -1,5 +1,9 @@
 # WAVE SDK for Python
 
+> **Canonical package:** The supported Python SDK is `wave-sdk` from
+> [github.com/wave-av/sdk-python](https://github.com/wave-av/sdk-python). `wave-av-sdk` from this
+> monorepo is frozen at 3.0.0 and will be marked deprecated on PyPI.
+
 Official Python SDK for the WAVE API by WAVE Online, LLC
 
 ## Installation

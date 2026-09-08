@@ -17,7 +17,8 @@
         "npm-provenance-attested",
         "esm-import",
         "cjs-require",
-        "subpath-exports"
+        "subpath-exports",
+        "sbom-presence"
       ]
     },
     {
@@ -30,7 +31,8 @@
         "bin-help-exit-zero",
         "bin-version-matches-package",
         "bin-help-banner-version-consistent",
-        "declared-dep-ranges-pinned"
+        "declared-dep-ranges-pinned",
+        "sbom-presence"
       ]
     },
     {
@@ -43,7 +45,8 @@
         "esm-import",
         "mcp-server-lists-tools",
         "mcp-serverinfo-version-matches-package",
-        "mcp-advertised-tools-are-served"
+        "mcp-advertised-tools-are-served",
+        "sbom-presence"
       ]
     },
     {
@@ -52,7 +55,8 @@
       "package": "@wave-av/adk",
       "checks": [
         "npm-provenance-attested",
-        "esm-import"
+        "esm-import",
+        "sbom-presence"
       ]
     },
     {
@@ -63,18 +67,19 @@
       "import_symbol": "Wave",
       "checks": [
         "py-import-module",
-        "py-no-stdlib-shadow"
+        "py-no-stdlib-shadow",
+        "sbom-presence"
       ]
     },
     {
       "id": "pypi-wave-av-sdk",
       "ecosystem": "pypi",
       "package": "wave-av-sdk",
-      "import_module": "wave_sdk",
-      "import_symbol": "Wave",
+      "expect": "yanked",
+      "$comment": "NEGATIVE CONTROL, not a positive install target. wave-av-sdk is the deliberately retired legacy package name (canonical is wave-sdk, current 2.2.0) per IGV-D-024 (2026-09-07) — every release on PyPI is yanked. Absence must never read as health: this target asserts the retirement is still true (info.yanked / every release's files yanked) AND that an unconstrained `pip install wave-av-sdk` still fails, so a future un-yank or republish under this name is caught loudly instead of silently passing by omission.",
       "checks": [
-        "py-import-module",
-        "py-no-stdlib-shadow"
+        "negative-control-yanked",
+        "negative-control-install-refused"
       ]
     }
   ],
@@ -91,6 +96,11 @@
     "mcp-serverinfo-version-matches-package": ["ART-001", "VER-001"],
     "mcp-advertised-tools-are-served": ["ART-001"],
     "py-import-module": ["ART-001"],
-    "py-no-stdlib-shadow": ["ART-001"]
+    "py-no-stdlib-shadow": ["ART-001"],
+    "yank-state": ["ART-001", "SUPPLY-001"],
+    "latest-is-non-yanked": ["ART-001", "VER-001"],
+    "negative-control-yanked": ["SUPPLY-001"],
+    "negative-control-install-refused": ["ART-001", "SUPPLY-001"],
+    "sbom-presence": ["SUPPLY-001"]
   }
 }
