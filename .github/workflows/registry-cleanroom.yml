@@ -41,6 +41,26 @@ name: registry clean-room acceptance
 # to become a required status check later without a permanently-unreported gap (a path-filtered
 # required check blocks every PR that misses the filter — the lesson already recorded in
 # registry-parity.yml).
+#
+# ARTIFACT-UPLOAD 403s WERE TRANSIENT, NOT A PERMISSIONS GAP (investigated 2026-09-08, cw#4803)
+# The "Upload GA evidence" step (`actions/upload-artifact@v4`) failed on runs 34249236935 and
+# 34254764342 with `Failed to FinalizeArtifact: ... (403) Forbidden: Error from intermediary`,
+# while runs 34253661323 and 34253751343 on the byte-identical job content uploaded fine. An
+# initial hypothesis — that the job was missing `actions: write` — was proposed, landed on a PR,
+# reviewed by three independent tools (codeant-ai, cubic-dev-ai, coderabbitai), and then TESTED
+# and DISPROVEN by a real control experiment: re-dispatching the workflow on unchanged `main`
+# (still with no `actions: write`, run 34258507516) succeeded a few minutes later with no code
+# change at all — the same fail/pass/pass/fail/pass pattern a static permissions gap cannot
+# produce. The reviewers were right, and cited two independent confirmations worth keeping on
+# record: standard `actions/upload-artifact` uploads do not require `actions: write` per GitHub's
+# own documentation (that scope is for programmatic artifact delete/overwrite via the API), and
+# this repo's own `publish-pypi.yml` uploads with the identical pinned action using only
+# `contents: read`. Root cause: an intermittent, external GitHub Actions Artifacts-backend
+# ("Actions Results" service) error, not anything in this repository's configuration — nothing
+# here was changed as a result, deliberately, since granting an unused `actions: write` scope to a
+# job that runs untrusted npm/pip package lifecycle scripts would have been a real (if minor)
+# unnecessary-privilege regression for zero benefit. Left as a comment so nobody re-proposes the
+# same disproven fix next time this transient error recurs.
 
 on:
   schedule:
