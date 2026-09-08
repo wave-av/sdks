@@ -11,6 +11,7 @@ import {
   PUBLIC_NPM, bad, fetchJson, installedFile, installedManifest, latestNonYankedVersion,
   npmCleanRoom, npmEncode, ok, releaseIsYanked, run, yankReason,
 } from './cleanroom-util.mjs';
+import { checkSbomPresence } from './sbom-presence.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 
@@ -191,6 +192,19 @@ export async function runPypiTarget(target, args) {
   }
 
   result.checks.push(...yankEval.checks);
+
+  // SUPPLY-001 (cw#4803): independent of installability — asks whether the GitHub Release backing
+  // this PyPI package carries an SBOM asset. PyPI's own metadata declares the repository
+  // (`project_urls.Repository`); reported back rather than hardcoded, same rule as the npm path
+  // in cleanroom-checks.mjs. Not run for the `expect: 'yanked'` negative-control target above —
+  // that target's whole job is proving a retirement, and returns before reaching here.
+  if (target.checks.includes('sbom-presence')) {
+    result.checks.push(await checkSbomPresence({
+      packageLabel: `${name}@${version}`,
+      repoRaw: projectMeta?.info?.project_urls?.Repository,
+    }));
+  }
+
   if (!yankEval.installable) return result;
 
   const room = mkdtempSync(join(tmpdir(), 'wave-cleanroom-py-'));
@@ -223,11 +237,15 @@ export async function runPypiTarget(target, args) {
 
   result.python = parsed.python;
   result.top_level = parsed.top_level;
-  const wanted = new Set(target.checks);
+  // 'sbom-presence' is handled directly in JS above (it is not, and cannot be, produced by
+  // cleanroom_python_assert.py) — exclude it here so the "missing check" reconciliation below
+  // doesn't mistake an already-satisfied JS-side check for one the Python probe forgot to emit.
+  const pythonWantedChecks = target.checks.filter((c) => c !== 'sbom-presence');
+  const wanted = new Set(pythonWantedChecks);
   for (const c of parsed.checks) {
     if (c.name === 'cleanroom-isolation' || wanted.has(c.name)) result.checks.push(c);
   }
-  for (const want of target.checks) {
+  for (const want of pythonWantedChecks) {
     if (!parsed.checks.some((c) => c.name === want)) result.checks.push(bad(want, 'check not produced by cleanroom_python_assert.py'));
   }
   return result;

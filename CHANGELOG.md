@@ -6,6 +6,19 @@ All notable changes to this project are documented here. The format is based on
 
 ## [Unreleased]
 
+### Added
+
+- **SBOM-presence GA check (SUPPLY-001, cw#4803)**: this repo publishes no GitHub Release of its
+  own (`gh release list` is empty; every `publish-*.yml` job ships straight to a package
+  registry), so instead of an in-workflow `sbom` job (not applicable here) it now extends the GA
+  evidence tooling — `scripts/ga/sbom-presence.mjs`, wired into `registry-cleanroom.mjs` via a new
+  `sbom-presence` check on the `npm-sdk`, `npm-cli`, `npm-mcp-server`, `npm-adk`, and
+  `pypi-wave-sdk` targets. For each published package it reads the repository the package's OWN
+  metadata declares and checks that repository's latest GitHub Release for a `*.spdx.json` /
+  `*.cdx.json` asset — PASS/FAIL is recorded per package, never fabricated (see `GA-READINESS.md`,
+  SUPPLY-001: every package fails today, the honest state before any sibling repo has shipped an
+  SBOM-producing release workflow). Unit tests: `scripts/ga/__tests__/sbom-presence.test.mjs`.
+
 ### Changed
 
 - **BREAKING for Go SDK consumers: the minimum Go version is now 1.25** (`sdk-go/go.mod`,

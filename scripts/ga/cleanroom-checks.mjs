@@ -8,10 +8,20 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { bad, installedManifest, ok, run } from './cleanroom-util.mjs';
+import { checkSbomPresence } from './sbom-presence.mjs';
 
 const DEFAULT_ADVERTISED_TOOL_PATTERN = '(?:wave|mvp)_[a-z0-9_]+';
 
 export const CHECKS = {
+  // SUPPLY-001 (cw#4803): does the GitHub Release backing this npm package carry an SBOM asset
+  // (*.spdx.json / *.cdx.json)? Reads the repository npm's own metadata declares
+  // (`ctx.packument.repository`) — never a hardcoded owner/repo map — and asks GitHub's Releases
+  // API directly. See sbom-presence.mjs for the shared (npm + PyPI) implementation.
+  'sbom-presence': async (ctx) => checkSbomPresence({
+    packageLabel: `${ctx.pkg}@${ctx.version}`,
+    repoRaw: ctx.packument?.repository,
+  }),
+
   'npm-provenance-attested': async (ctx) => {
     const att = ctx.packument?.dist?.attestations;
     if (att?.provenance?.predicateType) {

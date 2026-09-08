@@ -144,8 +144,9 @@ pass_condition_from_spec: >
   verifiable, SBOM is attached, critical known vulnerabilities are resolved or explicitly
   risk-accepted, and publisher accounts require strong MFA.
 notes: |
-  PARTIAL COVERAGE — this evaluator checks two of the five clauses. A `fail` here is therefore
-  sound, but a future `pass` would NOT be sufficient to pass SUPPLY-001 on its own.
+  PARTIAL COVERAGE — this evaluator now checks three of the five clauses (provenance, dependency
+  policy, and — as of this change (cw#4803, ci/sbom-on-release) — SBOM attachment). A `fail` here
+  is therefore sound, but a future `pass` would NOT be sufficient to pass SUPPLY-001 on its own.
   Covered and failing (both already fixed in `wave-av/cli` source, pending publish — verified
   2026-09-04 against `wave-av/cli`'s `origin/main`):
     provenance      @wave-av/cli@1.0.8 carries no npm provenance attestation (dist.attestations is
@@ -155,8 +156,49 @@ notes: |
                     `1.0.8` predates that pipeline; the next publish carries provenance.
     dependency      @wave-av/cli@1.0.8 declares `@wave-av/sdk: "^2.0.11"`. `package.json` on
     policy          `origin/main` already pins it exact (`2.0.14`); pending publish.
-  NOT covered here, still unknown: SBOM attachment, vulnerability posture, publisher MFA and
-  branch-protection attestation.
+  NOT covered here, still unknown: vulnerability posture, publisher MFA and branch-protection
+  attestation.
+
+  ## SBOM attachment (SUPPLY-001, added this change — cw#4803)
+
+  This repo publishes NO GitHub Release itself (`gh release list --repo wave-av/sdks` returns
+  `[]`; no workflow here runs `gh release create`/`softprops/action-gh-release`/
+  `actions/upload-release-asset` — every `publish-*.yml` job ships straight to a package registry
+  — npm, PyPI, crates.io, RubyGems — via OIDC trusted publishing, never a GitHub Release asset).
+  So there is no in-repo release job to attach an SBOM to here (path 2a from cw#4803 does not
+  apply to this repo). What this repo DOES own is the evidence side: `scripts/ga/sbom-presence.mjs`
+  is a new ecosystem-agnostic check, wired into `registry-cleanroom.mjs` via
+  `cleanroom-targets.json`'s `sbom-presence` check on `npm-sdk`, `npm-cli`, `npm-mcp-server`,
+  `npm-adk`, `pypi-wave-sdk`. It reads each package's OWN declared repository (npm
+  `repository.url`, PyPI `project_urls.Repository` — never a hardcoded owner/repo map, so it does
+  not drift the next time a package's canonical repo moves) and asks that repo's GitHub Releases
+  API (`GET /repos/{owner}/{repo}/releases/latest`) whether the release carries a `*.spdx.json` or
+  `*.cdx.json` asset.
+
+  Real, non-fabricated run against the LIVE registries and LIVE GitHub Releases, 2026-09-08
+  (`node scripts/ga/registry-cleanroom.mjs`, local pre-merge verification — not yet a CI artifact
+  URI, since this is the change introducing the check; the `registry-cleanroom.yml` `pull_request`
+  trigger produces the CI-artifact version of this same evidence once this change is a PR):
+
+    @wave-av/sdk@2.1.3        FAIL — wave-av/sdk@sdk-v2.1.3 release carries only
+                              `wave-av-sdk-2.1.3.tgz`, no SBOM asset.
+    @wave-av/cli@1.0.10       FAIL — wave-av/cli@v1.0.10 release carries only
+                              `wave-av-cli-1.0.10.tgz`, no SBOM asset.
+    @wave-av/mcp-server@0.3.0 FAIL — wave-av/mcp-server@v0.3.0 release carries NO assets at all.
+    @wave-av/adk@1.0.15       FAIL — wave-av/adk@v1.0.6 release carries NO assets at all (repo tag
+                              lags the npm-published 1.0.15; either way, no SBOM).
+    wave-sdk@2.2.0 (PyPI)     FAIL — wave-av/sdk-python@v2.2.0 release carries only the wheel and
+                              sdist, no SBOM asset.
+
+  Every checked package fails today — this is the honest negative control cw#4803 requires (no
+  sibling repo has shipped an SBOM-producing release workflow yet; this lane's sibling lanes are
+  landing that in parallel in `wave-av/sdk`, `wave-av/cli`, `wave-av/mcp-server`,
+  `wave-av/sdk-python`). Nothing here is fabricated as a pass. `scripts/ga/sbom-presence.mjs`
+  passes when a real `*.spdx.json`/`*.cdx.json` asset is observed on the target repo's latest
+  release, fails on "no asset found" AND on "could not check" (unresolvable repository, network
+  error, non-2xx/404 API response) alike — a lookup failure never reads as health. Unit coverage:
+  `scripts/ga/__tests__/sbom-presence.test.mjs` (13 tests, `node --test`, no live network call —
+  fixtures are the real observed shapes above, trimmed).
 ```
 
 ## Arming window (2026-09-04 false-green remediation)
