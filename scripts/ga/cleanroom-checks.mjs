@@ -8,19 +8,15 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { bad, installedManifest, ok, run } from './cleanroom-util.mjs';
-import { checkSbomPresence } from './sbom-presence.mjs';
 
 const DEFAULT_ADVERTISED_TOOL_PATTERN = '(?:wave|mvp)_[a-z0-9_]+';
 
 export const CHECKS = {
-  // SUPPLY-001 (cw#4803): does the GitHub Release backing this npm package carry an SBOM asset
-  // (*.spdx.json / *.cdx.json)? Reads the repository npm's own metadata declares
-  // (`ctx.packument.repository`) — never a hardcoded owner/repo map — and asks GitHub's Releases
-  // API directly. See sbom-presence.mjs for the shared (npm + PyPI) implementation.
-  'sbom-presence': async (ctx) => checkSbomPresence({
-    packageLabel: `${ctx.pkg}@${ctx.version}`,
-    repoRaw: ctx.packument?.repository,
-  }),
+  // NOTE: 'sbom-presence' (SUPPLY-001, cw#4803) is NOT in this table. It is computed directly in
+  // cleanroom-targets.mjs's runNpmTarget/runPypiTarget, from registry metadata, BEFORE the
+  // clean-room install — this table's checks all assume a successful install (`ctx.manifest`,
+  // `ctx.room` etc.), and a target whose install fails must still produce SBOM evidence rather
+  // than silently skip it. See sbom-presence.mjs for the shared (npm + PyPI) implementation.
 
   'npm-provenance-attested': async (ctx) => {
     const att = ctx.packument?.dist?.attestations;

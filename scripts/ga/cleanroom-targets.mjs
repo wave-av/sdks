@@ -35,6 +35,17 @@ export async function runNpmTarget(target, args) {
     checks: [],
   };
 
+  // SUPPLY-001 (cw#4803): deliberately computed from registry METADATA, before the clean-room
+  // install below, and unconditionally (not gated in the generic CHECKS-table loop further down)
+  // — a target whose `npm install` fails must still produce SBOM evidence, never silently drop
+  // it. See cleanroom-targets.mjs's PyPI path (runPypiTarget) for the same rule.
+  if (target.checks.includes('sbom-presence')) {
+    result.checks.push(await checkSbomPresence({
+      packageLabel: `${pkg}@${version}`,
+      repoRaw: packument?.repository,
+    }));
+  }
+
   const cr = npmCleanRoom(pkg, version);
   result.clean_room = cr.room;
   if (cr.failed) {
@@ -73,6 +84,10 @@ export async function runNpmTarget(target, args) {
   };
 
   for (const name of target.checks) {
+    // Already produced, unconditionally, above — before the install this loop's checks assume
+    // succeeded. Re-running it here would both duplicate evidence and hide behind an install
+    // failure that already returned before reaching this loop.
+    if (name === 'sbom-presence') continue;
     const fn = CHECKS[name];
     if (!fn) { result.checks.push(bad(name, 'check not implemented in cleanroom-checks.mjs')); continue; }
     try { result.checks.push(await fn(ctx)); }
@@ -194,14 +209,18 @@ export async function runPypiTarget(target, args) {
   result.checks.push(...yankEval.checks);
 
   // SUPPLY-001 (cw#4803): independent of installability — asks whether the GitHub Release backing
-  // this PyPI package carries an SBOM asset. PyPI's own metadata declares the repository
-  // (`project_urls.Repository`); reported back rather than hardcoded, same rule as the npm path
-  // in cleanroom-checks.mjs. Not run for the `expect: 'yanked'` negative-control target above —
-  // that target's whole job is proving a retirement, and returns before reaching here.
+  // this PyPI package carries an SBOM asset. Reads `versionMeta` (the RESOLVED version's own
+  // metadata), NOT `projectMeta` (project-level, always reflects whatever release PyPI most
+  // recently indexed) — a package's declared repository can change between releases (this repo
+  // lived through exactly that under Option A, 2026-09-06), so using the project-level document
+  // could validate the wrong repository for an explicitly `--versions`-pinned older release.
+  // Reported back rather than hardcoded, same rule as the npm path in cleanroom-checks.mjs. Not
+  // run for the `expect: 'yanked'` negative-control target above — that target's whole job is
+  // proving a retirement, and returns before reaching here.
   if (target.checks.includes('sbom-presence')) {
     result.checks.push(await checkSbomPresence({
       packageLabel: `${name}@${version}`,
-      repoRaw: projectMeta?.info?.project_urls?.Repository,
+      repoRaw: versionMeta?.info?.project_urls?.Repository,
     }));
   }
 

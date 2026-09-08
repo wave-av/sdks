@@ -3,12 +3,16 @@
 // WHY THIS IS A SEPARATE MODULE, NOT A CLEAN-ROOM INSTALL CHECK
 // This repo's registry-cleanroom checks answer "does the published REGISTRY artifact work" by
 // installing it. SBOM attachment is a different question: "does the GITHUB RELEASE that backs
-// this artifact carry a signed bill of materials". That question needs no install — it needs the
-// repository the package itself declares (npm `repository.url`, PyPI `project_urls.Repository`)
-// and a read of that repo's GitHub Releases API. It runs from both the npm path
-// (cleanroom-checks.mjs, via the existing CHECKS table) and the PyPI path (cleanroom-targets.mjs,
-// called directly — PyPI checks otherwise come from cleanroom_python_assert.py, a Python
-// subprocess that has no business calling GitHub's API).
+// this artifact carry an SBOM asset (*.spdx.json / *.cdx.json)". This check verifies PRESENCE of
+// such a file by name only — it does NOT verify the SBOM's contents, signature, or that it
+// actually describes the released artifact; "SBOM asset present" is the GA-READINESS.md-documented
+// claim, deliberately never overstated to "signed" or "validated". That question needs no install
+// — it needs the repository the package itself declares (npm `repository.url`, PyPI
+// `project_urls.Repository`) and a read of that repo's GitHub Releases API. It is called directly
+// from BOTH ecosystem runners in cleanroom-targets.mjs (runNpmTarget, runPypiTarget), before
+// either one's install step — not through cleanroom-checks.mjs's CHECKS table (npm) or
+// cleanroom_python_assert.py (PyPI), because both of those assume a successful install and this
+// check must still produce evidence when install fails.
 //
 // DESIGN RULE, same one the rest of this suite follows: report the artifact's OWN declared
 // repository back, never a hardcoded owner/repo map that can drift the day a package moves (this
@@ -48,24 +52,53 @@ export function repoFromMetadata(raw) {
   return `${owner}/${repo}`;
 }
 
+const GITHUB_API_TIMEOUT_MS = 30_000;
+
+/** True for a GitHub API response that is a RATE LIMIT, not a real "repo/release doesn't exist" —
+ * distinguished so a reader of GA-READINESS.md evidence can tell "genuinely no SBOM" apart from
+ * "GitHub throttled the check" at a glance, rather than both surfacing as the same generic error. */
+function isRateLimited(res) {
+  if (res.status !== 403 && res.status !== 429) return false;
+  const remaining = res.headers?.get?.('x-ratelimit-remaining');
+  return res.status === 429 || remaining === '0';
+}
+
 /** Fetch `GET /repos/{owner}/{repo}/releases/latest`. `fetchImpl` is injectable so tests never
- * hit the network (this repo's convention — see cleanroom-pypi-yank.test.mjs). */
+ * hit the network (this repo's convention — see cleanroom-pypi-yank.test.mjs). Bounded by a 30s
+ * deadline (`AbortSignal`) covering both the request and the `res.json()` body read, so a stalled
+ * GitHub response cannot hang the whole clean-room run — an aborted or errored request must still
+ * surface as a `bad` check result, never as a suite that silently never finishes. */
 export async function fetchLatestRelease(repo, fetchImpl = fetch) {
   const [owner, name] = repo.split('/');
   const headers = { 'user-agent': 'wave-ga-registry-cleanroom/1.0', accept: 'application/vnd.github+json' };
+  // Read from `GITHUB_TOKEN`/`GH_TOKEN` when present (wired in by `registry-cleanroom.yml`'s
+  // `GITHUB_TOKEN: ${{ github.token }}`) so this runs authenticated (5,000 req/hour) rather than
+  // sharing the unauthenticated 60 req/hour limit across GitHub Actions' shared runner IP pool —
+  // 5 targets on every `pull_request` + nightly + post-publish trigger would otherwise risk
+  // exhausting that limit and turning a rate-limit response into a fabricated "no SBOM" reading.
   const token = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
   if (token) headers.authorization = `Bearer ${token}`;
   const url = `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(name)}/releases/latest`;
-  const res = await fetchImpl(url, { headers });
-  if (res.status === 404) return { notFound: true };
-  if (!res.ok) throw new Error(`GET ${url} -> HTTP ${res.status}`);
-  return res.json();
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), GITHUB_API_TIMEOUT_MS);
+  try {
+    const res = await fetchImpl(url, { headers, signal: controller.signal });
+    if (res.status === 404) return { notFound: true };
+    if (isRateLimited(res)) return { rateLimited: true, status: res.status };
+    if (!res.ok) throw new Error(`GET ${url} -> HTTP ${res.status}`);
+    return await res.json();
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 /**
  * Ecosystem-agnostic SBOM presence check. `packageLabel` is `name@version`, for messages only.
  * `repoRaw` is whatever the ecosystem's own metadata declares as its repository (npm
- * `packument.repository`, PyPI `projectMeta.info.project_urls.Repository`).
+ * `packument.repository`, PyPI `versionMeta.info.project_urls.Repository` — the RESOLVED
+ * version's own metadata, not the project-level document, so a `--versions`-pinned older release
+ * is checked against the repository IT declared, not whatever the project's newest release moved
+ * to since).
  *
  * Never fabricates a pass: a lookup failure (unresolvable repo, network error, non-2xx/404
  * response) is reported as `bad`, exactly like "no SBOM asset found" — "could not check" and
@@ -85,6 +118,9 @@ export async function checkSbomPresence({ packageLabel, repoRaw, fetchImpl = fet
   }
   if (release?.notFound) {
     return bad('sbom-presence', `${repo} has no GitHub Release at all (checked releases/latest) — ${packageLabel} carries no SBOM`);
+  }
+  if (release?.rateLimited) {
+    return bad('sbom-presence', `RATE LIMITED (HTTP ${release.status}) querying ${repo}'s latest GitHub Release for ${packageLabel} — this is GitHub throttling the check, NOT an observation that the SBOM is missing; re-run with a GITHUB_TOKEN/GH_TOKEN set, or retry once the rate limit resets`);
   }
   const assets = (release.assets || []).map((a) => a.name);
   const sbomAssets = assets.filter((n) => SBOM_ASSET_RE.test(n));

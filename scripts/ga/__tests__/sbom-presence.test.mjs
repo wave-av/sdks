@@ -60,6 +60,53 @@ test('fetchLatestRelease throws on a non-404 error status — never silently tre
   await assert.rejects(() => fetchLatestRelease('wave-av/cli', fakeFetch), /HTTP 500/);
 });
 
+test('fetchLatestRelease passes an AbortSignal so a stalled response can be cancelled', async () => {
+  let receivedSignal;
+  const fakeFetch = async (url, opts) => {
+    receivedSignal = opts.signal;
+    return { status: 404, ok: false };
+  };
+  await fetchLatestRelease('wave-av/adk', fakeFetch);
+  assert.ok(receivedSignal instanceof AbortSignal, 'expected an AbortSignal to be passed to fetchImpl');
+});
+
+test('fetchLatestRelease distinguishes a 403 rate-limit response (x-ratelimit-remaining: 0) from a real error', async () => {
+  const fakeFetch = async () => ({
+    status: 403,
+    ok: false,
+    headers: { get: (h) => (h === 'x-ratelimit-remaining' ? '0' : null) },
+  });
+  const result = await fetchLatestRelease('wave-av/cli', fakeFetch);
+  assert.deepEqual(result, { rateLimited: true, status: 403 });
+});
+
+test('fetchLatestRelease treats a 429 as rate-limited even without the ratelimit header', async () => {
+  const fakeFetch = async () => ({ status: 429, ok: false, headers: { get: () => null } });
+  const result = await fetchLatestRelease('wave-av/cli', fakeFetch);
+  assert.deepEqual(result, { rateLimited: true, status: 429 });
+});
+
+test('fetchLatestRelease treats an ordinary 403 (no ratelimit signal) as a real error, not a rate limit', async () => {
+  const fakeFetch = async () => ({ status: 403, ok: false, headers: { get: () => '42' } });
+  await assert.rejects(() => fetchLatestRelease('wave-av/cli', fakeFetch), /HTTP 403/);
+});
+
+test('checkSbomPresence FAILS with a distinguishable message on a rate-limited lookup — never silently reads as "SBOM missing"', async () => {
+  const fakeFetch = async () => ({
+    status: 403,
+    ok: false,
+    headers: { get: (h) => (h === 'x-ratelimit-remaining' ? '0' : null) },
+  });
+  const result = await checkSbomPresence({
+    packageLabel: '@wave-av/cli@1.0.10',
+    repoRaw: { url: 'git+https://github.com/wave-av/cli.git' },
+    fetchImpl: fakeFetch,
+  });
+  assert.equal(result.ok, false);
+  assert.match(result.detail, /RATE LIMITED/);
+  assert.doesNotMatch(result.detail, /NO SBOM asset/);
+});
+
 test('checkSbomPresence FAILS (negative control, real shape) when the latest release carries no SBOM asset', async () => {
   // Real shape observed live 2026-09-08: wave-av/cli releases/latest tag v1.0.10 carries only the
   // npm pack tarball — no *.spdx.json / *.cdx.json asset exists yet anywhere in the fleet.
