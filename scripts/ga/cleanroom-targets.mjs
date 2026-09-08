@@ -1,15 +1,15 @@
 // Per-ecosystem target runners: stand up the clean room, install the published artifact, then
 // hand a context to the checks. Nothing here reads the repository checkout.
 
-import { createHash } from 'node:crypto';
-import { mkdtempSync, writeFileSync } from 'node:fs';
+import { mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { CHECKS } from './cleanroom-checks.mjs';
 import {
-  PUBLIC_NPM, bad, fetchJson, installedFile, installedManifest, npmCleanRoom, npmEncode, ok, run,
+  PUBLIC_NPM, bad, fetchJson, installedFile, installedManifest, latestNonYankedVersion,
+  npmCleanRoom, npmEncode, ok, releaseIsYanked, run, yankReason,
 } from './cleanroom-util.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -80,13 +80,72 @@ export async function runNpmTarget(target, args) {
   return result;
 }
 
+/**
+ * Pure decision layer for PyPI yank state (PEP 592) — deliberately factored out of `runPypiTarget`
+ * so it is unit-testable against fixture JSON with no network call, no pip, no venv. Given the
+ * already-fetched project-level and resolved-version PyPI documents, decides whether the resolved
+ * version is something a real, unconstrained `pip install <name>[==version]` would actually give a
+ * user, which is the exact question the direct-URL-download defect skipped entirely.
+ *
+ * `versionMeta.urls` for a real PyPI response is per-file: `[{ filename, yanked, yanked_reason }]`.
+ * `versionMeta.info.yanked` / `info.yanked_reason` is the release-level flag. Either can carry the
+ * truth depending on when the release was yanked, so both are checked (`releaseIsYanked` covers the
+ * per-file case; `info.yanked` covers the release-level case) — this mirrors what pip itself
+ * consults per PEP 592.
+ */
+export function evaluatePypiYankState({
+  name, version, resolvedFromPin, projectMeta, versionMeta,
+}) {
+  const files = versionMeta?.urls || [];
+  const checks = [];
+
+  if (files.length === 0) {
+    checks.push(bad('yank-state', `PyPI lists no files for ${name}==${version} — nothing for a real \`pip install ${name}==${version}\` to install`));
+    return { yanked: null, installable: false, checks };
+  }
+
+  const yanked = versionMeta?.info?.yanked === true || releaseIsYanked(files);
+  if (yanked) {
+    checks.push(bad('yank-state', `PyPI has YANKED ${name}==${version} (PEP 592) — ${yankReason(versionMeta)}. A real \`pip install ${name}==${version}\` refuses this release; the clean room must too.`));
+  } else {
+    checks.push(ok('yank-state', `${name}==${version} is not yanked on PyPI`));
+  }
+
+  // Only meaningful when the target resolved to "latest" (no explicit --versions pin): PyPI keeps
+  // `info.version` pointed at the most-recently-published release even after it (and every earlier
+  // release) is yanked, so a naive "latest = info.version" reading can silently pick an
+  // unreachable release. A real unconstrained `pip install <name>` resolves to the highest
+  // NON-yanked release instead.
+  if (!resolvedFromPin) {
+    const nonYankedLatest = latestNonYankedVersion(projectMeta);
+    if (nonYankedLatest && nonYankedLatest !== version) {
+      checks.push(bad('latest-is-non-yanked', `resolved "latest" to ${version} via PyPI info.version, but the highest NON-yanked release is ${nonYankedLatest} — an unconstrained \`pip install ${name}\` resolves there, not to ${version}`));
+    }
+  }
+
+  return { yanked, installable: !yanked, checks };
+}
+
+function pipVenv(python, room) {
+  const venv = join(room, 'venv');
+  const mk = run(python, ['-m', 'venv', venv], { cwd: room, timeout: 300000 });
+  if (mk.status !== 0) {
+    return { ok: false, detail: `could not create a clean venv with ${python}: ${(mk.stderr || mk.stdout || mk.error || '').trim().slice(0, 400)}` };
+  }
+  return { ok: true, py: join(venv, 'bin', 'python') };
+}
+
 export async function runPypiTarget(target, args) {
   const name = target.package;
-  const meta = await fetchJson(`https://pypi.org/pypi/${encodeURIComponent(name)}/json`);
-  const version = args.versions[name] || meta.info.version;
-  const files = version === meta.info.version
-    ? meta.urls
-    : (await fetchJson(`https://pypi.org/pypi/${encodeURIComponent(name)}/${encodeURIComponent(version)}/json`)).urls;
+  const expectYanked = target.expect === 'yanked';
+  const requestedVersion = args.versions[name];
+  const resolvedFromPin = Boolean(requestedVersion);
+
+  const projectMeta = await fetchJson(`https://pypi.org/pypi/${encodeURIComponent(name)}/json`);
+  const version = requestedVersion || projectMeta.info.version;
+  const versionMeta = version === projectMeta.info.version
+    ? projectMeta
+    : await fetchJson(`https://pypi.org/pypi/${encodeURIComponent(name)}/${encodeURIComponent(version)}/json`);
 
   const result = {
     id: target.id,
@@ -94,46 +153,67 @@ export async function runPypiTarget(target, args) {
     package: name,
     version,
     registry: 'https://pypi.org',
-    resolved_from: args.versions[name] ? 'explicit --versions pin' : 'PyPI info.version',
+    resolved_from: resolvedFromPin ? 'explicit --versions pin' : 'PyPI info.version',
+    ...(expectYanked ? { negative_control: true } : {}),
     checks: [],
   };
 
-  const wheel = files.find((f) => f.packagetype === 'bdist_wheel') || files.find((f) => f.packagetype === 'sdist');
-  if (!wheel) { result.checks.push(bad('download', `PyPI serves no wheel or sdist for ${name}@${version}`)); return result; }
+  const yankEval = evaluatePypiYankState({
+    name, version, resolvedFromPin, projectMeta, versionMeta,
+  });
+
+  if (expectYanked) {
+    // Negative control: this target's entire job is to prove PyPI has retired every release of a
+    // deliberately-sunset package and that a real, unconstrained `pip install <name>` fails.
+    // "PASS" here means "still correctly retired"; a FAIL means the retirement regressed (a new
+    // release appeared, or a release got un-yanked) — the gate must surface that loudly, never
+    // read "no positive target to run" as health. See IGV-D-024 (2026-09-07): this package is the
+    // retired legacy name; the canonical package is the sibling `pypi-wave-sdk` target.
+    if (yankEval.yanked !== true) {
+      result.checks.push(bad('negative-control-yanked', `expected ${name} to be fully yanked on PyPI (retired package, negative control) but the resolved release ${name}==${version} is NOT yanked — the retirement regressed or this target needs updating`));
+      return result;
+    }
+    result.checks.push(ok('negative-control-yanked', `confirmed ${name}==${version} is YANKED on PyPI — ${yankReason(versionMeta)}`));
+
+    const room = mkdtempSync(join(tmpdir(), 'wave-cleanroom-py-'));
+    result.clean_room = room;
+    const venv = pipVenv(args.python, room);
+    if (!venv.ok) { result.checks.push(bad('venv', venv.detail)); return result; }
+
+    // Unconstrained — no version pin — exactly the command a real user runs.
+    const inst = run(venv.py, ['-m', 'pip', 'install', '-q', '--disable-pip-version-check', '--no-input', name], { cwd: room, timeout: 600000 });
+    if (inst.status === 0) {
+      result.checks.push(bad('negative-control-install-refused', `expected \`pip install ${name}\` to fail (fully yanked) but it SUCCEEDED — this is exactly the false-green this gate exists to catch`));
+      return result;
+    }
+    result.checks.push(ok('negative-control-install-refused', `\`pip install ${name}\` correctly refused: ${(inst.stderr || inst.stdout).trim().slice(0, 400)}`));
+    return result;
+  }
+
+  result.checks.push(...yankEval.checks);
+  if (!yankEval.installable) return result;
 
   const room = mkdtempSync(join(tmpdir(), 'wave-cleanroom-py-'));
   result.clean_room = room;
-  const wheelPath = join(room, wheel.filename); // pip rejects a renamed wheel — keep the real filename
-  const bytes = Buffer.from(await (await fetch(wheel.url)).arrayBuffer());
-  writeFileSync(wheelPath, bytes);
-  const sha = createHash('sha256').update(bytes).digest('hex');
-  result.artifact = { filename: wheel.filename, url: wheel.url, sha256: sha };
-  if (wheel.digests?.sha256 && wheel.digests.sha256 !== sha) {
-    result.checks.push(bad('download', `downloaded ${wheel.filename} sha256 ${sha} != PyPI-declared ${wheel.digests.sha256}`));
-    return result;
-  }
-  result.checks.push(ok('download', `downloaded ${wheel.filename} from PyPI, sha256 ${sha} matches the declared digest`));
+  const venv = pipVenv(args.python, room);
+  if (!venv.ok) { result.checks.push(bad('venv', venv.detail)); return result; }
 
-  const venv = join(room, 'venv');
-  const mk = run(args.python, ['-m', 'venv', venv], { cwd: room, timeout: 300000 });
-  if (mk.status !== 0) {
-    result.checks.push(bad('venv', `could not create a clean venv with ${args.python}: ${(mk.stderr || mk.stdout || mk.error || '').trim().slice(0, 400)}`));
-    return result;
-  }
-  const py = join(venv, 'bin', 'python');
-  const inst = run(py, ['-m', 'pip', 'install', '-q', '--disable-pip-version-check', '--no-input', wheelPath], { cwd: room, timeout: 600000 });
+  // Installed BY NAME==VERSION FROM THE PUBLIC INDEX — never a direct file URL. This is what makes
+  // pip's own resolver, and therefore PyPI's yank state (PEP 592), bite naturally: the exact
+  // command a customer's `pip install <name>==<version>` runs, not a bypass of it.
+  const inst = run(venv.py, ['-m', 'pip', 'install', '-q', '--disable-pip-version-check', '--no-input', `${name}==${version}`], { cwd: room, timeout: 600000 });
   if (inst.status !== 0) {
-    result.checks.push(bad('install', `pip install of the downloaded wheel failed: ${(inst.stderr || inst.stdout).trim().slice(0, 600)}`));
+    result.checks.push(bad('install', `pip install ${name}==${version} from the public PyPI index failed — this is what a real \`pip install ${name}==${version}\` gets: ${(inst.stderr || inst.stdout).trim().slice(0, 600)}`));
     return result;
   }
-  result.checks.push(ok('install', `pip installed the downloaded wheel into a fresh venv (${args.python})`));
+  result.checks.push(ok('install', `pip installed ${name}==${version} from the public PyPI index into a fresh venv (${args.python}) — the same path a real user's \`pip install\` takes`));
 
   // cwd is the throwaway room, never the repo: a checkout on sys.path could satisfy an import the
   // published wheel is supposed to satisfy — exactly the illusion this suite exists to destroy.
   // cleanroom_python_assert.py re-verifies that independently and reports it as its own check.
   const argv = [join(HERE, 'cleanroom_python_assert.py'), '--dist', name, '--module', target.import_module];
   if (target.import_symbol) argv.push('--symbol', target.import_symbol);
-  const probe = run(py, argv, { cwd: room, timeout: 180000 });
+  const probe = run(venv.py, argv, { cwd: room, timeout: 180000 });
   let parsed;
   try { parsed = JSON.parse(probe.stdout.trim().split('\n').filter(Boolean).pop()); }
   catch {

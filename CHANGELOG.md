@@ -39,6 +39,26 @@ All notable changes to this project are documented here. The format is based on
 
 ### Fixed
 
+- **The registry clean-room gate ignored PyPI yank state (PEP 592), so it could PASS a package a
+  real user cannot install** (`scripts/ga/cleanroom-targets.mjs`, `scripts/ga/cleanroom-util.mjs`,
+  `scripts/ga/cleanroom-targets.json`). `runPypiTarget` resolved a version from `info.version`,
+  picked a wheel/sdist URL out of `meta.urls`, downloaded it directly, and ran
+  `pip install <local-file>` — a path that never asks pip's index resolver anything, so PyPI's
+  yank flag never had a chance to bite. Workflow run 34208693233 (2026-09-08) installed the
+  YANKED `wave-av-sdk` 3.0.0 this way and reported ART-001/SUPPLY-001/VER-001 PASS, while a real
+  `pip install wave-av-sdk` fails ("Ignored the following yanked versions: 2.0.0, 3.0.0 ... No
+  matching distribution found"). The gate now installs by `pip install "<name>==<version>"` from
+  the public index — the same command a user runs — and additionally reads
+  `https://pypi.org/pypi/<name>/<version>/json` to fail loud (with the yank reason) when the
+  resolved release is yanked, or when an unpinned "latest" resolves to something other than the
+  index's highest NON-yanked release (PyPI keeps `info.version` pointed at a release even after
+  every file under it is yanked). The `pypi-wave-av-sdk` target — `wave-av-sdk` is the
+  deliberately retired legacy package, canonical is `wave-sdk` (current 2.2.0), decision
+  IGV-D-024 (2026-09-07) — is inverted into a negative control asserting the package stays fully
+  yanked and that `pip install wave-av-sdk` keeps failing, so a future re-publish under that name
+  is caught loudly instead of the gate just going quiet. Verified against live PyPI: `wave-sdk`
+  2.2.0 installs and imports cleanly; `wave-av-sdk` is correctly refused as yanked.
+
 - **Codegen crashed on any OpenAPI 3.1 nullable union** (`codegen/parse_spec.py`).
   `type: [string, null]` — 3.1's spelling of a nullable field — was passed through to the
   renderers as a Python list, and every renderer keys its type map on that value, so the run died
