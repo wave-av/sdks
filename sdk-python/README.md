@@ -1,5 +1,9 @@
 # WAVE SDK for Python
 
+> **Canonical package:** The supported Python SDK is `wave-sdk` from
+> [github.com/wave-av/sdk-python](https://github.com/wave-av/sdk-python). `wave-av-sdk` from this
+> monorepo is frozen at 3.0.0 and will be marked deprecated on PyPI.
+
 Official Python SDK for the WAVE API by WAVE Online, LLC
 
 ## Installation
@@ -11,7 +15,7 @@ pip install wave-av-sdk
 ## Quick start
 
 ```python
-from wave import Wave
+from wave_sdk import Wave
 
 wave = Wave(api_key="your-api-key", organization_id="org_123")
 
@@ -93,7 +97,7 @@ viewers = wave.pulse.get_viewer_analytics(time_range="24h")
 ## Error handling
 
 ```python
-from wave import WaveError, RateLimitError
+from wave_sdk import WaveError, RateLimitError
 
 try:
     wave.pipeline.get("invalid-id")

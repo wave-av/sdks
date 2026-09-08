@@ -37,9 +37,19 @@ Agents and short-lived sandboxes can skip the SDK entirely and call the gateway 
 sdk-typescript/packages/{core,clips,sdk}/   # the TS fleet (pnpm workspace)
 scripts/sync-from-monorepo.sh               # allowlist sync + fail-closed secret scan
 scripts/check-registry-parity.py            # declared-vs-published gate (vendored from wave-foundation)
+scripts/ga/registry-cleanroom.mjs           # clean-room acceptance of what the REGISTRIES serve
 .github/workflows/publish-npm.yml           # OIDC trusted publishing + provenance
-.github/workflows/registry-parity.yml       # parity gate
+.github/workflows/registry-parity.yml       # parity gate (declared version == published version)
+.github/workflows/registry-cleanroom.yml    # clean-room gate (published artifact actually works)
 ```
+
+## GA readiness
+
+This repository participates in the WAVE GA gate. Its criterion ownership, runnable checks and latest evidence are in [GA-READINESS.md](./GA-READINESS.md). CI emits `ga-evidence.json` against spec version 1.0.0. Stable criterion IDs are never renamed or reused.
+
+The check that matters here is **clean-room acceptance**: `scripts/ga/registry-cleanroom.mjs` installs each package from its public registry into a throwaway directory or venv — never from this checkout — and asserts the artifact imports, starts, and reports its own version honestly. A green source branch cannot certify a package already on npm or PyPI, which is why this runs nightly as well as on release: a published dependency *range* is resolved on the day a customer installs, so an artifact can break with no commit anywhere.
+
+A green repository is necessary but not sufficient for platform GA. The platform release is **NO-GO** unless the root gate aggregator has current passing evidence for every must-pass criterion across all owning repositories and deployed surfaces. `unknown`, stale evidence, missing evidence, a waiver, or an unapproved `not_applicable` counts as failure.
 
 ## License
 
