@@ -42,27 +42,25 @@ name: registry clean-room acceptance
 # required check blocks every PR that misses the filter — the lesson already recorded in
 # registry-parity.yml).
 #
-# ARTIFACT UPLOAD NEEDS `actions: write` (found 2026-09-08, cw#4803)
-# The "Upload GA evidence" step (`actions/upload-artifact@v4`) failed on run 34249236935 (the
-# first run of sdks#92) and again on run 34254764342 (a `workflow_dispatch` re-run on `main` after
-# sdks#92 merged) with `Failed to FinalizeArtifact: Received non-retryable error: Failed request:
-# (403) Forbidden: Error from intermediary` — while two intervening `pull_request` runs on the
-# EXACT same job content (34253661323, 34253751343) uploaded successfully. Ruled out before
-# landing this permission: (1) the new `sbom-presence` check introduced in sdks#92 — it completed
-# and reported real evidence in every one of these runs, including the failing ones, so it is not
-# the cause; (2) a concurrent same-name artifact collision — no two runs of this workflow
-# overlapped in time, and artifacts are scoped per run+attempt, not shareable across runs, so a
-# cross-run name collision is not architecturally possible here; (3) a difference between
-# `pull_request` and `workflow_dispatch` — this job's `permissions:` block is explicit (not
-# defaulted from repo/org settings), so it is identical regardless of trigger. What was missing:
-# `actions: write` on the job. GitHub's Artifacts v4 backend (the "Actions Results" service that
-# `FinalizeArtifact` calls) can 403 intermittently — not on every run — when the job's GITHUB_TOKEN
-# lacks `actions: write`, which is exactly the fail/pass/pass/fail pattern observed (a check that
-# always fails would rule out a static permission gap; one that fails intermittently while gated
-# on a scope check some code paths enforce and others don't is consistent with it). This is the
-# minimum ADDITIVE scope for the one step that needs it — not `contents: write`, and scoped to
-# this job only, matching this file's existing pattern (`issues: write` is likewise scoped here
-# for exactly one purpose).
+# ARTIFACT-UPLOAD 403s WERE TRANSIENT, NOT A PERMISSIONS GAP (investigated 2026-09-08, cw#4803)
+# The "Upload GA evidence" step (`actions/upload-artifact@v4`) failed on runs 34249236935 and
+# 34254764342 with `Failed to FinalizeArtifact: ... (403) Forbidden: Error from intermediary`,
+# while runs 34253661323 and 34253751343 on the byte-identical job content uploaded fine. An
+# initial hypothesis — that the job was missing `actions: write` — was proposed, landed on a PR,
+# reviewed by three independent tools (codeant-ai, cubic-dev-ai, coderabbitai), and then TESTED
+# and DISPROVEN by a real control experiment: re-dispatching the workflow on unchanged `main`
+# (still with no `actions: write`, run 34258507516) succeeded a few minutes later with no code
+# change at all — the same fail/pass/pass/fail/pass pattern a static permissions gap cannot
+# produce. The reviewers were right, and cited two independent confirmations worth keeping on
+# record: standard `actions/upload-artifact` uploads do not require `actions: write` per GitHub's
+# own documentation (that scope is for programmatic artifact delete/overwrite via the API), and
+# this repo's own `publish-pypi.yml` uploads with the identical pinned action using only
+# `contents: read`. Root cause: an intermittent, external GitHub Actions Artifacts-backend
+# ("Actions Results" service) error, not anything in this repository's configuration — nothing
+# here was changed as a result, deliberately, since granting an unused `actions: write` scope to a
+# job that runs untrusted npm/pip package lifecycle scripts would have been a real (if minor)
+# unnecessary-privilege regression for zero benefit. Left as a comment so nobody re-proposes the
+# same disproven fix next time this transient error recurs.
 
 on:
   schedule:
@@ -102,7 +100,6 @@ jobs:
     permissions:
       contents: read
       issues: write # fail-loud: open or update the tracking issue
-      actions: write # artifact upload (Upload GA evidence, actions/upload-artifact) — see below
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
