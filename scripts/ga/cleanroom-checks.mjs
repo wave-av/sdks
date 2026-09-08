@@ -12,6 +12,12 @@ import { bad, installedManifest, ok, run } from './cleanroom-util.mjs';
 const DEFAULT_ADVERTISED_TOOL_PATTERN = '(?:wave|mvp)_[a-z0-9_]+';
 
 export const CHECKS = {
+  // NOTE: 'sbom-presence' (SUPPLY-001, cw#4803) is NOT in this table. It is computed directly in
+  // cleanroom-targets.mjs's runNpmTarget/runPypiTarget, from registry metadata, BEFORE the
+  // clean-room install — this table's checks all assume a successful install (`ctx.manifest`,
+  // `ctx.room` etc.), and a target whose install fails must still produce SBOM evidence rather
+  // than silently skip it. See sbom-presence.mjs for the shared (npm + PyPI) implementation.
+
   'npm-provenance-attested': async (ctx) => {
     const att = ctx.packument?.dist?.attestations;
     if (att?.provenance?.predicateType) {
