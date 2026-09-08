@@ -1,0 +1,32 @@
+scripts/ga/cleanroom-checks.mjs
+  s_efe86faf2558e9::t_117c6d1006c50a 15-19
+.github/workflows/registry-cleanroom.yml
+  s_efe86faf2558e9::t_d6f937e671b53f 101-106
+scripts/ga/__tests__/sbom-presence.test.mjs
+  s_efe86faf2558e9::t_895aeedceafb97 63-109
+scripts/ga/cleanroom-targets.mjs
+  s_efe86faf2558e9::t_bc4d95d7c2be70 38-48
+  s_efe86faf2558e9::t_3b87cd903355fa 87-90
+  s_efe86faf2558e9::t_b71f9be2cb5810 212-219,223
+scripts/ga/sbom-presence.mjs
+  s_efe86faf2558e9::t_8f0aeff399d05c 98-101
+  s_efe86faf2558e9::t_25e66e9e28e5b6 6-15
+  s_efe86faf2558e9::t_1e4edfcdc28c0c 122-124
+  s_efe86faf2558e9::t_7623043b1fcb53 55-65,67-70,74-78,82-92
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "2f163a1d78f9006c5d3ef9352b1bd7846202eef0",
+  "prompts": {},
+  "sessions": {
+    "s_efe86faf2558e9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f2b6e2e9-ab55-4d57-9d9f-d57a588ae688",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Jake Fineman <jakefineman@gmail.com>"
+    }
+  }
+}
