@@ -1,0 +1,40 @@
+scripts/ga/cleanroom-targets.json
+  s_efe86faf2558e9::t_77a3bdb3720f65 20-21
+  s_efe86faf2558e9::t_9339738a15d10a 34-35
+  s_efe86faf2558e9::t_dd31244ce4f4c2 70-71
+  s_efe86faf2558e9::t_47e3a8765fc282 103-104
+  s_efe86faf2558e9::t_26caad5dc92cc4 58-59
+  s_efe86faf2558e9::t_c7d99e70cc476e 48-49
+scripts/ga/sbom-presence.mjs
+  s_efe86faf2558e9::t_c6eaac6598904d 38-43
+  s_efe86faf2558e9::t_b26e021a704846 1-37,44-96
+scripts/ga/__tests__/sbom-presence.test.mjs
+  s_efe86faf2558e9::t_6ccae8c9f62959 1-129
+scripts/ga/cleanroom-checks.mjs
+  s_efe86faf2558e9::t_51961ac8ef9f1c 16-24
+  s_efe86faf2558e9::t_f04c2c911a26c2 11
+CHANGELOG.md
+  s_efe86faf2558e9::t_4f3372bf86757e 9-21
+scripts/ga/cleanroom-targets.mjs
+  s_efe86faf2558e9::t_7b69d68d52e686 14
+  s_efe86faf2558e9::t_5ffa5e1d2c278c 195-207
+  s_efe86faf2558e9::t_dbc94b83601840 240-244,248
+GA-READINESS.md
+  s_efe86faf2558e9::t_36ebcfe7a2b4ea 147-149,159-201
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "01df5df6c4faa8a0c8bc6b0c94c1a5a41d460f57",
+  "prompts": {},
+  "sessions": {
+    "s_efe86faf2558e9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f2b6e2e9-ab55-4d57-9d9f-d57a588ae688",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Jake Fineman <jakefineman@gmail.com>"
+    }
+  }
+}

@@ -1,0 +1,47 @@
+CHANGELOG.md
+  s_efe86faf2558e9::t_8aa0d21c771df6 42-61
+scripts/ga/cleanroom-targets.json
+  s_38790ffd45a473::t_d6b7df388dc53c 73-74,76-77,94-98
+scripts/ga/cleanroom-util.mjs
+  s_5fdfd3268ab32a::t_3fa6d6a2782b89 101-168
+scripts/ga/__tests__/cleanroom-pypi-yank.test.mjs
+  s_5fdfd3268ab32a::t_e8833be72124f3 1-161
+scripts/ga/__tests__/fixtures/wave-av-sdk.pypi.json
+  s_5fdfd3268ab32a::t_a6234df05ad3cf 1-47
+scripts/ga/__tests__/fixtures/wave-sdk.pypi.json
+  s_5fdfd3268ab32a::t_08183e84fefb3b 1-59
+scripts/ga/cleanroom-targets.mjs
+  s_5fdfd3268ab32a::t_ad6f4bdf6e2361 4,11-12,83-137,140-148,156-157,161-163,165-176,178-189,192-204,206,209,216
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "7aa92d9efcef85003979533a50085277bc8239a3",
+  "prompts": {},
+  "sessions": {
+    "s_38790ffd45a473": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "agent-a022f26fd72770050",
+        "model": "unknown"
+      },
+      "human_author": "Jake Fineman <jakefineman@gmail.com>"
+    },
+    "s_5fdfd3268ab32a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "agent-aa0775d939c14aa2d",
+        "model": "unknown"
+      },
+      "human_author": "Jake Fineman <jakefineman@gmail.com>"
+    },
+    "s_efe86faf2558e9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f2b6e2e9-ab55-4d57-9d9f-d57a588ae688",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Jake Fineman <jakefineman@gmail.com>"
+    }
+  }
+}
