@@ -1,0 +1,20 @@
+.github/workflows/registry-cleanroom.yml
+  s_efe86faf2558e9::t_60bdd302fcab5a 44-65
+  s_efe86faf2558e9::t_b74cf4a2a9a802 105
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "b820972c42ffc9aba37ffe9b46b5dde89901ed3e",
+  "prompts": {},
+  "sessions": {
+    "s_efe86faf2558e9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f2b6e2e9-ab55-4d57-9d9f-d57a588ae688",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Jake Fineman <jakefineman@gmail.com>"
+    }
+  }
+}
