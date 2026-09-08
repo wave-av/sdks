@@ -1,0 +1,47 @@
+{
+  "info": {
+    "version": "3.0.0",
+    "yanked": true,
+    "yanked_reason": null
+  },
+  "urls": [
+    {
+      "filename": "wave_av_sdk-3.0.0-py3-none-any.whl",
+      "packagetype": "bdist_wheel",
+      "yanked": true,
+      "yanked_reason": null
+    },
+    {
+      "filename": "wave_av_sdk-3.0.0.tar.gz",
+      "packagetype": "sdist",
+      "yanked": true,
+      "yanked_reason": null
+    }
+  ],
+  "releases": {
+    "2.0.0": [
+      {
+        "filename": "wave_av_sdk-2.0.0-py3-none-any.whl",
+        "yanked": true,
+        "yanked_reason": null
+      },
+      {
+        "filename": "wave_av_sdk-2.0.0.tar.gz",
+        "yanked": true,
+        "yanked_reason": null
+      }
+    ],
+    "3.0.0": [
+      {
+        "filename": "wave_av_sdk-3.0.0-py3-none-any.whl",
+        "yanked": true,
+        "yanked_reason": null
+      },
+      {
+        "filename": "wave_av_sdk-3.0.0.tar.gz",
+        "yanked": true,
+        "yanked_reason": null
+      }
+    ]
+  }
+}
