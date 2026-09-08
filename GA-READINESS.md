@@ -194,11 +194,30 @@ notes: |
   sibling repo has shipped an SBOM-producing release workflow yet; this lane's sibling lanes are
   landing that in parallel in `wave-av/sdk`, `wave-av/cli`, `wave-av/mcp-server`,
   `wave-av/sdk-python`). Nothing here is fabricated as a pass. `scripts/ga/sbom-presence.mjs`
-  passes when a real `*.spdx.json`/`*.cdx.json` asset is observed on the target repo's latest
+  passes when a real `*.spdx.json`/`*.cdx.json` asset is observed on the target repo's LATEST
   release, fails on "no asset found" AND on "could not check" (unresolvable repository, network
-  error, non-2xx/404 API response) alike — a lookup failure never reads as health. Unit coverage:
-  `scripts/ga/__tests__/sbom-presence.test.mjs` (13 tests, `node --test`, no live network call —
-  fixtures are the real observed shapes above, trimmed).
+  error, timeout, rate-limited, non-2xx/404 API response) alike — a lookup failure never reads as
+  health. A rate-limited lookup is reported distinctly ("RATE LIMITED", never merged into the "no
+  SBOM" message) so a reader can tell GitHub throttling the check apart from a genuine gap;
+  `registry-cleanroom.yml` now passes `GITHUB_TOKEN` to this step so a real run authenticates at
+  5,000 req/hour instead of risking the 60 req/hour unauthenticated limit.
+
+  KNOWN SCOPE LIMITS (raised in PR review, both deliberate for this pass): (1) presence is
+  filename-only — `checkSbomPresence` accepts any asset named `*.spdx.json`/`*.cdx.json` and does
+  NOT parse, validate, or verify a signature over its contents, so a same-named empty or malformed
+  file would read as a pass; the GA criterion this closes is "is an SBOM attached", not "is the
+  SBOM correct", and content/signature validation is a natural follow-up, not silently claimed
+  here. (2) it always checks the repository's LATEST release, matching cw#4803's literal
+  instruction ("verify the latest GitHub Release carries a *.spdx.json/*.cdx.json asset") — an
+  npm/PyPI target resolved via an explicit `--versions` pin is checked against its OWN declared
+  repository (fixed in this PR to read the resolved version's metadata, not the project-level
+  document — a package's canonical repo can and has moved between versions), but still against
+  that repository's newest release, not a release matching the pinned version number; per-version
+  release matching is out of scope for this check and would need the pinned artifact's own release
+  tag, not just its repository, threaded through.
+
+  Unit coverage: `scripts/ga/__tests__/sbom-presence.test.mjs` (18 tests, `node --test`, no live
+  network call — fixtures are the real observed shapes above, trimmed).
 ```
 
 ## Arming window (2026-09-04 false-green remediation)
