@@ -1,0 +1,38 @@
+.github/workflows/registry-cleanroom.yml
+  h_af5ac1a9798224 101-106
+CHANGELOG.md
+  h_af5ac1a9798224 9,11-20,53-61,64-83
+GA-READINESS.md
+  h_af5ac1a9798224 147-149,159-220
+docs/ga-public-reproductions/VER-001.md
+  h_af5ac1a9798224 1-104
+scripts/ga/__tests__/cleanroom-pypi-yank.test.mjs
+  h_af5ac1a9798224 1-161
+scripts/ga/__tests__/fixtures/wave-av-sdk.pypi.json
+  h_af5ac1a9798224 1-47
+scripts/ga/__tests__/fixtures/wave-sdk.pypi.json
+  h_af5ac1a9798224 1-59
+scripts/ga/__tests__/sbom-presence.test.mjs
+  h_af5ac1a9798224 1-176
+scripts/ga/cleanroom-checks.mjs
+  h_af5ac1a9798224 15-20
+scripts/ga/cleanroom-targets.json
+  h_af5ac1a9798224 20-21,34-35,48-49,58-59,70-71,78-79,81-82,99-104
+scripts/ga/cleanroom-targets.mjs
+  h_af5ac1a9798224 4,11-12,14,38-48,87-90,99-153,156-164,172-173,177-179,181-205,209-224,226-237,239,242,249,259-263,267
+scripts/ga/cleanroom-util.mjs
+  h_af5ac1a9798224 101-168
+scripts/ga/sbom-presence.mjs
+  h_af5ac1a9798224 1-132
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "55c1f6cfe5f5f428e7994c703e191efea1f70afd",
+  "prompts": {},
+  "humans": {
+    "h_af5ac1a9798224": {
+      "author": "Jake Fineman <jakefineman@gmail.com>"
+    }
+  }
+}
