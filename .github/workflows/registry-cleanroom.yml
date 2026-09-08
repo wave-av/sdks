@@ -98,6 +98,12 @@ jobs:
         env:
           CLEANROOM_VERSIONS: ${{ inputs.versions }}
           ONLY: ${{ inputs.only }}
+          # Authenticates scripts/ga/sbom-presence.mjs's GitHub Releases API calls (SUPPLY-001,
+          # cw#4803) at 5,000 req/hour instead of the 60 req/hour unauthenticated limit shared
+          # across GitHub Actions' runner IP pool — this workflow runs on every pull_request (no
+          # path filter), a daily schedule, and every successful publish. A read-only call against
+          # public repos' releases/latest; `contents: read` (already granted above) is sufficient.
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           set -uo pipefail
           args=(--python python3 --out-dir "$GITHUB_WORKSPACE/ga-out")
