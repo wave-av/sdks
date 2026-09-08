@@ -41,6 +41,28 @@ name: registry clean-room acceptance
 # to become a required status check later without a permanently-unreported gap (a path-filtered
 # required check blocks every PR that misses the filter — the lesson already recorded in
 # registry-parity.yml).
+#
+# ARTIFACT UPLOAD NEEDS `actions: write` (found 2026-09-08, cw#4803)
+# The "Upload GA evidence" step (`actions/upload-artifact@v4`) failed on run 34249236935 (the
+# first run of sdks#92) and again on run 34254764342 (a `workflow_dispatch` re-run on `main` after
+# sdks#92 merged) with `Failed to FinalizeArtifact: Received non-retryable error: Failed request:
+# (403) Forbidden: Error from intermediary` — while two intervening `pull_request` runs on the
+# EXACT same job content (34253661323, 34253751343) uploaded successfully. Ruled out before
+# landing this permission: (1) the new `sbom-presence` check introduced in sdks#92 — it completed
+# and reported real evidence in every one of these runs, including the failing ones, so it is not
+# the cause; (2) a concurrent same-name artifact collision — no two runs of this workflow
+# overlapped in time, and artifacts are scoped per run+attempt, not shareable across runs, so a
+# cross-run name collision is not architecturally possible here; (3) a difference between
+# `pull_request` and `workflow_dispatch` — this job's `permissions:` block is explicit (not
+# defaulted from repo/org settings), so it is identical regardless of trigger. What was missing:
+# `actions: write` on the job. GitHub's Artifacts v4 backend (the "Actions Results" service that
+# `FinalizeArtifact` calls) can 403 intermittently — not on every run — when the job's GITHUB_TOKEN
+# lacks `actions: write`, which is exactly the fail/pass/pass/fail pattern observed (a check that
+# always fails would rule out a static permission gap; one that fails intermittently while gated
+# on a scope check some code paths enforce and others don't is consistent with it). This is the
+# minimum ADDITIVE scope for the one step that needs it — not `contents: write`, and scoped to
+# this job only, matching this file's existing pattern (`issues: write` is likewise scoped here
+# for exactly one purpose).
 
 on:
   schedule:
@@ -80,6 +102,7 @@ jobs:
     permissions:
       contents: read
       issues: write # fail-loud: open or update the tracking issue
+      actions: write # artifact upload (Upload GA evidence, actions/upload-artifact) — see below
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
