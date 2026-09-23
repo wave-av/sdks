@@ -10,6 +10,10 @@
     "type-check": "pnpm -r type-check"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["esbuild"]
+    "onlyBuiltDependencies": ["esbuild"],
+    "overrides": {
+      "hono": "^4.13.5",
+      "@hono/node-server": "^1.19.15"
+    }
   }
 }
