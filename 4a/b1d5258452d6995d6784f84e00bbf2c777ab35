@@ -1,0 +1,21 @@
+sdk-typescript/package.json
+  s_e57a421d93fc0d::t_99ba25a9ae92b7 16-17
+sdk-typescript/pnpm-lock.yaml
+  s_e57a421d93fc0d::t_f055436a1c8e72 10,2203-2204,2275-2276,2880,3042,3290,3292-3293,3427
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "4ab1d5258452d6995d6784f84e00bbf2c777ab35",
+  "prompts": {},
+  "sessions": {
+    "s_e57a421d93fc0d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f63e974a2ffeqvfTqkIyEz8bPP",
+        "model": "muse-spark-1.3-contributor"
+      },
+      "human_author": "Jake Fineman <jakefineman@gmail.com>"
+    }
+  }
+}
