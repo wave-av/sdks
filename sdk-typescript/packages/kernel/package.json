@@ -75,7 +75,7 @@
     "@types/opossum": "^8.1.9",
     "tsup": "^8.0.0",
     "typescript": "^5.9.0",
-    "vitest": "^4.1.4"
+    "vitest": "^4.1.11"
   },
   "author": "WAVE Online, LLC <sdk@wave.online>"
 }
