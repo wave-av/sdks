@@ -13,7 +13,8 @@
     "onlyBuiltDependencies": ["esbuild"],
     "overrides": {
       "hono": "^4.13.5",
-      "@hono/node-server": "^1.19.15"
+      "@hono/node-server": "^1.19.15",
+      "qs": "^6.16.0"
     }
   }
 }
