@@ -14,7 +14,7 @@
  * genuinely large responses (schema dumps, full graph queries, audit reports).
  */
 
-import { detectSaturation, captureSaturationEvent, SSE_CAP_BYTES, type SaturationMetrics } from './saturation-detector.js';
+import { detectSaturation, SSE_CAP_BYTES, type SaturationMetrics } from './saturation-detector.js';
 
 const DEFAULT_MAX_CHARS = 500_000;
 
@@ -60,11 +60,12 @@ export function autoSizingTextContent(
 
 /**
  * Safely truncate an MCP response body to stay under the 16 MB SSE frame cap.
- * Per CC 2.1.139 saturation-detection spec (P11.6.x). Returns McpToolResult
- * with maxResultSizeChars annotation; emits Sentry warn/error via
- * captureSaturationEvent when willWarn/willTruncate cross threshold.
+ * Per CC 2.1.139 saturation-detection spec (P11.6.x). Under the cap the body is
+ * returned as-is (with saturation metadata in `_meta` once it crosses the
+ * warning threshold); only a truncated body carries the maxResultSizeChars
+ * annotation.
  *
- * Context is optional; when omitted, no Sentry side effect occurs.
+ * Context is optional; it only labels the computed saturation metrics.
  */
 export function safeTruncateForSseCap(
   body: string,
@@ -73,11 +74,6 @@ export function safeTruncateForSseCap(
   const ctx = context ?? { tool: 'unknown', server: 'unknown' };
   const metrics = detectSaturation(ctx.tool, ctx.server, body);
   if (!metrics.willTruncate) {
-    // Resolves CR r3249315058: emit warn-level Sentry when within 15-16MB
-    // saturation band even though no truncation applied yet.
-    if (metrics.willWarn && context) {
-      captureSaturationEvent(metrics);
-    }
     // Resolves CR r3249315109: don't clamp to 500K maxResultSizeChars when
     // body is under SSE cap — that artificially restricts client display.
     return {
@@ -109,10 +105,6 @@ export function safeTruncateForSseCap(
   const truncated = body.slice(0, lo) + truncatedSuffix;
   // Resolves CR r3249315... (PR #4438): maxResultSizeChars must be a CHARACTER
   // count (not bytes). Use truncated.length so client knows the exact size.
-  // Also emit saturation event in error tier per metrics.willTruncate=true.
-  if (context) {
-    captureSaturationEvent(metrics);
-  }
   return {
     content: [{ type: 'text' as const, text: truncated }],
     _meta: {
@@ -124,5 +116,5 @@ export function safeTruncateForSseCap(
   };
 }
 
-export { detectSaturation, captureSaturationEvent };
+export { detectSaturation };
 export type { SaturationMetrics };
