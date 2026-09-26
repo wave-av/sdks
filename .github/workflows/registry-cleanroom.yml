@@ -47,7 +47,7 @@ name: registry clean-room acceptance
 # 34254764342 with `Failed to FinalizeArtifact: ... (403) Forbidden: Error from intermediary`,
 # while runs 34253661323 and 34253751343 on the byte-identical job content uploaded fine. An
 # initial hypothesis — that the job was missing `actions: write` — was proposed, landed on a PR,
-# reviewed by independent AI review tools, and then TESTED
+# reviewed by three independent tools (codeant-ai, cubic-dev-ai, coderabbitai), and then TESTED
 # and DISPROVEN by a real control experiment: re-dispatching the workflow on unchanged `main`
 # (still with no `actions: write`, run 34258507516) succeeded a few minutes later with no code
 # change at all — the same fail/pass/pass/fail/pass pattern a static permissions gap cannot
