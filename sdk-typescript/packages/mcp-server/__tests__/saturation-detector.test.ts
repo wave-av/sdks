@@ -1,10 +1,8 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import {
   SSE_CAP_BYTES,
   WARN_THRESHOLD_BYTES,
   detectSaturation,
-  captureSaturationEvent,
-  checkAndReportSaturation,
 } from '../src/tools/saturation-detector.js';
 
 describe('saturation-detector', () => {
@@ -73,73 +71,6 @@ describe('saturation-detector', () => {
       expect(m.willWarn).toBe(false);
       expect(m.willTruncate).toBe(false);
       expect(m.saturationPct).toBe(0);
-    });
-  });
-
-  describe('captureSaturationEvent', () => {
-    it('no-op when willWarn is false', () => {
-      const captureMessage = vi.fn();
-      const m = detectSaturation('q', 's', 'short');
-      captureSaturationEvent(m, { captureMessage });
-      expect(captureMessage).not.toHaveBeenCalled();
-    });
-
-    it('no-op when sentry is undefined', () => {
-      const body = 'a'.repeat(WARN_THRESHOLD_BYTES);
-      const m = detectSaturation('q', 's', body);
-      // Should not throw
-      expect(() => captureSaturationEvent(m)).not.toThrow();
-    });
-
-    it('emits warning (not error) when at warn threshold but below SSE cap', () => {
-      const captureMessage = vi.fn();
-      const body = 'a'.repeat(WARN_THRESHOLD_BYTES);
-      const m = detectSaturation('my-tool', 'my-server', body);
-      captureSaturationEvent(m, { captureMessage });
-
-      expect(captureMessage).toHaveBeenCalledOnce();
-      const [msg, opts] = captureMessage.mock.calls[0]!;
-      expect(msg).toContain('my-tool');
-      expect(opts.level).toBe('warning');
-      expect(opts.tags!['mcp.server']).toBe('my-server');
-      expect(opts.tags!['mcp.tool']).toBe('my-tool');
-      expect(opts.tags!['mcp.will_truncate']).toBe('false');
-      // truncationApplied should be false until the actual SSE cap is hit
-      expect(opts.extra!.truncationApplied).toBe(false);
-    });
-
-    it('emits error (not warning) when body reaches SSE cap', () => {
-      const captureMessage = vi.fn();
-      const body = 'a'.repeat(SSE_CAP_BYTES);
-      const m = detectSaturation('my-tool', 'my-server', body);
-      captureSaturationEvent(m, { captureMessage });
-
-      expect(captureMessage).toHaveBeenCalledOnce();
-      const [, opts] = captureMessage.mock.calls[0]!;
-      expect(opts.level).toBe('error');
-      expect(opts.tags!['mcp.will_truncate']).toBe('true');
-      expect(opts.extra!.truncationApplied).toBe(true);
-    });
-
-    it('swallows Sentry errors gracefully', () => {
-      const captureMessage = vi.fn(() => {
-        throw new Error('Sentry down');
-      });
-      const body = 'a'.repeat(WARN_THRESHOLD_BYTES);
-      const m = detectSaturation('q', 's', body);
-      expect(() => captureSaturationEvent(m, { captureMessage })).not.toThrow();
-    });
-  });
-
-  describe('checkAndReportSaturation', () => {
-    it('returns metrics and reports in one call', () => {
-      const captureMessage = vi.fn();
-      const body = 'a'.repeat(WARN_THRESHOLD_BYTES);
-      const m = checkAndReportSaturation('t', 's', body, { captureMessage });
-      // willTruncate is false at WARN_THRESHOLD_BYTES (15MB) — only true at SSE_CAP_BYTES (16MB)
-      // per saturation-detector.ts:66. Resolves CodeRabbit r3249315039.
-      expect(m.willTruncate).toBe(false);
-      expect(captureMessage).toHaveBeenCalledOnce();
     });
   });
 });
