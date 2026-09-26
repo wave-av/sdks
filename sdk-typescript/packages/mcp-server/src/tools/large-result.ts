@@ -60,9 +60,10 @@ export function autoSizingTextContent(
 
 /**
  * Safely truncate an MCP response body to stay under the 16 MB SSE frame cap.
- * Per CC 2.1.139 saturation-detection spec (P11.6.x). Returns McpToolResult
- * with maxResultSizeChars annotation, plus saturation metadata in `_meta`
- * once the body crosses the warning threshold.
+ * Per CC 2.1.139 saturation-detection spec (P11.6.x). Under the cap the body is
+ * returned as-is (with saturation metadata in `_meta` once it crosses the
+ * warning threshold); only a truncated body carries the maxResultSizeChars
+ * annotation.
  *
  * Context is optional; it only labels the computed saturation metrics.
  */
