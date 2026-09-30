@@ -1,0 +1,25 @@
+sdk-typescript/packages/workflow-sdk/src/types.ts
+  s_13ccc7d9001218::t_5f52d4de948543 286
+  s_13ccc7d9001218::t_119706e124314b 279-282
+  s_13ccc7d9001218::t_2096e017590a2d 330
+sdk-typescript/packages/workflow-sdk/package.json
+  s_13ccc7d9001218::t_66a0ccbf74c6b3 3-4,10-17,20-27,30-39,51,54-55,76,84-85,91
+sdk-typescript/pnpm-lock.yaml
+  s_13ccc7d9001218::t_7898f7c096062f 1187-1189,2494-2496,3632-3633
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "4e50d831aa5afba9aad6a3447b191cac496b788c",
+  "prompts": {},
+  "sessions": {
+    "s_13ccc7d9001218": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "11229abc-f617-4541-b5d7-d693c6ae4d9d",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Jake Fineman <jakefineman@gmail.com>"
+    }
+  }
+}
