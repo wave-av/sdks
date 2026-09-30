@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.version = Wave::VERSION
   spec.summary = "Official WAVE API SDK for Ruby"
   spec.description = "Typed-ergonomic Ruby client for the WAVE API, generated from the gateway OpenAPI contract."
-  spec.authors = ["WAVE Inc."]
+  spec.authors = ["WAVE Online, LLC"]
   spec.email = ["sdk@wave.online"]
   spec.homepage = "https://wave.online"
   spec.license = "MIT"
