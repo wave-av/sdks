@@ -13,8 +13,11 @@ import os
 from wave_sdk import Wave
 
 client = Wave(api_key=os.environ["WAVE_API_KEY"])
-usage = client.usage.get()   # GET /v1/usage, available from wave-sdk 2.3.0
+manifests = client.pricing.list_manifests()   # GET /v1/pricing/manifests, a free read
 ```
+
+This call works on every `wave-sdk` release from 2.2.0 on, so it runs whichever version
+`pip install wave-sdk` resolves.
 
 Quickstart, namespace table, error handling and changelog:
 [wave-av/sdk-python README](https://github.com/wave-av/sdk-python#readme).
