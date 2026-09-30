@@ -1,118 +1,46 @@
-# WAVE SDK for Python
+# WAVE SDK for Python: this directory is not the published SDK
 
-> **Canonical package:** The supported Python SDK is `wave-sdk` from
-> [github.com/wave-av/sdk-python](https://github.com/wave-av/sdk-python). `wave-av-sdk` from this
-> monorepo is frozen at 3.0.0 and will be marked deprecated on PyPI.
-
-Official Python SDK for the WAVE API by WAVE Online, LLC
-
-## Installation
+The supported Python SDK is **`wave-sdk`**. Its source, releases and documentation live in
+[github.com/wave-av/sdk-python](https://github.com/wave-av/sdk-python).
 
 ```bash
-pip install wave-av-sdk
+pip install wave-sdk
 ```
 
-## Quick start
-
 ```python
+import os
+
 from wave_sdk import Wave
 
-wave = Wave(api_key="your-api-key", organization_id="org_123")
-
-# Create and start a live stream
-stream = wave.pipeline.create(title="My Stream", protocol="webrtc")
-wave.pipeline.start(stream.id)
-health = wave.pipeline.get_health(stream.id)
-print(f"Viewers: {health['viewer_count']}")
-
-# Create a virtual camera from NDI
-device = wave.prism.create_device(
-    name="PTZ Camera 1",
-    type="camera",
-    source_protocol="ndi",
-    source_endpoint="NDI-CAM-1",
-    node_id="node_abc",
-    ptz_enabled=True,
-)
-
-# Get analytics
-viewers = wave.pulse.get_viewer_analytics(time_range="24h")
+client = Wave(api_key=os.environ["WAVE_API_KEY"])
+manifests = client.pricing.list_manifests()   # GET /v1/pricing/manifests, a free read
 ```
 
-## All 33 APIs
+This call works on every `wave-sdk` release from 2.2.0 on, so it runs whichever version
+`pip install wave-sdk` resolves.
 
-### P1 - Core
+Quickstart, namespace table, error handling and changelog:
+[wave-av/sdk-python README](https://github.com/wave-av/sdk-python#readme).
 
-| API             | Description             |
-| --------------- | ----------------------- |
-| `wave.pipeline` | Live streaming engine   |
-| `wave.studio`   | Multi-camera production |
+## Why this directory still exists
 
-### P2 - Enterprise
+`sdk-python/` built the PyPI distribution **`wave-av-sdk`**. Every `wave-av-sdk` release on PyPI
+is yanked, so `pip install wave-av-sdk` fails with "No matching distribution found". The
+pipeline that published it (`.github/workflows/publish-pypi.yml`) is disabled unless the
+`MONOREPO_NPM_PYPI_PUBLISH` repository variable is `true`, and it must stay disabled. The source
+stays because this repository's `test-python` workflow still installs and tests it.
 
-| API          | Description             |
-| ------------ | ----------------------- |
-| `wave.fleet` | Device fleet management |
-| `wave.ghost` | AI auto-directing       |
-| `wave.mesh`  | Multi-region failover   |
-| `wave.edge`  | CDN and edge workers    |
-| `wave.pulse` | Analytics and BI        |
-| `wave.prism` | Virtual Device Bridge   |
-| `wave.zoom`  | Zoom integration        |
+If you installed `wave-av-sdk`, switch to `wave-sdk`:
 
-### P3 - Content & Commerce
-
-| API                 | Description        |
-| ------------------- | ------------------ |
-| `wave.clips`        | Video clips        |
-| `wave.editor`       | Video editor       |
-| `wave.voice`        | Voice synthesis    |
-| `wave.phone`        | Phone calls        |
-| `wave.collab`       | Collaboration      |
-| `wave.captions`     | Auto-captions      |
-| `wave.chapters`     | Video chapters     |
-| `wave.studio_ai`    | AI assistant       |
-| `wave.transcribe`   | Transcription      |
-| `wave.sentiment`    | Sentiment analysis |
-| `wave.search`       | Content search     |
-| `wave.scene`        | Scene detection    |
-| `wave.vault`        | Recording storage  |
-| `wave.marketplace`  | Marketplace        |
-| `wave.connect`      | Integrations       |
-| `wave.distribution` | Social simulcast   |
-| `wave.desktop`      | Desktop Node       |
-| `wave.signage`      | Digital signage    |
-| `wave.qr`           | QR codes           |
-| `wave.audience`     | Polls/Q&A          |
-| `wave.creator`      | Monetization       |
-
-### P4 - Specialized
-
-| API            | Description        |
-| -------------- | ------------------ |
-| `wave.podcast` | Podcast production |
-| `wave.slides`  | Slides-to-video    |
-| `wave.usb`     | USB relay          |
-
-## Error handling
-
-```python
-from wave_sdk import WaveError, RateLimitError
-
-try:
-    wave.pipeline.get("invalid-id")
-except RateLimitError as e:
-    print(f"Rate limited. Retry after {e.retry_after}s")
-except WaveError as e:
-    print(f"{e.code}: {e.message} ({e.status_code})")
+```bash
+pip uninstall -y wave-av-sdk
+pip install wave-sdk
 ```
 
-## Requirements
-
-- Python 3.9+
-- httpx
-- pydantic
+The import name is the same (`wave_sdk`). If your code still has `from wave import Wave`, change
+it to `from wave_sdk import Wave`: the old `wave` top-level package collided with the Python
+standard library's `wave` module and could never be imported.
 
 ## License
 
-MIT - WAVE Online, LLC
+Apache-2.0 - WAVE Online, LLC. See [LICENSE](LICENSE).
