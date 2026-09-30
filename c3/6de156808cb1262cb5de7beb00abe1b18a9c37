@@ -1,0 +1,20 @@
+sdk-python/README.md
+  s_13ccc7d9001218::t_7e2acc838f57b1 28
+  s_13ccc7d9001218::t_1558755a1726d3 1,3-4,7,11,13,15-16,19-20,22,24-27,30,32-34,37-39,43
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "c36de156808cb1262cb5de7beb00abe1b18a9c37",
+  "prompts": {},
+  "sessions": {
+    "s_13ccc7d9001218": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "11229abc-f617-4541-b5d7-d693c6ae4d9d",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Jake Fineman <jakefineman@gmail.com>"
+    }
+  }
+}
