@@ -1,14 +1,24 @@
 # @wave-av/workflow-sdk
 
-> **Canonical package:** The supported package is `@wave-av/workflow-sdk` published from
-> [github.com/wave-av/workflow-sdk](https://github.com/wave-av/workflow-sdk). This monorepo
-> (`wave-av/sdks`) no longer publishes npm packages.
-
 [![npm version](https://img.shields.io/npm/v/@wave-av/workflow-sdk.svg)](https://www.npmjs.com/package/@wave-av/workflow-sdk)
 [![npm downloads](https://img.shields.io/npm/dm/@wave-av/workflow-sdk.svg)](https://www.npmjs.com/package/@wave-av/workflow-sdk)
-[![license](https://img.shields.io/npm/l/@wave-av/workflow-sdk.svg)](https://github.com/wave-av/sdks/blob/main/LICENSE)
+[![license](https://img.shields.io/npm/l/@wave-av/workflow-sdk.svg)](./LICENSE)
 
-Official SDK for building and executing workflows on the WAVE platform.
+SDK for building and executing workflows on the WAVE platform. The source lives here, in
+`wave-av/sdks` at `sdk-typescript/packages/workflow-sdk`.
+
+## Status: the Workflow API is not served yet
+
+`WorkflowBuilder` and the Zod schemas work today, locally. The HTTP client does not have a
+server to talk to yet: `https://api.wave.online` does not serve the `/v1/workflows` and
+`/v1/executions` routes this client calls, and answers each of them `404 ROUTE_NOT_MAPPED`.
+None of them is in the published WAVE API contract. The contract's only workflow operation
+is `POST /v1/workflow-engine`, which is a draft and is not served either.
+
+Until a Workflow API ships, every client method rejects with a `WorkflowApiError` whose
+`code` is `ROUTE_NOT_MAPPED` and whose `requestId` you can quote to WAVE support. The client
+never reports a refusal as a success. `WORKFLOW_ROUTES` lists every route it calls, and
+`scripts/live-smoke.mjs` re-checks them against the gateway.
 
 ## Installation
 
@@ -20,29 +30,40 @@ yarn add @wave-av/workflow-sdk
 pnpm add @wave-av/workflow-sdk
 ```
 
+Zod is a regular dependency (the same `^4.4.3` range as `@wave-av/adk`), so the package
+installs next to either zod 3 or zod 4 in your project.
+
 ## Quick start
 
 ```typescript
-import { WaveWorkflowClient } from '@wave-av/workflow-sdk';
+import { WaveWorkflowClient, WorkflowApiError } from '@wave-av/workflow-sdk';
 
-// Create a client
+// Create a client (throws WAVE_ERR_MISSING_API_KEY if the key is empty)
 const client = new WaveWorkflowClient({
   apiKey: process.env.WAVE_API_KEY!,
   organizationId: 'org_123',
 });
 
-// Execute a workflow
-const execution = await client.execute('my-workflow', {
-  input_params: {
-    environment: 'production',
-  },
-});
+try {
+  // Execute a workflow
+  const execution = await client.execute('my-workflow', {
+    input_params: {
+      environment: 'production',
+    },
+  });
+  console.log('Execution started:', execution.id);
 
-console.log('Execution started:', execution.id);
-
-// Wait for completion
-const result = await client.waitForCompletion(execution.id);
-console.log('Result:', result.status);
+  // Wait for completion
+  const result = await client.waitForCompletion(execution.id);
+  console.log('Result:', result.status);
+} catch (error) {
+  if (error instanceof WorkflowApiError) {
+    // Today: 404 ROUTE_NOT_MAPPED (see "Status" above)
+    console.error(error.status, error.code, error.requestId);
+  } else {
+    throw error;
+  }
+}
 ```
 
 ## Building workflows
@@ -91,11 +112,12 @@ console.log(JSON.stringify(workflow, null, 2));
 
 ```typescript
 const client = new WaveWorkflowClient({
-  apiKey: string;           // Required: API key for authentication
+  apiKey: string;           // Required: API key, sent only in the Authorization header
   organizationId: string;   // Required: Organization ID for tenant isolation
-  baseUrl?: string;         // Optional: API base URL (default: https://api.wave.online)
+  baseUrl?: string;         // Optional: API base URL (default: https://api.wave.online; https unless localhost)
   timeout?: number;         // Optional: Request timeout in ms (default: 30000)
-  debug?: boolean;          // Optional: Enable debug logging
+  debug?: boolean;          // Optional: Log method and URL of each request (never credentials)
+  webSocketFactory?: (url, { headers }) => WebSocket; // Optional: see "Real-time events"
 });
 ```
 
@@ -177,6 +199,24 @@ const { logs } = await client.getLogs(execution.id, {
 
 ##### Real-time events
 
+The API key is sent in the WebSocket handshake's `Authorization` header. It is never put in
+the URL, where proxies, CDNs and access logs would record it. Node.js 22+ and Bun do this
+with their built-in `WebSocket`. On Node.js 18/20, pass a factory from the `ws` package:
+
+```typescript
+import WebSocket from 'ws';
+
+const client = new WaveWorkflowClient({
+  apiKey: process.env.WAVE_API_KEY!,
+  organizationId: 'org_123',
+  webSocketFactory: (url, { headers }) => new WebSocket(url, { headers }),
+});
+```
+
+Browsers cannot set WebSocket headers, so `subscribeToExecution` throws
+`WAVE_ERR_WEBSOCKET_UNSUPPORTED` there. Keep the long-lived API key on your server and
+subscribe from it.
+
 ```typescript
 // Subscribe to execution events
 const unsubscribe = client.subscribeToExecution(execution.id);
@@ -231,18 +271,43 @@ if (!result.success) {
 
 ## Error handling
 
+Two error classes tell "the API said no" apart from "no request was sent":
+
+- `WorkflowApiError`: the gateway answered with a non-2xx status. It has `status`, `code`
+  (the gateway's machine-readable code, e.g. `ROUTE_NOT_MAPPED`, `AUTH_INVALID_KEY`,
+  `SCOPE_INSUFFICIENT`), `requestId`, `docUrl`, `route` (e.g. `GET /v1/workflows`) and the raw
+  `body`. Its message still starts with `API error (<status>)`, as in 1.0.x.
+- `WorkflowClientError`: the client stopped before any network I/O. `code` is one of
+  `WAVE_ERR_MISSING_API_KEY`, `WAVE_ERR_INVALID_ARGUMENT` (for example an empty or `..` id),
+  `WAVE_ERR_WEBSOCKET_UNSUPPORTED` or `WAVE_ERR_TIMEOUT`.
+
+Neither error ever contains the API key.
+
 ```typescript
+import { WorkflowApiError, WorkflowClientError } from '@wave-av/workflow-sdk';
+
 try {
   const execution = await client.execute('my-workflow');
 } catch (error) {
-  if (error.message.includes('API error (404)')) {
-    console.error('Workflow not found');
-  } else if (error.message.includes('timeout')) {
+  if (error instanceof WorkflowApiError) {
+    console.error(`${error.route} -> ${error.status} ${error.code} (request ${error.requestId})`);
+  } else if (error instanceof WorkflowClientError && error.code === 'WAVE_ERR_TIMEOUT') {
     console.error('Request timed out');
   } else {
-    console.error('Unknown error:', error);
+    throw error;
   }
 }
+```
+
+## Live check
+
+`scripts/live-smoke.mjs` calls every GET route through the built client against the live
+gateway, after two controls (`GET /v1/network/surface` and an authenticated
+`GET /v1/billing/usage`). It refuses any non-GET request, so it cannot change anything.
+
+```bash
+pnpm build && WAVE_API_KEY=... pnpm smoke:live            # report
+pnpm build && WAVE_API_KEY=... pnpm smoke:live -- --strict # exit 1 while any route is unserved
 ```
 
 ## Environment variables
@@ -260,13 +325,10 @@ try {
 - [@wave-av/mcp-server](https://www.npmjs.com/package/@wave-av/mcp-server) — MCP server for AI tools
 - [@wave-av/cli](https://www.npmjs.com/package/@wave-av/cli) — Command-line interface
 
-## License
+## API contract
 
-MIT
-
-## API Reference
-
-See [docs.wave.online/sdk/workflow-sdk](https://docs.wave.online/sdk/workflow-sdk) for the complete API reference.
+The WAVE API contract and the capability index list every route the gateway serves:
+[gateway.wave.online/.well-known/wave-skills.json](https://gateway.wave.online/.well-known/wave-skills.json).
 
 ## Maturity
 
@@ -288,4 +350,4 @@ See the [wave-av/sdks](https://github.com/wave-av/sdks) repository for security 
 
 ## License
 
-MIT — see [LICENSE](./LICENSE).
+Apache-2.0. See [LICENSE](./LICENSE).
