@@ -1,26 +1,42 @@
 {
   "name": "@wave-av/workflow-sdk",
-  "version": "1.0.6",
-  "description": "WAVE Workflow SDK \u2014 build and execute multi-phase workflows with real-time events, checkpoints, and retry logic",
+  "version": "1.1.0",
+  "description": "WAVE Workflow SDK — build and execute multi-phase workflows with real-time events, checkpoints, and retry logic",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
     },
     "./types": {
-      "types": "./dist/types.d.ts",
-      "import": "./dist/types.mjs",
-      "require": "./dist/types.js"
+      "import": {
+        "types": "./dist/types.d.mts",
+        "default": "./dist/types.mjs"
+      },
+      "require": {
+        "types": "./dist/types.d.ts",
+        "default": "./dist/types.js"
+      }
     },
     "./client": {
-      "types": "./dist/client.d.ts",
-      "import": "./dist/client.mjs",
-      "require": "./dist/client.js"
-    }
+      "import": {
+        "types": "./dist/client.d.mts",
+        "default": "./dist/client.mjs"
+      },
+      "require": {
+        "types": "./dist/client.d.ts",
+        "default": "./dist/client.js"
+      }
+    },
+    "./package.json": "./package.json"
   },
   "files": [
     "dist",
@@ -32,10 +48,11 @@
     "build": "tsup src/index.ts src/types.ts src/client.ts --format cjs,esm --dts --clean",
     "dev": "tsup src/index.ts src/types.ts src/client.ts --format cjs,esm --dts --watch",
     "lint": "eslint src/",
-    "test": "vitest run --passWithNoTests",
+    "test": "vitest run",
     "test:watch": "vitest",
     "type-check": "tsc --noEmit",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "smoke:live": "node scripts/live-smoke.mjs"
   },
   "keywords": [
     "wave",
@@ -56,25 +73,22 @@
     "url": "https://github.com/wave-av/sdks.git",
     "directory": "sdk-typescript/packages/workflow-sdk"
   },
-  "homepage": "https://docs.wave.online/sdk/workflows",
+  "homepage": "https://github.com/wave-av/sdks/tree/main/sdk-typescript/packages/workflow-sdk#readme",
   "bugs": {
     "url": "https://github.com/wave-av/sdks/issues"
   },
   "engines": {
     "node": ">=18.0.0"
   },
-  "peerDependencies": {
-    "zod": "^3.22.0"
-  },
   "dependencies": {
-    "eventemitter3": "^5.0.1"
+    "eventemitter3": "^5.0.1",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@types/node": "^25.0.3",
     "tsup": "^8.0.0",
     "typescript": "^5.9.3",
-    "vitest": "^4.1.4",
-    "zod": "3.25.76"
+    "vitest": "^4.1.4"
   },
   "publishConfig": {
     "provenance": true,
