@@ -301,9 +301,11 @@ try {
 
 ## Live check
 
-`scripts/live-smoke.mjs` calls every GET route through the built client against the live
-gateway, after two controls (`GET /v1/network/surface` and an authenticated
+`scripts/live-smoke.mjs` calls every HTTP GET route through the built client against the
+live gateway, after two controls (`GET /v1/network/surface` and an authenticated
 `GET /v1/billing/usage`). It refuses any non-GET request, so it cannot change anything.
+The WebSocket events route (`subscribeToExecution`) is not probed. `WAVE_API_URL` must
+pass the client's https check before the key is sent anywhere.
 
 ```bash
 pnpm build && WAVE_API_KEY=... pnpm smoke:live            # report

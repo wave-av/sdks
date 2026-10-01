@@ -14,6 +14,8 @@ on:
     branches: [main]
     paths:
       - "sdk-typescript/packages/workflow-sdk/**"
+      - "sdk-typescript/pnpm-lock.yaml"
+      - ".github/workflows/test-workflow-sdk.yml"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
