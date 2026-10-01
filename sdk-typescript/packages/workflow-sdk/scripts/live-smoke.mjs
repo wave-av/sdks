@@ -61,14 +61,19 @@ globalThis.fetch = (input, init = {}) => {
 
 let failed = false;
 
-const control = await fetch(`${BASE}/v1/network/surface`);
+// Controls never follow a redirect: a 3xx to a page that answers 200 must not
+// pass, and the key must not travel along a redirect. Any 3xx fails the check.
+const control = await fetch(`${BASE}/v1/network/surface`, { redirect: 'manual' });
 console.log(`control GET /v1/network/surface -> ${control.status} (rid ${control.headers.get('x-request-id') ?? '-'})`);
 if (control.status !== 200) {
   console.error('live-smoke: control failed; the gateway is not reachable, so no route result below means anything');
   process.exit(1);
 }
 // Authenticated control: proves the key is accepted, so a refusal below is about the route, not the key.
-const authed = await fetch(`${BASE}/v1/billing/usage`, { headers: { Authorization: `Bearer ${apiKey}` } });
+const authed = await fetch(`${BASE}/v1/billing/usage`, {
+  headers: { Authorization: `Bearer ${apiKey}` },
+  redirect: 'manual',
+});
 console.log(`control GET /v1/billing/usage (authed) -> ${authed.status} (rid ${authed.headers.get('x-request-id') ?? '-'})`);
 if (authed.status !== 200) {
   console.error('live-smoke: the API key was not accepted by an authenticated control route');
