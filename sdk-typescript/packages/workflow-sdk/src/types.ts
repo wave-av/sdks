@@ -276,10 +276,14 @@ export interface ListExecutionsResponse {
 // ============================================================================
 // Zod Schemas for Validation
 // ============================================================================
+//
+// Built with the package's own zod 4 dependency (the same range @wave-av/adk
+// uses), so installing this SDK never conflicts with the zod version your
+// project uses. Only APIs that behave the same in zod 3 and 4 are used here.
 
 export const WorkflowAgentSchema = z.object({
   type: z.string().min(1),
-  config: z.record(z.unknown()).optional(),
+  config: z.record(z.string(), z.unknown()).optional(),
   timeout_seconds: z.number().int().positive().optional(),
   retry_policy: z.object({
     max_attempts: z.number().int().positive(),
@@ -323,7 +327,7 @@ export const WorkflowDefinitionSchema = z.object({
 });
 
 export const ExecuteWorkflowRequestSchema = z.object({
-  input_params: z.record(z.unknown()).optional(),
+  input_params: z.record(z.string(), z.unknown()).optional(),
   trigger_type: z.enum(['manual', 'api']).optional(),
   idempotency_key: z.string().max(100).optional(),
   checkpoint_id: z.string().uuid().optional(),

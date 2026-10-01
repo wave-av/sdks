@@ -38,15 +38,27 @@ export {
   createClient,
   type WaveWorkflowClientConfig,
   type WorkflowClientEvents,
+  type WorkflowWebSocket,
+  type WorkflowWebSocketFactory,
 } from './client';
+
+// Errors: WorkflowApiError (the gateway answered non-2xx), WorkflowClientError (no request was sent)
+export {
+  WorkflowApiError,
+  WorkflowClientError,
+  type WorkflowClientErrorCode,
+} from './errors';
+
+// The routes the client calls (none is served by the WAVE gateway yet; see README)
+export { WORKFLOW_ROUTES, type WorkflowRouteName } from './routes';
 
 // Builder utilities for creating workflow definitions
 export { WorkflowBuilder } from './builder';
 
 /**
- * SDK version
+ * SDK version (kept equal to package.json by a unit test)
  */
-export const VERSION = '1.0.0';
+export const VERSION = '1.1.0';
 
 /**
  * Default API base URL
