@@ -1,0 +1,83 @@
+{
+  "$comment": "NOT RENDERED: the pipeline renderer reads only the settings file. This file records every GitHub Actions job (or secret-bearing leg of a ported job) that is parked, with the reason and what unblocks it, so nothing is dropped silently. Classes: publish (deploy-class, waits for an explicit owner decision), event-bot (waits on a GitHub-event bridge for Buildkite), secret (a main-only step needing a secret that is not granted to a public repository yet), registry (waits on a self-hosted npm registry). deferred_schedules lists GH schedule legs whose job is parked; ported schedules live in the settings `schedules`.",
+  "deferred_schedules": [],
+  "parked": [
+    {
+      "workflow": "publish-npm.yml",
+      "jobs": ["publish"],
+      "class": "publish",
+      "reason": "Tag-triggered (sdks-v*) pnpm build + publish of the @wave-av/* packages with OIDC trusted publishing and provenance. Deploy-class; not enabled.",
+      "blocked_on": "the owner explicitly enables publishing; then a main_only, tag-gated step with a publish credential or OIDC federation"
+    },
+    {
+      "workflow": "publish-pypi.yml",
+      "jobs": ["build", "publish"],
+      "class": "publish",
+      "reason": "Tag-triggered (sdk-python-v*) build + twine check, then OIDC trusted publishing to PyPI. Deploy-class; not enabled.",
+      "blocked_on": "the owner explicitly enables publishing"
+    },
+    {
+      "workflow": "publish-crates.yml",
+      "jobs": ["verify", "publish"],
+      "class": "publish",
+      "reason": "Tag-triggered (sdk-rust-v*) cargo build/test/package, then OIDC publish to crates.io. Deploy-class; not enabled. The verify content is covered by test-rust.",
+      "blocked_on": "the owner explicitly enables publishing"
+    },
+    {
+      "workflow": "publish-rubygems.yml",
+      "jobs": ["verify", "publish"],
+      "class": "publish",
+      "reason": "Tag-triggered (sdk-ruby-v*) gem build, then OIDC publish to RubyGems. Deploy-class; not enabled. The verify content is covered by test-ruby-31/33.",
+      "blocked_on": "the owner explicitly enables publishing"
+    },
+    {
+      "workflow": "release-go.yml",
+      "jobs": ["validate-and-warm"],
+      "class": "publish",
+      "reason": "Runs only on sdk-go/v* tags (Buildkite tag builds are off). Its vet + test are covered by test-go; warming the Go module proxy for a new tag is a release action.",
+      "blocked_on": "the owner explicitly enables releases (tag builds)"
+    },
+    {
+      "workflow": "governance-enforce.yml",
+      "jobs": ["enforce"],
+      "class": "registry",
+      "reason": "Installs @wave-av/governance from GitHub Packages, which returns 403 (billing) for every install, and needs a packages read credential this public pipeline does not hold. Not worked around.",
+      "blocked_on": "the self-hosted npm registry, then a governance-enforce step that diffs against the PR merge-base"
+    },
+    {
+      "workflow": "public-repo-guard.yml",
+      "jobs": ["guard: private-repo-name rule"],
+      "class": "secret",
+      "reason": "content-policy.sh checks private repository names only when GUARD_PRIVATE_REPOS is set (an org Actions variable on GH). Here it would be a job secret; the ported secrets-content-policy step runs without it, as a fork PR does on GH.",
+      "blocked_on": "secret decision: GUARD_PRIVATE_REPOS for a main-only content-policy step"
+    },
+    {
+      "workflow": "registry-cleanroom.yml",
+      "jobs": ["cleanroom: open or update the tracking issue"],
+      "class": "secret",
+      "reason": "On a failing schedule run GH opens or comments on a tracking issue with an issues:write token. The ported step fails loudly instead.",
+      "blocked_on": "secret decision: an issues:write GitHub token for a main-only notifier step"
+    },
+    {
+      "workflow": "registry-cleanroom.yml",
+      "jobs": ["cleanroom: workflow_run after npm publish"],
+      "class": "publish",
+      "reason": "Chained after publish-npm.yml completes; publishing is parked.",
+      "blocked_on": "the publish crossing above"
+    },
+    {
+      "workflow": "issue-ops-triage.yml",
+      "jobs": ["triage"],
+      "class": "event-bot",
+      "reason": "Triggered by issues events; uses ISSUE_OPS_PAT, BOT_ISSUE_OPS_APP_ID, BOT_ISSUE_OPS_PRIVATE_KEY.",
+      "blocked_on": "a GitHub-event bridge for Buildkite"
+    },
+    {
+      "workflow": "governance-enforce.yml",
+      "jobs": ["merge_group trigger"],
+      "class": "event-bot",
+      "reason": "GitHub merge queue events have no Buildkite equivalent while GitHub's merge queue gates merges.",
+      "blocked_on": "a required-check swap decision"
+    }
+  ]
+}

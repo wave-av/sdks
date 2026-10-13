@@ -1,0 +1,140 @@
+{
+  "$comment": "Pipeline settings for wave-av/sdks, PUBLIC. Template custom: every step is a checked-in .buildkite/scripts script. Language test steps are path-filtered like the GH workflows (on main too, via paths_on_default_branch). No step holds a secret. Parked jobs (the four registry publishes, release-go, governance-enforce, event bots, secret-bearing legs) are in .buildkite/parked.json; see .buildkite/README.md.",
+  "wave_ci": "296cc0cf4faf1f06d0acd4c2a767d6c111d2adf3",
+  "repo": "wave-av/sdks",
+  "pipeline": "sdks",
+  "template": "custom",
+  "visibility": "public",
+  "default_branch": "main",
+  "extra_steps": [
+    {
+      "key": "gate-checks",
+      "label": ":lock: gate / checks: secret scan + file size + verify-routes",
+      "script": ".buildkite/scripts/gate-checks.sh",
+      "timeout": 10
+    },
+    {
+      "key": "gate-skill-validate",
+      "label": ":scroll: gate / skill-validate (SKILL.md frontmatter)",
+      "script": ".buildkite/scripts/gate-skill-validate.sh",
+      "timeout": 5
+    },
+    {
+      "key": "secrets-content-policy",
+      "label": ":closed_lock_with_key: secrets + content policy (gitleaks, content-policy)",
+      "script": ".buildkite/scripts/secrets-content-policy.sh",
+      "timeout": 10
+    },
+    {
+      "key": "license-consistency",
+      "label": ":scales: license consistency (declared vs shipped text)",
+      "script": ".buildkite/scripts/license-consistency.sh",
+      "timeout": 5
+    },
+    {
+      "key": "test-go",
+      "label": ":go: go test: gofmt, vet, test (go 1.27)",
+      "script": ".buildkite/scripts/test-go.sh",
+      "timeout": 20,
+      "paths": [
+        "sdk-go/**",
+        "codegen/**",
+        ".github/workflows/test-go.yml"
+      ],
+      "paths_on_default_branch": true
+    },
+    {
+      "key": "test-python-310",
+      "label": ":python: python test (3.10)",
+      "script": ".buildkite/scripts/test-python.sh",
+      "timeout": 15,
+      "paths": [
+        "sdk-python/**",
+        ".github/workflows/test-python.yml"
+      ],
+      "paths_on_default_branch": true
+    },
+    {
+      "key": "test-python-312",
+      "label": ":python: python test (3.12)",
+      "script": ".buildkite/scripts/test-python.sh",
+      "timeout": 15,
+      "paths": [
+        "sdk-python/**",
+        ".github/workflows/test-python.yml"
+      ],
+      "paths_on_default_branch": true
+    },
+    {
+      "key": "test-ruby-31",
+      "label": ":ruby: ruby test: syntax, gem build, smoke (3.1)",
+      "script": ".buildkite/scripts/test-ruby.sh",
+      "timeout": 10,
+      "paths": [
+        "sdk-ruby/**",
+        "codegen/**",
+        ".github/workflows/test-ruby.yml"
+      ],
+      "paths_on_default_branch": true
+    },
+    {
+      "key": "test-ruby-33",
+      "label": ":ruby: ruby test: syntax, gem build, smoke (3.3)",
+      "script": ".buildkite/scripts/test-ruby.sh",
+      "timeout": 10,
+      "paths": [
+        "sdk-ruby/**",
+        "codegen/**",
+        ".github/workflows/test-ruby.yml"
+      ],
+      "paths_on_default_branch": true
+    },
+    {
+      "key": "test-rust",
+      "label": ":rust: rust test: build, test, fmt, clippy (rust 1.99)",
+      "script": ".buildkite/scripts/test-rust.sh",
+      "timeout": 30,
+      "paths": [
+        "sdk-rust/**",
+        "codegen/**",
+        ".github/workflows/test-rust.yml"
+      ],
+      "paths_on_default_branch": true
+    },
+    {
+      "key": "registry-parity",
+      "label": ":npm: registry parity: declared version vs npm latest (warn-only)",
+      "script": ".buildkite/scripts/registry-parity.sh",
+      "timeout": 10
+    },
+    {
+      "key": "registry-cleanroom",
+      "label": ":microscope: registry clean-room acceptance (npm + PyPI)",
+      "script": ".buildkite/scripts/registry-cleanroom.sh",
+      "timeout": 30,
+      "artifacts": [
+        "ga-out/**"
+      ]
+    }
+  ],
+  "schedules": [
+    {
+      "name": "registry-cleanroom-daily",
+      "label": "daily registry clean-room acceptance, 09:00 UTC (registry-cleanroom.yml schedule)",
+      "cronline": "0 9 * * *",
+      "branch": "main",
+      "steps": [
+        "registry-cleanroom"
+      ]
+    },
+    {
+      "name": "registry-parity-daily",
+      "label": "daily registry parity, 14:00 UTC (registry-parity.yml schedule)",
+      "cronline": "0 14 * * *",
+      "branch": "main",
+      "steps": [
+        "registry-parity"
+      ]
+    }
+  ]
+}
