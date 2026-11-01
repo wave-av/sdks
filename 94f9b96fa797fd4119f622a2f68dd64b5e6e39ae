@@ -1,0 +1,26 @@
+sdk-typescript/packages/workflow-sdk/README.md
+  s_13ccc7d9001218::t_2d0c5b4690c2cd 304-305,307-308
+sdk-typescript/packages/workflow-sdk/scripts/live-smoke.mjs
+  s_13ccc7d9001218::t_a404fe3eee6152 89-90
+  s_13ccc7d9001218::t_ca98586356390b 13-21
+  s_13ccc7d9001218::t_d37386a21144ae 39-53
+  s_13ccc7d9001218::t_cf3d4160291bb5 54
+.github/workflows/test-workflow-sdk.yml
+  s_13ccc7d9001218::t_c86749e4eb77db 17-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "94f9b96fa797fd4119f622a2f68dd64b5e6e39ae",
+  "prompts": {},
+  "sessions": {
+    "s_13ccc7d9001218": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "11229abc-f617-4541-b5d7-d693c6ae4d9d",
+        "model": "unknown"
+      },
+      "human_author": "Jake Fineman <jakefineman@gmail.com>"
+    }
+  }
+}

@@ -1,0 +1,29 @@
+sdk-typescript/packages/workflow-sdk/README.md
+  s_13ccc7d9001218::t_fca98f04ad5f3c 328,330-331
+  s_13ccc7d9001218::t_13c3ac71040382 274-285,287-288,292-294,297,302-310
+  s_13ccc7d9001218::t_608b3cb79438de 353
+  s_13ccc7d9001218::t_30474ac1571772 202-219,311
+  s_13ccc7d9001218::t_6c6f66abae5227 115,117,119-120
+  s_13ccc7d9001218::t_1daa2edd53b3ae 5-10,12-21,33-35,39,41,47-66
+  s_13ccc7d9001218::t_4eb6be0ba82e4f 312
+.github/workflows/test-workflow-sdk.yml
+  s_13ccc7d9001218::t_5fc669dfbc26ed 1-62
+sdk-typescript/packages/workflow-sdk/CHANGELOG.md
+  s_13ccc7d9001218::t_098d6c4dfc18c2 5-37
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "4fdb81e4a5a4e2d92c515af4fc479255ff0c55fa",
+  "prompts": {},
+  "sessions": {
+    "s_13ccc7d9001218": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "11229abc-f617-4541-b5d7-d693c6ae4d9d",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Jake Fineman <jakefineman@gmail.com>"
+    }
+  }
+}

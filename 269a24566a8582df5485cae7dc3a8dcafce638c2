@@ -1,0 +1,133 @@
+LICENSE
+  s_0cf84883a2f268::t_bb20698fa729ee 189
+NOTICE
+  s_0cf84883a2f268::t_9a9f6a1040f65b 2,4,8
+codegen/render_ruby.py
+  s_0cf84883a2f268::t_c64a0446238892 294
+sdk-python/LICENSE
+  s_0cf84883a2f268::t_3f1a8473e15f15 189
+sdk-python/pyproject.toml
+  s_0cf84883a2f268::t_3601db74f17ad3 23
+sdk-python/wave_sdk/__init__.py
+  s_0cf84883a2f268::t_c159d99b0d91a1 4
+sdk-ruby/wave-sdk.gemspec
+  s_0cf84883a2f268::t_c5d9e8b47740fe 10
+sdk-rust/wave-core/LICENSE
+  s_0cf84883a2f268::t_c6e64008378b17 189
+sdk-rust/wave/LICENSE
+  s_0cf84883a2f268::t_4ab04088843c8f 189
+sdk-typescript/packages/adk/LICENSE
+  s_0cf84883a2f268::t_b5cf2bccfcf509 189
+sdk-typescript/packages/audience/LICENSE
+  s_0cf84883a2f268::t_ab6a01f735b5a7 189
+sdk-typescript/packages/autopilot/LICENSE
+  s_0cf84883a2f268::t_011f7a89184a0f 189
+sdk-typescript/packages/billing/LICENSE
+  s_0cf84883a2f268::t_5e159e5dc2e1b0 189
+sdk-typescript/packages/camera-control/LICENSE
+  s_0cf84883a2f268::t_665bd482d5582e 189
+sdk-typescript/packages/captions/LICENSE
+  s_0cf84883a2f268::t_9587fc7b5438ee 189
+sdk-typescript/packages/chapters/LICENSE
+  s_0cf84883a2f268::t_59c32ef63c7e59 189
+sdk-typescript/packages/clips/LICENSE
+  s_0cf84883a2f268::t_3fd8c2c6a063fb 189
+sdk-typescript/packages/cloud-switcher/LICENSE
+  s_0cf84883a2f268::t_c76215ecaa48ec 189
+sdk-typescript/packages/collab/LICENSE
+  s_0cf84883a2f268::t_a8fbf387c09694 189
+sdk-typescript/packages/connect/LICENSE
+  s_0cf84883a2f268::t_fbd017e2a5bdd7 189
+sdk-typescript/packages/console/LICENSE
+  s_0cf84883a2f268::t_e52ad80e17ee41 189
+sdk-typescript/packages/core/LICENSE
+  s_0cf84883a2f268::t_00af9929f42103 189
+sdk-typescript/packages/creator/LICENSE
+  s_0cf84883a2f268::t_59f0d69b85d3f0 189
+sdk-typescript/packages/desktop/LICENSE
+  s_0cf84883a2f268::t_e95e536a6b5302 189
+sdk-typescript/packages/discovery/LICENSE
+  s_0cf84883a2f268::t_c4a0eaf5ff29cf 189
+sdk-typescript/packages/distribution/LICENSE
+  s_0cf84883a2f268::t_449815eac8e39a 189
+sdk-typescript/packages/drm/LICENSE
+  s_0cf84883a2f268::t_a94f5e367cdea0 189
+sdk-typescript/packages/edge/LICENSE
+  s_0cf84883a2f268::t_2bbcd821154844 189
+sdk-typescript/packages/editor/LICENSE
+  s_0cf84883a2f268::t_d55b6a79c8cb95 189
+sdk-typescript/packages/fleet/LICENSE
+  s_0cf84883a2f268::t_ad7506d9db5bbc 189
+sdk-typescript/packages/ghost/LICENSE
+  s_0cf84883a2f268::t_51ed7f02c2250b 189
+sdk-typescript/packages/kernel/LICENSE
+  s_0cf84883a2f268::t_cb0c6f0673baf3 189
+sdk-typescript/packages/marketplace/LICENSE
+  s_0cf84883a2f268::t_445f35083d4fea 189
+sdk-typescript/packages/mcp-server/LICENSE
+  s_0cf84883a2f268::t_8d03b0e99ca5c0 189
+sdk-typescript/packages/mesh/LICENSE
+  s_0cf84883a2f268::t_00a9c89b199904 189
+sdk-typescript/packages/notifications/LICENSE
+  s_0cf84883a2f268::t_c588026d3b5b45 189
+sdk-typescript/packages/phone/LICENSE
+  s_0cf84883a2f268::t_ff4afa9cf8d5ae 189
+sdk-typescript/packages/pipeline/LICENSE
+  s_0cf84883a2f268::t_2a0c9c347ce785 189
+sdk-typescript/packages/podcast/LICENSE
+  s_0cf84883a2f268::t_b86befe10ae8d5 189
+sdk-typescript/packages/prism/LICENSE
+  s_0cf84883a2f268::t_826324beb8d636 189
+sdk-typescript/packages/prompter/LICENSE
+  s_0cf84883a2f268::t_b1a96c4880dd32 189
+sdk-typescript/packages/pulse/LICENSE
+  s_0cf84883a2f268::t_b56689e6f13209 189
+sdk-typescript/packages/qr/LICENSE
+  s_0cf84883a2f268::t_9b69e01739dc12 189
+sdk-typescript/packages/replay/LICENSE
+  s_0cf84883a2f268::t_29e2643c875a9b 189
+sdk-typescript/packages/scene/LICENSE
+  s_0cf84883a2f268::t_fae3e94ecbe993 189
+sdk-typescript/packages/sdk/LICENSE
+  s_0cf84883a2f268::t_4058375323c1fa 189
+sdk-typescript/packages/search/LICENSE
+  s_0cf84883a2f268::t_82eafbc15e1c84 189
+sdk-typescript/packages/sentiment/LICENSE
+  s_0cf84883a2f268::t_66bc5477690404 189
+sdk-typescript/packages/signage/LICENSE
+  s_0cf84883a2f268::t_da687dea6cd7bf 189
+sdk-typescript/packages/slides/LICENSE
+  s_0cf84883a2f268::t_2ab3fbe089cdac 189
+sdk-typescript/packages/studio-ai/LICENSE
+  s_0cf84883a2f268::t_eece6582ea4cbe 189
+sdk-typescript/packages/studio/LICENSE
+  s_0cf84883a2f268::t_a1d29b98cb6c30 189
+sdk-typescript/packages/transcribe/LICENSE
+  s_0cf84883a2f268::t_55f1ca5f4c4d0f 189
+sdk-typescript/packages/usb/LICENSE
+  s_0cf84883a2f268::t_979e042a6fb01d 189
+sdk-typescript/packages/vault/LICENSE
+  s_0cf84883a2f268::t_005926dd878f2b 189
+sdk-typescript/packages/voice/LICENSE
+  s_0cf84883a2f268::t_12796491722704 189
+sdk-typescript/packages/workflow-sdk/LICENSE
+  s_0cf84883a2f268::t_b3afaea7626604 189
+sdk-typescript/packages/zoom/LICENSE
+  s_0cf84883a2f268::t_b9300445927f4c 189
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "269a24566a8582df5485cae7dc3a8dcafce638c2",
+  "prompts": {},
+  "sessions": {
+    "s_0cf84883a2f268": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "agent-a22f056fd4a301e07",
+        "model": "unknown"
+      },
+      "human_author": "Jake Fineman <jakefineman@gmail.com>"
+    }
+  }
+}
