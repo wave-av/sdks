@@ -1,0 +1,20 @@
+sdk-typescript/packages/workflow-sdk/README.md
+  h_af5ac1a9798224 150-171
+sdk-typescript/packages/workflow-sdk/src/entire.test.ts
+  h_af5ac1a9798224 1-80
+sdk-typescript/packages/workflow-sdk/src/entire.ts
+  h_af5ac1a9798224 1-104
+sdk-typescript/packages/workflow-sdk/src/index.ts
+  h_af5ac1a9798224 46-48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.23",
+  "base_commit_sha": "ac5c396d1ee4a53ac7648528b5e7f13e08cd5e65",
+  "prompts": {},
+  "humans": {
+    "h_af5ac1a9798224": {
+      "author": "Jake Fineman <jakefineman@gmail.com>"
+    }
+  }
+}
