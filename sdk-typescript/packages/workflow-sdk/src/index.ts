@@ -43,6 +43,9 @@ export {
 // Builder utilities for creating workflow definitions
 export { WorkflowBuilder } from './builder';
 
+// Entire resume tokens: carry an Entire checkpoint/session link on executions
+export * from './entire';
+
 /**
  * SDK version
  */
