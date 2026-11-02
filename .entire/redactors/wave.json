@@ -1,0 +1,42 @@
+{
+  "name": "wave",
+  "version": "1.0.1",
+  "description": "WAVE fleet secret shapes missed by the built-in pipeline (canary-proven 2026-08-14: Doppler dp.* and AWS AKIA shapes passed through 0.10.0's 6 always-on layers). v1.0.1: dropped the standalone 40-char Cloudflare rule — it matched 40-hex git SHAs (review finding); CF tokens in assignment context are covered by generic-credential-kv, and standalone CF tokens are caught by the built-in entropy layer (mixed-case 40-char strings exceed the Shannon>4.5 bar while lowercase hex SHAs sit under it). Committed samples are negative-only so even decoy-shaped strings never land in git.",
+  "rules": [
+    {
+      "id": "doppler-token",
+      "description": "Doppler personal/service tokens — our secrets manager; built-in pipeline missed this shape in canary checkpoint b66947bd4947",
+      "regex": "dp\\.(pt|st|sc|sa|configs|audit)\\.[A-Za-z0-9]{20,}",
+      "samples": [
+        { "input": "see the doppler docs; dp.pt alone is not a token", "redacted": false },
+        { "input": "short dp.pt.abc123 is below the length floor", "redacted": false }
+      ]
+    },
+    {
+      "id": "aws-access-key",
+      "description": "AWS access key IDs, including docs-example shapes the built-in allowlist skips",
+      "regex": "\\b(AKIA|ASIA|ABIA|ACCA)[0-9A-Z]{16}\\b",
+      "samples": [
+        { "input": "AKIA is a prefix, not a key", "redacted": false },
+        { "input": "AKIA123 is too short to match", "redacted": false }
+      ]
+    },
+    {
+      "id": "supabase-service-jwt",
+      "description": "Full JWTs (all three segments) — built-in caught the signature segment only; redact whole token",
+      "regex": "eyJ[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]{10,}",
+      "samples": [
+        { "input": "prefix eyJhbGciOiJIUzI1NiIs alone is not a full JWT", "redacted": false }
+      ]
+    },
+    {
+      "id": "generic-credential-kv",
+      "description": "Any *_TOKEN / *_KEY / *_SECRET / *_PASSWORD env assignment with a 12+ char value (bounded KV safety net; also carries CF tokens in KEY= context)",
+      "regex": "\\b[A-Z][A-Z0-9_]*(TOKEN|KEY|SECRET|PASSWORD)[A-Z0-9_]*\\s*=\\s*['\"]?[^\\s'\"]{12,}",
+      "samples": [
+        { "input": "TOKEN=short stays", "redacted": false },
+        { "input": "the README mentions API_TOKEN conceptually", "redacted": false }
+      ]
+    }
+  ]
+}
