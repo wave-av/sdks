@@ -53,4 +53,4 @@ A green repository is necessary but not sufficient for platform GA. The platform
 
 ## License
 
-Apache-2.0 © WAVE — see [LICENSE](LICENSE) and [NOTICE](NOTICE).
+Apache-2.0 © WAVE Online, LLC — see [LICENSE](LICENSE) and [NOTICE](NOTICE).

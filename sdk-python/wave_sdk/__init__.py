@@ -1,7 +1,7 @@
 """
 WAVE SDK for Python
 
-Official Python SDK for the WAVE API by WAVE Inc.
+Official Python SDK for the WAVE API by WAVE Online, LLC.
 
 Example:
     >>> from wave_sdk import Wave
