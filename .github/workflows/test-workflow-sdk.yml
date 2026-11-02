@@ -1,0 +1,64 @@
+name: workflow-sdk test
+
+# Builds, type-checks and unit-tests @wave-av/workflow-sdk, then installs the packed
+# tarball into a clean project that already has zod 4 (what `npm i zod` gives today).
+# 1.0.6 failed that install with ERESOLVE; this gate keeps it from shipping again.
+# The live gateway check (scripts/live-smoke.mjs) needs an API key and stays manual.
+on:
+  pull_request:
+    paths:
+      - "sdk-typescript/packages/workflow-sdk/**"
+      - "sdk-typescript/pnpm-lock.yaml"
+      - ".github/workflows/test-workflow-sdk.yml"
+  push:
+    branches: [main]
+    paths:
+      - "sdk-typescript/packages/workflow-sdk/**"
+      - "sdk-typescript/pnpm-lock.yaml"
+      - ".github/workflows/test-workflow-sdk.yml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        node-version: ["20", "22"]
+    defaults:
+      run:
+        working-directory: sdk-typescript
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          version: 10
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          package-manager-cache: false
+          node-version: ${{ matrix.node-version }}
+      - name: Install (frozen lockfile)
+        run: pnpm install --frozen-lockfile --filter @wave-av/workflow-sdk
+      - name: Type-check
+        run: pnpm --filter @wave-av/workflow-sdk run type-check
+      - name: Build
+        run: pnpm --filter @wave-av/workflow-sdk run build
+      - name: Unit tests
+        run: pnpm --filter @wave-av/workflow-sdk run test
+      - name: Clean install next to zod 4 (ESM + CJS)
+        run: |
+          set -euo pipefail
+          pnpm --filter @wave-av/workflow-sdk pack --pack-destination "$RUNNER_TEMP"
+          mkdir -p "$RUNNER_TEMP/consumer" && cd "$RUNNER_TEMP/consumer"
+          printf '{"name":"consumer","private":true,"type":"module"}\n' > package.json
+          npm install --no-audit --no-fund zod@4
+          npm install --no-audit --no-fund "$RUNNER_TEMP"/wave-av-workflow-sdk-*.tgz
+          node -e 'import("@wave-av/workflow-sdk").then(m => { if (typeof m.WorkflowApiError !== "function") process.exit(1); console.log("esm ok", m.VERSION); })'
+          node -e 'const m = require("@wave-av/workflow-sdk"); if (typeof m.WaveWorkflowClient !== "function") process.exit(1); console.log("cjs ok")'
