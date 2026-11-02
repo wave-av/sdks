@@ -71,6 +71,9 @@ dev = [
     "mypy>=1.0.0",
     "ruff>=0.1.0",
     "black>=23.0.0",
+    # tests/test_packaging.py reads this file back to assert the shipped metadata
+    # matches the repo (name/version). tomllib is stdlib from 3.11 only.
+    "tomli>=2.0.0; python_version < '3.11'",
 ]
 
 [project.urls]
