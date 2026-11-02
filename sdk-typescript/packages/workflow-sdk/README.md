@@ -147,6 +147,28 @@ await client.resumeExecution(execution.id);
 await client.retryExecution(execution.id, { from_checkpoint: true });
 ```
 
+##### Entire resume tokens
+
+Stamp an execution with the Entire checkpoint that produced its context, so a
+retry deep-links back to the originating agent session
+(`entire checkpoint explain <id>`). The token rides in `input_params` — it
+never overloads `checkpoint_id`, which is the workflow server's own UUID
+checkpoint namespace:
+
+```typescript
+import { withEntireResumeToken, entireResumeTokenOf } from '@wave-av/workflow-sdk';
+
+const execution = await client.execute('my-workflow',
+  withEntireResumeToken(
+    { input_params: { environment: 'production' } },
+    { checkpointId: 'a829e9d5cff9' } // 12-char hex, from `entire checkpoint list`
+  ));
+
+// Later — e.g. before retryExecution(..., { from_checkpoint: true }):
+const link = entireResumeTokenOf(await client.getExecution(execution.id));
+// -> { checkpointId: 'a829e9d5cff9' } — resolve with `entire checkpoint explain`
+```
+
 ##### Convenience methods
 
 ```typescript
