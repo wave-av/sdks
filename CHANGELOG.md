@@ -52,6 +52,15 @@ All notable changes to this project are documented here. The format is based on
 
 ### Fixed
 
+- **`sdk-python/README.md` told readers to `pip install wave-av-sdk`, which cannot be installed.**
+  Every `wave-av-sdk` release on PyPI is yanked, so pip answers "No matching distribution found".
+  The README now points at the supported distribution, `wave-sdk`, built from
+  [wave-av/sdk-python](https://github.com/wave-av/sdk-python). It gives the uninstall and
+  install commands for moving from `wave-av-sdk`, and it explains why this directory's source
+  remains: the `test-python` workflow still installs and tests it. The `publish-pypi.yml`
+  pipeline stays disabled. Its quickstart calls `client.pricing.list_manifests()`, which exists in every
+  `wave-sdk` release from 2.2.0 on.
+
 - **The registry clean-room gate ignored PyPI yank state (PEP 592), so it could PASS a package a
   real user cannot install** (`scripts/ga/cleanroom-targets.mjs`, `scripts/ga/cleanroom-util.mjs`,
   `scripts/ga/cleanroom-targets.json`). `runPypiTarget` resolved a version from `info.version`,
