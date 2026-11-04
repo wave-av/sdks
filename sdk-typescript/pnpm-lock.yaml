@@ -8,6 +8,7 @@ overrides:
   hono: ^4.13.5
   '@hono/node-server': ^1.19.15
   qs: ^6.16.0
+  raw-body@3: 4.0.0
 
 importers:
 
@@ -19,15 +20,15 @@ importers:
         specifier: workspace:*
         version: link:../kernel
       zod:
-        specifier: ^3.23.0
-        version: 3.25.76
+        specifier: ^4.6.0
+        version: 4.6.0
     devDependencies:
       '@types/node':
         specifier: ^25.0.3
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.0
         version: 5.9.3
@@ -46,7 +47,7 @@ importers:
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -54,8 +55,8 @@ importers:
         specifier: ^4.1.4
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.0
+        version: 4.6.0
 
   packages/autopilot:
     dependencies:
@@ -68,7 +69,7 @@ importers:
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -76,8 +77,8 @@ importers:
         specifier: ^4.1.4
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.0
+        version: 4.6.0
 
   packages/billing:
     dependencies:
@@ -90,7 +91,7 @@ importers:
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -98,8 +99,8 @@ importers:
         specifier: ^4.1.4
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.0
+        version: 4.6.0
 
   packages/camera-control:
     dependencies:
@@ -112,7 +113,7 @@ importers:
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -120,8 +121,8 @@ importers:
         specifier: ^4.1.4
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.0
+        version: 4.6.0
 
   packages/captions:
     dependencies:
@@ -134,7 +135,7 @@ importers:
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -142,8 +143,8 @@ importers:
         specifier: ^4.1.4
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.0
+        version: 4.6.0
 
   packages/chapters:
     dependencies:
@@ -156,7 +157,7 @@ importers:
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -164,8 +165,8 @@ importers:
         specifier: ^4.1.4
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.0
+        version: 4.6.0
 
   packages/clips:
     dependencies:
@@ -178,7 +179,7 @@ importers:
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -186,8 +187,8 @@ importers:
         specifier: ^4.1.4
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.0
+        version: 4.6.0
 
   packages/cloud-switcher:
     dependencies:
@@ -200,7 +201,7 @@ importers:
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -208,8 +209,8 @@ importers:
         specifier: ^4.1.4
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.0
+        version: 4.6.0
 
   packages/collab:
     dependencies:
@@ -222,7 +223,7 @@ importers:
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -230,8 +231,8 @@ importers:
         specifier: ^4.1.4
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.0
+        version: 4.6.0
 
   packages/connect:
     dependencies:
@@ -244,7 +245,7 @@ importers:
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -252,8 +253,8 @@ importers:
         specifier: ^4.1.4
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.0
+        version: 4.6.0
 
   packages/console:
     dependencies:
@@ -266,7 +267,7 @@ importers:
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -274,8 +275,8 @@ importers:
         specifier: ^4.1.4
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.0
+        version: 4.6.0
 
   packages/core:
     dependencies:
@@ -291,7 +292,7 @@ importers:
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -299,8 +300,8 @@ importers:
         specifier: ^4.1.4
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.0
+        version: 4.6.0
 
   packages/creator:
     dependencies:
@@ -313,7 +314,7 @@ importers:
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -321,8 +322,8 @@ importers:
         specifier: ^4.1.4
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.0
+        version: 4.6.0
 
   packages/desktop:
     dependencies:
@@ -335,7 +336,7 @@ importers:
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -343,8 +344,8 @@ importers:
         specifier: ^4.1.4
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.0
+        version: 4.6.0
 
   packages/discovery:
     dependencies:
@@ -357,7 +358,7 @@ importers:
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -365,8 +366,8 @@ importers:
         specifier: ^4.1.4
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.0
+        version: 4.6.0
 
   packages/distribution:
     dependencies:
@@ -379,7 +380,7 @@ importers:
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -387,8 +388,8 @@ importers:
         specifier: ^4.1.4
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.0
+        version: 4.6.0
 
   packages/drm:
     dependencies:
@@ -401,7 +402,7 @@ importers:
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -409,8 +410,8 @@ importers:
         specifier: ^4.1.4
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.0
+        version: 4.6.0
 
   packages/edge:
     dependencies:
@@ -423,7 +424,7 @@ importers:
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -431,8 +432,8 @@ importers:
         specifier: ^4.1.4
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.0
+        version: 4.6.0
 
   packages/editor:
     dependencies:
@@ -445,7 +446,7 @@ importers:
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -453,8 +454,8 @@ importers:
         specifier: ^4.1.4
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.0
+        version: 4.6.0
 
   packages/fleet:
     dependencies:
@@ -467,7 +468,7 @@ importers:
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -475,8 +476,8 @@ importers:
         specifier: ^4.1.4
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.0
+        version: 4.6.0
 
   packages/ghost:
     dependencies:
@@ -489,7 +490,7 @@ importers:
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -497,8 +498,8 @@ importers:
         specifier: ^4.1.4
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.0
+        version: 4.6.0
 
   packages/kernel:
     dependencies:
@@ -520,7 +521,7 @@ importers:
         version: 8.1.9
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.0
         version: 5.9.3
@@ -539,7 +540,7 @@ importers:
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -547,24 +548,24 @@ importers:
         specifier: ^4.1.4
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.0
+        version: 4.6.0
 
   packages/mcp-server:
     dependencies:
       '@modelcontextprotocol/sdk':
-        specifier: ^1.0.0
-        version: 1.29.0(zod@3.25.76)
+        specifier: ^1.32.0
+        version: 1.32.2(zod@4.6.0)
       zod:
-        specifier: ^3.23.0
-        version: 3.25.76
+        specifier: ^4.6.0
+        version: 4.6.0
     devDependencies:
       '@types/node':
         specifier: ^22.13.0
         version: 22.19.19
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.0
         version: 5.9.3
@@ -583,7 +584,7 @@ importers:
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -591,8 +592,8 @@ importers:
         specifier: ^4.1.4
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.0
+        version: 4.6.0
 
   packages/notifications:
     dependencies:
@@ -605,7 +606,7 @@ importers:
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -613,8 +614,8 @@ importers:
         specifier: ^4.1.4
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.0
+        version: 4.6.0
 
   packages/phone:
     dependencies:
@@ -627,7 +628,7 @@ importers:
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -635,8 +636,8 @@ importers:
         specifier: ^4.1.4
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.0
+        version: 4.6.0
 
   packages/pipeline:
     dependencies:
@@ -649,7 +650,7 @@ importers:
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -657,8 +658,8 @@ importers:
         specifier: ^4.1.4
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.0
+        version: 4.6.0
 
   packages/podcast:
     dependencies:
@@ -671,7 +672,7 @@ importers:
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -679,8 +680,8 @@ importers:
         specifier: ^4.1.4
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.0
+        version: 4.6.0
 
   packages/prism:
     dependencies:
@@ -693,7 +694,7 @@ importers:
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -701,8 +702,8 @@ importers:
         specifier: ^4.1.4
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.0
+        version: 4.6.0
 
   packages/prompter:
     dependencies:
@@ -715,7 +716,7 @@ importers:
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -723,8 +724,8 @@ importers:
         specifier: ^4.1.4
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.0
+        version: 4.6.0
 
   packages/pulse:
     dependencies:
@@ -737,7 +738,7 @@ importers:
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -745,8 +746,8 @@ importers:
         specifier: ^4.1.4
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.0
+        version: 4.6.0
 
   packages/qr:
     dependencies:
@@ -759,7 +760,7 @@ importers:
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -767,8 +768,8 @@ importers:
         specifier: ^4.1.4
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.0
+        version: 4.6.0
 
   packages/replay:
     dependencies:
@@ -781,7 +782,7 @@ importers:
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -789,8 +790,8 @@ importers:
         specifier: ^4.1.4
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.0
+        version: 4.6.0
 
   packages/scene:
     dependencies:
@@ -803,7 +804,7 @@ importers:
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -811,8 +812,8 @@ importers:
         specifier: ^4.1.4
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.0
+        version: 4.6.0
 
   packages/sdk:
     dependencies:
@@ -951,7 +952,7 @@ importers:
     devDependencies:
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -970,7 +971,7 @@ importers:
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -978,8 +979,8 @@ importers:
         specifier: ^4.1.4
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.0
+        version: 4.6.0
 
   packages/sentiment:
     dependencies:
@@ -992,7 +993,7 @@ importers:
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1000,8 +1001,8 @@ importers:
         specifier: ^4.1.4
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.0
+        version: 4.6.0
 
   packages/signage:
     dependencies:
@@ -1014,7 +1015,7 @@ importers:
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1022,8 +1023,8 @@ importers:
         specifier: ^4.1.4
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.0
+        version: 4.6.0
 
   packages/slides:
     dependencies:
@@ -1036,7 +1037,7 @@ importers:
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1044,8 +1045,8 @@ importers:
         specifier: ^4.1.4
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.0
+        version: 4.6.0
 
   packages/studio:
     dependencies:
@@ -1058,7 +1059,7 @@ importers:
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1066,8 +1067,8 @@ importers:
         specifier: ^4.1.4
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.0
+        version: 4.6.0
 
   packages/studio-ai:
     dependencies:
@@ -1080,7 +1081,7 @@ importers:
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1088,8 +1089,8 @@ importers:
         specifier: ^4.1.4
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.0
+        version: 4.6.0
 
   packages/transcribe:
     dependencies:
@@ -1102,7 +1103,7 @@ importers:
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1110,8 +1111,8 @@ importers:
         specifier: ^4.1.4
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.0
+        version: 4.6.0
 
   packages/usb:
     dependencies:
@@ -1124,7 +1125,7 @@ importers:
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1132,8 +1133,8 @@ importers:
         specifier: ^4.1.4
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.0
+        version: 4.6.0
 
   packages/vault:
     dependencies:
@@ -1146,7 +1147,7 @@ importers:
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1154,8 +1155,8 @@ importers:
         specifier: ^4.1.4
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.0
+        version: 4.6.0
 
   packages/voice:
     dependencies:
@@ -1168,7 +1169,7 @@ importers:
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1176,8 +1177,8 @@ importers:
         specifier: ^4.1.4
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.0
+        version: 4.6.0
 
   packages/workflow-sdk:
     dependencies:
@@ -1190,7 +1191,7 @@ importers:
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1198,8 +1199,8 @@ importers:
         specifier: ^4.1.4
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.0
+        version: 4.6.0
 
   packages/zoom:
     dependencies:
@@ -1212,7 +1213,7 @@ importers:
         version: 25.9.1
       tsup:
         specifier: ^8.0.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)
+        version: 8.5.1(postcss@8.5.32)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1220,8 +1221,8 @@ importers:
         specifier: ^4.1.4
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7))
       zod:
-        specifier: 3.25.76
-        version: 3.25.76
+        specifier: 4.6.0
+        version: 4.6.0
 
 packages:
 
@@ -1409,8 +1410,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
-  '@modelcontextprotocol/sdk@1.29.0':
-    resolution: {integrity: sha512-zo37mZA9hJWpULgkRpowewez1y6ML5GsXJPY8FI0tBBCd77HEvza4jDqRKOXgHNn867PVGCyTdzqpz0izu5ZjQ==}
+  '@modelcontextprotocol/sdk@1.32.2':
+    resolution: {integrity: sha512-SWsVtH/0vULSQStoZ6xxH2K09Li8fXYTMC64ZeogCdpZ3XSi1eCPOByV1OpuJxuI3OcmHhosDWYyii07tpPsLw==}
     engines: {node: '>=18'}
     peerDependencies:
       '@cfworker/json-schema': ^4.1.1
@@ -1419,12 +1420,12 @@ packages:
       '@cfworker/json-schema':
         optional: true
 
-  '@napi-rs/wasm-runtime@1.2.3':
-    resolution: {integrity: sha512-UMduMbqO5s5zF2NkNacMT/yK5Y5QiKvWr2+50bzIIxFDwVJ2h49b+oyjaCGPhJxd2/gC2x39EHv/gHVuu36x2Q==}
+  '@napi-rs/wasm-runtime@1.2.6':
+    resolution: {integrity: sha512-mRyDmEw9/fCDXCGfL1sbgIw/GUK0PVxRW4YwgPN61F3LQ+fSyoBFarJVzgGyhF6kRzEQZ0FejDqm4WLXSeqQmw==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=23.5.0}
     peerDependencies:
-      '@emnapi/core': ^1.7.1 || ^2.0.0-alpha.4
-      '@emnapi/runtime': ^1.7.1 || ^2.0.0-alpha.4
+      '@emnapi/core': ^1.7.1 || 2.0.0-beta.2
+      '@emnapi/runtime': ^1.7.1 || 2.0.0-beta.2
 
   '@noble/ed25519@3.1.0':
     resolution: {integrity: sha512-pfcObRY3CtvwfaG9Mt5XqZdKmAQppl37tHUeuBhDUbiwJBCVY4/A4lbMvb1xKhMDx96AqAqZpMWuBX1HulhX4g==}
@@ -1474,36 +1475,42 @@ packages:
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
 
   '@rolldown/binding-linux-arm64-musl@1.0.2':
     resolution: {integrity: sha512-QVLO/czFMdoMFSqlX3bcswcJNm/23r+qoa/jgtmFc/qEp6/jXmIkDjF/XIo8dPfGaiwy1xfQn8o77L79GeXFgw==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
 
   '@rolldown/binding-linux-ppc64-gnu@1.0.2':
     resolution: {integrity: sha512-hgO5Abm0w5UL6FEa2iFnZqo2KlK7TQ5QhV5x09hujBf7t5KzHQ1VmfPuTpqRy/rNlSxua3eWH374xxiVrP+lcA==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [ppc64]
     os: [linux]
+    libc: [glibc]
 
   '@rolldown/binding-linux-s390x-gnu@1.0.2':
     resolution: {integrity: sha512-fy8rXxuYEu602abC8MUNaPjYLIFzReOaEIEMKMUa0rFEUxNpVXhs15KSSQ4qlqSaM7B6rcj9rDZgADh/IGDzLQ==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [s390x]
     os: [linux]
+    libc: [glibc]
 
   '@rolldown/binding-linux-x64-gnu@1.0.2':
     resolution: {integrity: sha512-0+bOkiQ779+r1WpoHOWHqncvyySci0vKph+myNDYb+im6meJAzHQXay6oEgnkHuUGouM1LKTZwqKpBow6Kj7CQ==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
 
   '@rolldown/binding-linux-x64-musl@1.0.2':
     resolution: {integrity: sha512-mjSkrzZK5Qsl0a9d1JgILOiuZOSDTVdKENcSXBoqbzSrspLR/4/IRVDo5wd2GgZjNss/viBFJdeq+j7qH2nypw==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
 
   '@rolldown/binding-openharmony-arm64@1.0.2':
     resolution: {integrity: sha512-1v5vHasdfQAZoEHakBV72LIFAC9JjnymsiKxp+GEr/ma3+NJCPSaYK+qavInOovJkgwFrs7GccX2d6IgDA3Z5w==}
@@ -1565,66 +1572,79 @@ packages:
     resolution: {integrity: sha512-EIPRXTVQpHyF8WOo219AD2yEltPehLTcTMz2fn6JsatLYSzQf00hj3rulF+yauOlF9/FtM2WpkT/hJh/KJFGhA==}
     cpu: [arm]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-arm-musleabihf@4.60.4':
     resolution: {integrity: sha512-J3Yh9PzzF1Ovah2At+lHiGQdsYgArxBbXv/zHfSyaiFQEqvNv7DcW98pCrmdjCZBrqBiKrKKe2V+aaSGWuBe/w==}
     cpu: [arm]
     os: [linux]
+    libc: [musl]
 
   '@rollup/rollup-linux-arm64-gnu@4.60.4':
     resolution: {integrity: sha512-BFDEZMYfUvLn37ONE1yMBojPxnMlTFsdyNoqncT0qFq1mAfllL+ATMMJd8TeuVMiX84s1KbcxcZbXInmcO2mRg==}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-arm64-musl@4.60.4':
     resolution: {integrity: sha512-pc9EYOSlOgdQ2uPl1o9PF6/kLSgaUosia7gOuS8mB69IxJvlclko1MECXysjs5ryez1/5zjYqx3+xYU0TU6R1A==}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
 
   '@rollup/rollup-linux-loong64-gnu@4.60.4':
     resolution: {integrity: sha512-NxnomyxYerDh5n4iLrNa+sH+Z+U4BMEE46V2PgQ/hoB909i8gV1M5wPojWg9fk1jWpO3IQnOs20K4wyZuFLEFQ==}
     cpu: [loong64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-loong64-musl@4.60.4':
     resolution: {integrity: sha512-nbJnQ8a3z1mtmrwImCYhc6BGpThAyYVRQxw9uKSKG4wR6aAYno9sVjJ0zaZcW9BPJX1GbrDPf+SvdWjgTuDmnw==}
     cpu: [loong64]
     os: [linux]
+    libc: [musl]
 
   '@rollup/rollup-linux-ppc64-gnu@4.60.4':
     resolution: {integrity: sha512-2EU6acNrQLd8tYvo/LXW535wupT3m6fo7HKo6lr7ktQoItxTyOL1ZCR/GfGCuXl2vR+zmfI6eRXkSemafv+iVg==}
     cpu: [ppc64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-ppc64-musl@4.60.4':
     resolution: {integrity: sha512-WeBtoMuaMxiiIrO2IYP3xs6GMWkJP2C0EoT8beTLkUPmzV1i/UcOSVw1d5r9KBODtHKilG5yFxsGRnBbK3wJ4A==}
     cpu: [ppc64]
     os: [linux]
+    libc: [musl]
 
   '@rollup/rollup-linux-riscv64-gnu@4.60.4':
     resolution: {integrity: sha512-FJHFfqpKUI3A10WrWKiFbBZ7yVbGT4q4B5o1qKFFojqpaYoh9LrQgqWCmmcxQzVSXYtyB5bzkXrYzlHTs21MYA==}
     cpu: [riscv64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-riscv64-musl@4.60.4':
     resolution: {integrity: sha512-mcEl6CUT5IAUmQf1m9FYSmVqCJlpQ8r8eyftFUHG8i9OhY7BkBXSUdnLH5DOf0wCOjcP9v/QO93zpmF1SptCCw==}
     cpu: [riscv64]
     os: [linux]
+    libc: [musl]
 
   '@rollup/rollup-linux-s390x-gnu@4.60.4':
     resolution: {integrity: sha512-ynt3JxVd2w2buzoKDWIyiV1pJW93xlQic1THVLXilz429oijRpSHivZAgp65KBu+cMcgf1eVVjdnTLvPxgCuoQ==}
     cpu: [s390x]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-x64-gnu@4.60.4':
     resolution: {integrity: sha512-Boiz5+MsaROEWDf+GGEwF8VMHGhlUoQMtIPjOgA5fv4osupqTVnJteQNKJwUcnUog2G55jYXH7KZFFiJe0TEzQ==}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-x64-musl@4.60.4':
     resolution: {integrity: sha512-+qfSY27qIrFfI/Hom04KYFw3GKZSGU4lXus51wsb5EuySfFlWRwjkKWoE9emgRw/ukoT4Udsj4W/+xxG8VbPKg==}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
 
   '@rollup/rollup-openbsd-x64@4.60.4':
     resolution: {integrity: sha512-VpTfOPHgVXEBeeR8hZ2O0F3aSso+JDWqTWmTmzcQKted54IAdUVbxE+j/MVxUsKa8L20HJhv3vUezVPoquqWjA==}
@@ -1659,8 +1679,8 @@ packages:
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
 
-  '@tybys/wasm-util@0.10.3':
-    resolution: {integrity: sha512-F3fo1MYrRJYL3zER0OUOmkutjr1Vp23m7OsSgp7nq4SP6OqX6C/56XFIPAl5bt3zaBRjmW7SGz3u/6LwFpYcOg==}
+  '@tybys/wasm-util@0.10.4':
+    resolution: {integrity: sha512-W3c4gRigFS0T/Ma4qIYF3GDAc5AQdHb1yL5znJT1Zv1YaD9Kitx656wBjvr19qbiosmZT8lWDM5BEMynUqX65A==}
 
   '@types/chai@5.2.3':
     resolution: {integrity: sha512-Mw558oeA9fFbv65/y4mHtXDs9bPnFMZAL/jxdPFUpOHHIXX91mcgEHbS5Lahr+pwZFR8A7GQleRWeI6cGFC2UA==}
@@ -1985,8 +2005,8 @@ packages:
   isexe@2.0.0:
     resolution: {integrity: sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==}
 
-  jose@6.2.3:
-    resolution: {integrity: sha512-YYVDInQKFJfR/xa3ojUTl8c2KoTwiL1R5Wg9YCydwH0x0B9grbzlg5HC7mMjCtUJjbQ/YnGEZIhI5tCgfTb4Hw==}
+  jose@6.2.15:
+    resolution: {integrity: sha512-qdF6ewcZARtef63fJ9AKKZPgxw+t7USH6HLXYcD4CrdmSvDp79rpJSPFEKc90QBeGS63u1KQtN2MZQHC0yDIzA==}
 
   joycon@3.1.1:
     resolution: {integrity: sha512-34wB/Y7MW7bzjKRjUKTa46I2Z7eV62Rkhva+KkopW7Qvv/OSWBqvkSY7vusOPrNuZcUG3tApvdVgNB8POj3SPw==}
@@ -2033,24 +2053,28 @@ packages:
     engines: {node: '>= 12.0.0'}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
 
   lightningcss-linux-arm64-musl@1.33.0:
     resolution: {integrity: sha512-yiO5ROMuYQgXbC60yjZU5CYSFZGKXL0HFATXt9mHJn1+zW55oCtMI9NfcVhYLMFDL7gV7oBPon/EmMMGg2OvtQ==}
     engines: {node: '>= 12.0.0'}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
 
   lightningcss-linux-x64-gnu@1.33.0:
     resolution: {integrity: sha512-ar+Ju7LmcN0Jo4FpL4hpFybwNG9/3A/Br5KW2n2jyODg3MEZXaDYADdemoNS+BDNfMgKvylJLj4S5tyRActuAg==}
     engines: {node: '>= 12.0.0'}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
 
   lightningcss-linux-x64-musl@1.33.0:
     resolution: {integrity: sha512-RYiYbkokw0trfKqqzfF55lginwEPrD3OJDfTuJzFs1MK6iFnDenaz1fqLLtX4ITG3OktJQXOeTaw1awrBAlZPw==}
     engines: {node: '>= 12.0.0'}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
 
   lightningcss-win32-arm64-msvc@1.33.0:
     resolution: {integrity: sha512-1K+MPfLSFVpphzpdbfkhlWk6wBrTObBzS2T6db10PNOZgR9GoVsAWzwNyuhUYYbTp23j+4RrncfujZ4uAzXvwA==}
@@ -2111,8 +2135,8 @@ packages:
   mz@2.7.0:
     resolution: {integrity: sha512-z81GNO7nnYMEhrGh9LeymoE4+Yr0Wn5McHIZMK5cfQCl+NDX08sCZgUc9/6MHni9IWuFLm1Z3HTCXu2z9fN62Q==}
 
-  nanoid@3.3.18:
-    resolution: {integrity: sha512-DTg4MJbGMWkfi6VZFdNt2/caMbQy4Ou+Op/hJQvGEWcnVfoA1QA+xzRKAzw9jD6+GVOOeYr/mIcuDSdug6F6+w==}
+  nanoid@3.3.20:
+    resolution: {integrity: sha512-uKdg2G3GNCKQn9byYOpxbGqrT2fGO5KRt5J/8b3pok8rT6qxGWF6hxMyJiEYtAf+FVyYuD9hRaDqX5uPFYJ4ZQ==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
@@ -2192,8 +2216,8 @@ packages:
       yaml:
         optional: true
 
-  postcss@8.5.28:
-    resolution: {integrity: sha512-RRuzqDtt5Y9h3quz5hWhK+TPnsmVs6WwSU6LkJMeY4HstUEDuYTG8UJSdawMRzmzAtV+KEoG8N3Qg2qLy5vM/A==}
+  postcss@8.5.32:
+    resolution: {integrity: sha512-LJlKCCAUFKOuZxipUdYw1NzIITEsPcgyOG9LkvRJvuKj/bRzbuRY0ARXvL0pWGpsZvn8jku+LMep2eU0seHp8g==}
     engines: {node: ^10 || ^12 || >=14}
 
   proxy-addr@2.0.7:
@@ -2208,9 +2232,9 @@ packages:
     resolution: {integrity: sha512-Hrgsx+orqoygnmhFbKaHE6c296J+HTAQXoxEF6gNupROmmGJRoyzfG3ccAveqCBrwr/2yxQ5BVd/GTl5agOwSg==}
     engines: {node: '>= 0.6'}
 
-  raw-body@3.0.2:
-    resolution: {integrity: sha512-K5zQjDllxWkf7Z5xJdV0/B0WTNqx6vxG70zJE4N0kBs4LovmEYWJzQGxC9bS9RAKu3bgM40lrd5zoLJ12MQ5BA==}
-    engines: {node: '>= 0.10'}
+  raw-body@4.0.0:
+    resolution: {integrity: sha512-TMHtwexrgOt9VJ2E5JF9RO8mRXGNgC5wXvKkc5AVSJUt1L5gxvjg7eiCQl96EqUEpCWrnNEkCnbAplYtyuq1IA==}
+    engines: {node: '>=22'}
 
   readdirp@4.1.2:
     resolution: {integrity: sha512-GDhwkLfywWL2s6vEjyhri+eXmfH6j1L7JE27WhqLeYzoh/A3DBaYGEj2H/HFZCn/kMfim73FXxEJTw06WtxQwg==}
@@ -2279,8 +2303,8 @@ packages:
   siginfo@2.0.0:
     resolution: {integrity: sha512-ybx0WO1/8bSBLEWXZvEd7gMW3Sn3JFlW3TvX1nREbDLRNQNaeNN8WK0meBwPdAaOI7TtRRRJn/Es1zhrrCHu7g==}
 
-  source-map-js@1.2.1:
-    resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
+  source-map-js@1.2.2:
+    resolution: {integrity: sha512-KGj/8Y43x35aZVDtt+J4mK1hoLGHULMYfSkODJNQjNDC3oW1PqPoxMwo0pLUsWM/UEGzON/NxeHywEfNXNP3Vw==}
     engines: {node: '>=0.10.0'}
 
   source-map@0.7.6:
@@ -2338,8 +2362,8 @@ packages:
   ts-interface-checker@0.1.13:
     resolution: {integrity: sha512-Y/arvbn+rrz3JCKl9C4kVNfTfSm2/mEp5FSz5EsZSANGPSlQrpRI5M4PKF+mJnE52jOO90PnPSc3Ur3bTQw0gA==}
 
-  tslib@2.8.1:
-    resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
+  tslib@2.9.1:
+    resolution: {integrity: sha512-a4Ux9VKuIMHsOS7ENbEq6hK2ZGYIT27Rtl0E4eD9KqwxhKiQeMZE/9xb3IdYwWaSOyIBQLExhQgXDTYoiCxnWA==}
 
   tsup@8.5.1:
     resolution: {integrity: sha512-xtgkqwdhpKWr3tKPmCkvYmS9xnQK3m3XgxZHwSUjvfTjp7YfXe5tT3GgWi0F2N+ZSMsOeWeZFh7ZZFg5iPhing==}
@@ -2377,10 +2401,6 @@ packages:
 
   undici-types@7.24.6:
     resolution: {integrity: sha512-WRNW+sJgj5OBN4/0JpHFqtqzhpbnV0GuB+OozA9gCL7a993SmU+1JBZCzLNxYsbMfIeDL+lTsphD5jN5N+n0zg==}
-
-  unpipe@1.0.0:
-    resolution: {integrity: sha512-pjy2bYhSsufwWlKwPc+l3cN7+wuJlK6uz0YdJEOlQDbl6jo/YlPi4mb8agUkVC8BF7V8NuzeyPNqRksA3hztKQ==}
-    engines: {node: '>= 0.8'}
 
   vary@1.1.2:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
@@ -2488,25 +2508,25 @@ packages:
     peerDependencies:
       zod: ^3.25.28 || ^4
 
-  zod@3.25.76:
-    resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
+  zod@4.6.0:
+    resolution: {integrity: sha512-iIvwyDnebKYpww2ta0DjaNOL8RnVLmPMhgWyOzlW9y0EIIxv5gl+H6Y0ONpt83HqjGqkk78uWp6xWtpxzZdPbw==}
 
 snapshots:
 
   '@emnapi/core@1.10.0':
     dependencies:
       '@emnapi/wasi-threads': 1.2.1
-      tslib: 2.8.1
+      tslib: 2.9.1
     optional: true
 
   '@emnapi/runtime@1.10.0':
     dependencies:
-      tslib: 2.8.1
+      tslib: 2.9.1
     optional: true
 
   '@emnapi/wasi-threads@1.2.1':
     dependencies:
-      tslib: 2.8.1
+      tslib: 2.9.1
     optional: true
 
   '@esbuild/aix-ppc64@0.27.7':
@@ -2605,7 +2625,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@modelcontextprotocol/sdk@1.29.0(zod@3.25.76)':
+  '@modelcontextprotocol/sdk@1.32.2(zod@4.6.0)':
     dependencies:
       '@hono/node-server': 1.19.17(hono@4.13.8)
       ajv: 8.20.0
@@ -2618,20 +2638,20 @@ snapshots:
       express: 5.2.1
       express-rate-limit: 8.5.2(express@5.2.1)
       hono: 4.13.8
-      jose: 6.2.3
+      jose: 6.2.15
       json-schema-typed: 8.0.2
       pkce-challenge: 5.0.1
-      raw-body: 3.0.2
-      zod: 3.25.76
-      zod-to-json-schema: 3.25.2(zod@3.25.76)
+      raw-body: 4.0.0
+      zod: 4.6.0
+      zod-to-json-schema: 3.25.2(zod@4.6.0)
     transitivePeerDependencies:
       - supports-color
 
-  '@napi-rs/wasm-runtime@1.2.3(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)':
+  '@napi-rs/wasm-runtime@1.2.6(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)':
     dependencies:
       '@emnapi/core': 1.10.0
       '@emnapi/runtime': 1.10.0
-      '@tybys/wasm-util': 0.10.3
+      '@tybys/wasm-util': 0.10.4
     optional: true
 
   '@noble/ed25519@3.1.0': {}
@@ -2682,7 +2702,7 @@ snapshots:
     dependencies:
       '@emnapi/core': 1.10.0
       '@emnapi/runtime': 1.10.0
-      '@napi-rs/wasm-runtime': 1.2.3(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)
+      '@napi-rs/wasm-runtime': 1.2.6(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)
     optional: true
 
   '@rolldown/binding-win32-arm64-msvc@1.0.2':
@@ -2770,9 +2790,9 @@ snapshots:
 
   '@standard-schema/spec@1.1.0': {}
 
-  '@tybys/wasm-util@0.10.3':
+  '@tybys/wasm-util@0.10.4':
     dependencies:
-      tslib: 2.8.1
+      tslib: 2.9.1
     optional: true
 
   '@types/chai@5.2.3':
@@ -2878,7 +2898,7 @@ snapshots:
       iconv-lite: 0.7.2
       on-finished: 2.4.1
       qs: 6.16.0
-      raw-body: 3.0.2
+      raw-body: 4.0.0
       type-is: 2.1.0
     transitivePeerDependencies:
       - supports-color
@@ -3134,7 +3154,7 @@ snapshots:
 
   isexe@2.0.0: {}
 
-  jose@6.2.3: {}
+  jose@6.2.15: {}
 
   joycon@3.1.1: {}
 
@@ -3228,7 +3248,7 @@ snapshots:
       object-assign: 4.1.1
       thenify-all: 1.6.0
 
-  nanoid@3.3.18: {}
+  nanoid@3.3.20: {}
 
   negotiator@1.0.0: {}
 
@@ -3270,17 +3290,17 @@ snapshots:
       mlly: 1.8.2
       pathe: 2.0.3
 
-  postcss-load-config@6.0.1(postcss@8.5.28):
+  postcss-load-config@6.0.1(postcss@8.5.32):
     dependencies:
       lilconfig: 3.1.3
     optionalDependencies:
-      postcss: 8.5.28
+      postcss: 8.5.32
 
-  postcss@8.5.28:
+  postcss@8.5.32:
     dependencies:
-      nanoid: 3.3.18
+      nanoid: 3.3.20
       picocolors: 1.1.1
-      source-map-js: 1.2.1
+      source-map-js: 1.2.2
 
   proxy-addr@2.0.7:
     dependencies:
@@ -3294,12 +3314,10 @@ snapshots:
 
   range-parser@1.2.1: {}
 
-  raw-body@3.0.2:
+  raw-body@4.0.0:
     dependencies:
       bytes: 3.1.2
       http-errors: 2.0.1
-      iconv-lite: 0.7.2
-      unpipe: 1.0.0
 
   readdirp@4.1.2: {}
 
@@ -3434,7 +3452,7 @@ snapshots:
 
   siginfo@2.0.0: {}
 
-  source-map-js@1.2.1: {}
+  source-map-js@1.2.2: {}
 
   source-map@0.7.6: {}
 
@@ -3481,10 +3499,10 @@ snapshots:
 
   ts-interface-checker@0.1.13: {}
 
-  tslib@2.8.1:
+  tslib@2.9.1:
     optional: true
 
-  tsup@8.5.1(postcss@8.5.28)(typescript@5.9.3):
+  tsup@8.5.1(postcss@8.5.32)(typescript@5.9.3):
     dependencies:
       bundle-require: 5.1.0(esbuild@0.27.7)
       cac: 6.7.14
@@ -3495,7 +3513,7 @@ snapshots:
       fix-dts-default-cjs-exports: 1.0.1
       joycon: 3.1.1
       picocolors: 1.1.1
-      postcss-load-config: 6.0.1(postcss@8.5.28)
+      postcss-load-config: 6.0.1(postcss@8.5.32)
       resolve-from: 5.0.0
       rollup: 4.60.4
       source-map: 0.7.6
@@ -3504,7 +3522,7 @@ snapshots:
       tinyglobby: 0.2.17
       tree-kill: 1.2.2
     optionalDependencies:
-      postcss: 8.5.28
+      postcss: 8.5.32
       typescript: 5.9.3
     transitivePeerDependencies:
       - jiti
@@ -3526,15 +3544,13 @@ snapshots:
 
   undici-types@7.24.6: {}
 
-  unpipe@1.0.0: {}
-
   vary@1.1.2: {}
 
   vite@8.0.14(@types/node@22.19.19)(esbuild@0.27.7):
     dependencies:
       lightningcss: 1.33.0
       picomatch: 4.0.7
-      postcss: 8.5.28
+      postcss: 8.5.32
       rolldown: 1.0.2
       tinyglobby: 0.2.17
     optionalDependencies:
@@ -3546,7 +3562,7 @@ snapshots:
     dependencies:
       lightningcss: 1.33.0
       picomatch: 4.0.7
-      postcss: 8.5.28
+      postcss: 8.5.32
       rolldown: 1.0.2
       tinyglobby: 0.2.17
     optionalDependencies:
@@ -3621,8 +3637,8 @@ snapshots:
 
   wrappy@1.0.2: {}
 
-  zod-to-json-schema@3.25.2(zod@3.25.76):
+  zod-to-json-schema@3.25.2(zod@4.6.0):
     dependencies:
-      zod: 3.25.76
+      zod: 4.6.0
 
-  zod@3.25.76: {}
+  zod@4.6.0: {}
