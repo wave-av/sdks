@@ -8,8 +8,8 @@ import { fileURLToPath } from 'node:url';
 
 import { CHECKS } from './cleanroom-checks.mjs';
 import {
-  PUBLIC_NPM, bad, fetchJson, installedFile, installedManifest, latestNonYankedVersion,
-  npmCleanRoom, npmEncode, ok, releaseIsYanked, run, yankReason,
+  PUBLIC_NPM, bad, cleanRoomChildEnv, fetchJson, installedFile, installedManifest,
+  latestNonYankedVersion, npmCleanRoom, npmEncode, ok, releaseIsYanked, run, yankReason,
 } from './cleanroom-util.mjs';
 import { checkSbomPresence } from './sbom-presence.mjs';
 
@@ -197,7 +197,7 @@ export async function runPypiTarget(target, args) {
     if (!venv.ok) { result.checks.push(bad('venv', venv.detail)); return result; }
 
     // Unconstrained — no version pin — exactly the command a real user runs.
-    const inst = run(venv.py, ['-m', 'pip', 'install', '-q', '--disable-pip-version-check', '--no-input', name], { cwd: room, timeout: 600000 });
+    const inst = run(venv.py, ['-m', 'pip', 'install', '-q', '--disable-pip-version-check', '--no-input', name], { cwd: room, env: cleanRoomChildEnv(), timeout: 600000 });
     if (inst.status === 0) {
       result.checks.push(bad('negative-control-install-refused', `expected \`pip install ${name}\` to fail (fully yanked) but it SUCCEEDED — this is exactly the false-green this gate exists to catch`));
       return result;
@@ -234,7 +234,7 @@ export async function runPypiTarget(target, args) {
   // Installed BY NAME==VERSION FROM THE PUBLIC INDEX — never a direct file URL. This is what makes
   // pip's own resolver, and therefore PyPI's yank state (PEP 592), bite naturally: the exact
   // command a customer's `pip install <name>==<version>` runs, not a bypass of it.
-  const inst = run(venv.py, ['-m', 'pip', 'install', '-q', '--disable-pip-version-check', '--no-input', `${name}==${version}`], { cwd: room, timeout: 600000 });
+  const inst = run(venv.py, ['-m', 'pip', 'install', '-q', '--disable-pip-version-check', '--no-input', `${name}==${version}`], { cwd: room, env: cleanRoomChildEnv(), timeout: 600000 });
   if (inst.status !== 0) {
     result.checks.push(bad('install', `pip install ${name}==${version} from the public PyPI index failed — this is what a real \`pip install ${name}==${version}\` gets: ${(inst.stderr || inst.stdout).trim().slice(0, 600)}`));
     return result;
@@ -246,7 +246,7 @@ export async function runPypiTarget(target, args) {
   // cleanroom_python_assert.py re-verifies that independently and reports it as its own check.
   const argv = [join(HERE, 'cleanroom_python_assert.py'), '--dist', name, '--module', target.import_module];
   if (target.import_symbol) argv.push('--symbol', target.import_symbol);
-  const probe = run(venv.py, argv, { cwd: room, timeout: 180000 });
+  const probe = run(venv.py, argv, { cwd: room, env: cleanRoomChildEnv(), timeout: 180000 });
   let parsed;
   try { parsed = JSON.parse(probe.stdout.trim().split('\n').filter(Boolean).pop()); }
   catch {

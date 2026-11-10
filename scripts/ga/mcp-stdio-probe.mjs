@@ -9,6 +9,7 @@
 // Usage: node mcp-stdio-probe.mjs <path-to-server-entrypoint>
 
 import { spawn } from 'node:child_process';
+import { scrubRunnerCredentials } from './cleanroom-util.mjs';
 
 const RPC_TIMEOUT_MS = Number(process.env.MCP_PROBE_TIMEOUT_MS || 30000);
 const entry = process.argv[2];
@@ -25,7 +26,7 @@ if (!entry) {
 const child = spawn(process.execPath, [entry], {
   stdio: ['pipe', 'pipe', 'pipe'],
   env: {
-    ...process.env,
+    ...scrubRunnerCredentials(process.env),
     // A syntactically plausible but non-functional key. tools/list must not require a live
     // credential — if it does, that is itself a defect worth failing on. No real secret is
     // used and no authenticated request is expected to succeed.

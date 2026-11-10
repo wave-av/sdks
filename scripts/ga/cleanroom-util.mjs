@@ -56,6 +56,33 @@ export function bad(name, detail) { return { name, ok: false, detail }; }
  */
 export function npmEncode(value) { return encodeURIComponent(value); }
 
+/**
+ * Names that GitHub Actions and npm/pip auth inject into the runner. Clean-room
+ * installs enable lifecycle scripts on purpose (a customer `npm install` runs
+ * them), so those child processes must not inherit the workflow token that
+ * `registry-cleanroom.yml` sets for GitHub Releases API rate limits.
+ *
+ * Match is exact (case-insensitive) plus npm's `npm_config_*auth*` flattening
+ * of `.npmrc` auth settings. Do not use a substring match on "TOKEN": that
+ * would drop `CLEANROOM_VERSIONS` and similar non-credential knobs.
+ */
+const RUNNER_CREDENTIAL_ENV = /^(GITHUB_TOKEN|GH_TOKEN|GH_PAT|NODE_AUTH_TOKEN|NPM_TOKEN|NPM_AUTH_TOKEN|ACTIONS_RUNTIME_TOKEN|ACTIONS_ID_TOKEN_REQUEST_TOKEN)$/i;
+const NPM_AUTH_ENV = /^npm_config_.*auth/i;
+
+/** Return a copy of `base` with runner credential names removed. */
+export function scrubRunnerCredentials(base = process.env) {
+  const env = { ...base };
+  for (const key of Object.keys(env)) {
+    if (RUNNER_CREDENTIAL_ENV.test(key) || NPM_AUTH_ENV.test(key)) delete env[key];
+  }
+  return env;
+}
+
+/** Isolated env for npm/pip/MCP child processes spawned by the clean-room suite. */
+export function cleanRoomChildEnv(extra = {}) {
+  return scrubRunnerCredentials({ ...process.env, ...extra });
+}
+
 /** Install one package from the PUBLIC npm registry into a throwaway directory. */
 export function npmCleanRoom(pkgName, version) {
   const room = mkdtempSync(join(tmpdir(), 'wave-cleanroom-npm-'));
@@ -71,14 +98,13 @@ export function npmCleanRoom(pkgName, version) {
   ].join('\n'));
   writeFileSync(globalConfig, ''); // npm refuses the same path for user and global config
 
-  const env = {
-    ...process.env,
+  const env = cleanRoomChildEnv({
     npm_config_userconfig: userConfig,
     npm_config_globalconfig: globalConfig,
     npm_config_cache: join(room, 'npm-cache'),
     npm_config_registry: `${PUBLIC_NPM}/`,
     NO_UPDATE_NOTIFIER: '1',
-  };
+  });
 
   // Lifecycle scripts stay ENABLED on purpose: a customer's `npm install` runs them, so an
   // artifact whose postinstall breaks is broken in the field and this suite must see it.

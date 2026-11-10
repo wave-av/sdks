@@ -6,6 +6,10 @@ All notable changes to this project are documented here. The format is based on
 
 ## [Unreleased]
 
+### Fixed
+
+- Registry clean-room child processes (`npm install`, `pip install`, MCP stdio probe) no longer inherit runner credential environment variables. Lifecycle scripts stay enabled so the gate still matches a customer install; the workflow token used for GitHub Releases API rate limits stays in the parent Node process for SBOM checks only.
+
 ### Added
 
 - **SBOM-presence GA check (SUPPLY-001, cw#4803)**: this repo publishes no GitHub Release of its
