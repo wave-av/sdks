@@ -12,9 +12,10 @@
   "pnpm": {
     "onlyBuiltDependencies": ["esbuild"],
     "overrides": {
-      "hono": "^4.13.5",
-      "@hono/node-server": "^1.19.15",
-      "qs": "^6.16.0"
+      "hono": "^4.13.16",
+      "@hono/node-server": "^1.19.18",
+      "qs": "^6.16.0",
+      "raw-body@3": "4.0.0"
     }
   }
 }
